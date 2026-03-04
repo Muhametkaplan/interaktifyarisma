@@ -180,9 +180,6 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    /* =========================================================================
-       🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
-    ========================================================================= */
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
       authDomain: "interaktif-yarisma.firebaseapp.com",
@@ -192,12 +189,10 @@
       appId: "1:652081118487:web:409c5737ced7cb8377cb52"
     };
 
-    // --- CANVAS TEST ORTAMI İÇİN GÜVENLİK ---
     if (typeof __firebase_config !== 'undefined' && __firebase_config) {
       firebaseConfig = JSON.parse(__firebase_config);
     }
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    // ----------------------------------------
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -215,6 +210,7 @@
     let timeLeft = 0;
     let timerInterval = null;
     let questionStartTime = 0;
+    let localGameState = 'setup'; // YENİ: Sonsuz döngüleri engelleyen yerel kilit
 
     // --- EKRAN GEÇİŞ FONKSİYONU ---
     const screens = ['setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
@@ -277,8 +273,10 @@
       try {
         pin = Math.floor(100000 + Math.random() * 900000).toString();
         document.getElementById('display-pin').innerText = pin;
+        
+        localGameState = 'lobby'; // Lobi durumuna geçtik
 
-        // QR Kod için mevcut URL'yi al (admin.html'yi silip yerine kök dizini koy)
+        // QR Kod için mevcut URL'yi al
         const studentUrl = window.location.href.replace('admin.html', '').replace(/\/$/, '');
         document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
         document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
@@ -294,11 +292,13 @@
           players = all.filter(p => p.pin === pin);
           updateLobbyUI();
           
-          // Eğer soru ekranındaysak ve herkes cevapladıysa süreyi erken bitir
-          if (document.getElementById('screen-question').classList.contains('flex')) {
-             document.getElementById('answered-count').innerText = players.filter(p => p.currentAnswer !== null).length;
-             if (players.length > 0 && players.every(p => p.currentAnswer !== null)) {
-                handleTimeUp();
+          // GÜNCELLEME: Sonsuz döngüyü engellemek için DOM kontrolü yerine Local State kontrolü
+          if (localGameState === 'question') {
+             const answeredPlayers = players.filter(p => p.currentAnswer !== null && p.currentAnswer !== undefined);
+             document.getElementById('answered-count').innerText = answeredPlayers.length;
+             
+             if (players.length > 0 && answeredPlayers.length === players.length) {
+                handleTimeUp(); // Herkes cevapladıysa süreyi bitir
              }
           }
         });
@@ -330,6 +330,8 @@
       const q = questions[index];
       timeLeft = q.timeLimit;
       questionStartTime = Date.now();
+      
+      localGameState = 'question'; // Soru modunu aktif et
 
       // UI Güncelle
       document.getElementById('live-q-text').innerText = q.question;
@@ -362,13 +364,16 @@
     // --- 4. SÜRE BİTİMİ (Puan Hesaplama & Bar Grafiği) ---
     async function handleTimeUp() {
       clearInterval(timerInterval);
-      if(!document.getElementById('screen-question').classList.contains('flex')) return; // Zaten bitmişse dur
+      
+      // GÜNCELLEME: Eğer zaten sorudan çıkmışsak, puanları tekrar tekrar ÇARPMA!
+      if (localGameState !== 'question') return; 
+      localGameState = 'reveal'; // Hemen kilitle ki tekrar tetiklenmesin
       
       const q = questions[currentQIndex];
       const batch = writeBatch(db);
       batch.update(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), { state: 'reveal' });
 
-      // Puanları Hesapla
+      // Puanları Hesapla (Sadece 1 Kere Çalışacak)
       players.forEach(p => {
         const playerRef = doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, p.id);
         if (p.currentAnswer === q.correctAnswerIndex) {
@@ -410,6 +415,7 @@
 
     // --- 5. LİDERLİK TABLOSU ---
     document.getElementById('btn-next-leaderboard').addEventListener('click', async () => {
+      localGameState = 'leaderboard'; // Kilit güncellemesi
       await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), { state: 'leaderboard' });
       
       const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
@@ -432,6 +438,7 @@
 
     // --- 6. OYUN SONU (PODYUM) ---
     async function triggerEndGame() {
+      localGameState = 'end'; // Kilit güncellemesi
       await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), { state: 'end' });
       const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
       const p1 = sorted[0]; const p2 = sorted[1]; const p3 = sorted[2];

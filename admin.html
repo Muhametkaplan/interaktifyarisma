@@ -182,23 +182,17 @@
 
     /* =========================================================================
        🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
-       Firebase konsolundan aldığın "const firebaseConfig = { ... }"
-       kısmındaki SÜSLÜ PARANTEZ İÇİNİ (sadece içindeki yazıları) 
-       aşağıdaki boşluğa kopyalayıp yapıştır.
-       (Bu işlemi hem index.html hem de admin.html dosyası için yapmalısın)
     ========================================================================= */
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
-  authDomain: "interaktif-yarisma.firebaseapp.com",
-  projectId: "interaktif-yarisma",
-  storageBucket: "interaktif-yarisma.firebasestorage.app",
-  messagingSenderId: "652081118487",
-  appId: "1:652081118487:web:409c5737ced7cb8377cb52"
-
+      authDomain: "interaktif-yarisma.firebaseapp.com",
+      projectId: "interaktif-yarisma",
+      storageBucket: "interaktif-yarisma.firebasestorage.app",
+      messagingSenderId: "652081118487",
+      appId: "1:652081118487:web:409c5737ced7cb8377cb52"
     };
 
     // --- CANVAS TEST ORTAMI İÇİN GÜVENLİK ---
-    // Eğer projeyi burada (Canvas'ta) test ediyorsan kendi sistemini kullanmaya devam etmesi için:
     if (typeof __firebase_config !== 'undefined' && __firebase_config) {
       firebaseConfig = JSON.parse(__firebase_config);
     }
@@ -234,6 +228,9 @@
     signInAnonymously(auth).then(userCred => {
        hostId = userCred.user.uid;
        showScreen('setup');
+    }).catch(error => {
+       alert("Sisteme giriş yapılırken (Kimlik Doğrulama) bir hata oluştu:\n" + error.message + "\n\nLütfen Firebase üzerinden 'Anonymous' (Anonim) girişlerin açık olduğundan emin olun.");
+       console.error("Auth error:", error);
     });
 
     // --- 1. SORU EKLEME İŞLEMLERİ ---
@@ -277,35 +274,40 @@
 
     // --- 2. ODA KURMA VE LOBİ ---
     document.getElementById('btn-create-room').addEventListener('click', async () => {
-      pin = Math.floor(100000 + Math.random() * 900000).toString();
-      document.getElementById('display-pin').innerText = pin;
+      try {
+        pin = Math.floor(100000 + Math.random() * 900000).toString();
+        document.getElementById('display-pin').innerText = pin;
 
-      // QR Kod için mevcut URL'yi al (admin.html'yi silip yerine kök dizini koy)
-      const studentUrl = window.location.href.replace('admin.html', '').replace(/\/$/, '');
-      document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
-      document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
+        // QR Kod için mevcut URL'yi al (admin.html'yi silip yerine kök dizini koy)
+        const studentUrl = window.location.href.replace('admin.html', '').replace(/\/$/, '');
+        document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
+        document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
 
-      // Firebase'e Oyunu Kaydet
-      await setDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
-        pin: pin, state: 'lobby', currentQuestionIndex: 0, hostId: hostId, createdAt: Date.now(), questionCount: questions.length
-      });
+        // Firebase'e Oyunu Kaydet
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
+          pin: pin, state: 'lobby', currentQuestionIndex: 0, hostId: hostId, createdAt: Date.now(), questionCount: questions.length
+        });
 
-      // Öğrencileri Dinle
-      onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH), (snap) => {
-        const all = snap.docs.map(d => d.data());
-        players = all.filter(p => p.pin === pin);
-        updateLobbyUI();
-        
-        // Eğer soru ekranındaysak ve herkes cevapladıysa süreyi erken bitir
-        if (document.getElementById('screen-question').classList.contains('flex')) {
-           document.getElementById('answered-count').innerText = players.filter(p => p.currentAnswer !== null).length;
-           if (players.length > 0 && players.every(p => p.currentAnswer !== null)) {
-              handleTimeUp();
-           }
-        }
-      });
+        // Öğrencileri Dinle
+        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH), (snap) => {
+          const all = snap.docs.map(d => d.data());
+          players = all.filter(p => p.pin === pin);
+          updateLobbyUI();
+          
+          // Eğer soru ekranındaysak ve herkes cevapladıysa süreyi erken bitir
+          if (document.getElementById('screen-question').classList.contains('flex')) {
+             document.getElementById('answered-count').innerText = players.filter(p => p.currentAnswer !== null).length;
+             if (players.length > 0 && players.every(p => p.currentAnswer !== null)) {
+                handleTimeUp();
+             }
+          }
+        });
 
-      showScreen('lobby');
+        showScreen('lobby');
+      } catch (err) {
+        alert("Oda oluşturulurken veritabanına bağlanılamadı:\n" + err.message + "\n\nOlası Nedenler:\n1) API kısıtlaması yaptıysanız, bu dosyayı bilgisayardan (file://) değil GitHub linkinizden açmalısınız.\n2) Firestore veritabanı kurallarınız yazmaya izin vermiyor olabilir.");
+        console.error("Firestore Yazma Hatası:", err);
+      }
     });
 
     function updateLobbyUI() {

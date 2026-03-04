@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Yarışmaya Katıl</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Dokunmatik ekranlarda butonlara basmayı kolaylaştıran özel ayarlar */
+    button { touch-action: manipulation; }
+    .shape-btn:active { transform: translateY(4px); box-shadow: none !important; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex justify-center font-sans antialiased text-gray-800">
+
+  <div class="w-full max-w-md bg-white shadow-2xl flex flex-col relative overflow-hidden h-screen">
+    
+    <!-- Çıkış Butonu -->
+    <button id="btn-exit" class="hidden absolute top-4 left-4 text-gray-400 hover:text-gray-700 z-50 p-2">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+
+    <!-- 0. YÜKLENİYOR EKRANI -->
+    <div id="screen-loading" class="flex-1 bg-gray-900 flex flex-col items-center justify-center">
+      <svg class="w-12 h-12 animate-spin text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    </div>
+
+    <!-- 1. GİRİŞ EKRANI -->
+    <div id="screen-join" class="hidden flex-1 bg-gray-50 flex-col items-center justify-center p-8">
+      <div class="flex justify-center mb-8 space-x-2">
+        <svg class="w-8 h-8 fill-red-600 text-red-600" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+        <svg class="w-8 h-8 fill-blue-600 text-blue-600" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
+        <svg class="w-8 h-8 fill-yellow-500 text-yellow-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+        <svg class="w-8 h-8 fill-green-600 text-green-600" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+      </div>
+      <h2 class="text-4xl font-black text-gray-800 mb-10 tracking-tighter text-center">Yarışmaya Katıl</h2>
+      
+      <div id="error-msg" class="hidden w-full bg-red-100 text-red-700 p-4 rounded-xl mb-6 flex items-center font-bold">
+        <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="error-text">Hata metni</span>
+      </div>
+      
+      <form id="join-form" class="w-full space-y-5">
+        <input id="input-pin" type="number" placeholder="Oyun PIN Kodu" class="w-full text-center text-2xl font-bold p-5 border-2 border-gray-300 rounded-2xl shadow-sm outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100 bg-white transition" required />
+        <input id="input-name" type="text" placeholder="Adın / Soyadın" class="w-full text-center text-2xl font-bold p-5 border-2 border-gray-300 rounded-2xl shadow-sm outline-none focus:border-purple-600 focus:ring-4 focus:ring-purple-100 bg-white transition" maxlength="20" required />
+        <button type="submit" class="w-full bg-purple-700 text-white font-black text-2xl p-5 rounded-2xl hover:bg-purple-800 active:transform active:scale-95 transition-all shadow-xl mt-4">Oyuna Gir</button>
+      </form>
+    </div>
+
+    <!-- 2. BEKLEME EKRANI (Lobi) -->
+    <div id="screen-lobby" class="hidden flex-1 bg-purple-700 flex-col items-center justify-center p-8 text-white text-center">
+      <h2 class="text-4xl font-black mb-6">İçerdesin!</h2>
+      <p class="text-xl font-medium opacity-90">Tahtada adını görüyor musun?</p>
+      <div id="lobby-player-name" class="mt-12 text-3xl font-black bg-white/20 px-8 py-4 rounded-full border-2 border-white/30 shadow-inner">İsim</div>
+      <div class="absolute bottom-12 flex flex-col items-center">
+         <svg class="w-8 h-8 animate-spin mb-3 opacity-70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+         <p class="opacity-70 font-medium text-lg">Yarışmanın başlaması bekleniyor...</p>
+      </div>
+    </div>
+
+    <!-- 3. SORU/CEVAPLAMA EKRANI -->
+    <div id="screen-question" class="hidden flex-1 flex-col bg-gray-100 p-4">
+       <div class="flex justify-between items-center p-4 bg-white rounded-2xl shadow-sm mb-4 border border-gray-200">
+         <span id="question-player-name" class="font-bold text-gray-700 text-xl truncate pr-4">İsim</span>
+         <span id="question-player-score" class="font-black text-2xl bg-purple-100 text-purple-800 px-4 py-2 rounded-xl flex-shrink-0">0</span>
+      </div>
+
+      <!-- Cevap Bekleme (Öğrenci cevapladıktan sonra) -->
+      <div id="question-waiting" class="hidden flex-1 bg-gray-200 rounded-3xl flex-col items-center justify-center text-gray-600 text-center p-8 border-4 border-dashed border-gray-300 shadow-inner">
+         <svg class="w-16 h-16 animate-spin mb-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+         <h2 class="text-3xl font-black mb-2">Harika!</h2>
+         <p class="text-xl font-medium">Tahtadaki sürenin bitmesi bekleniyor...</p>
+      </div>
+
+      <!-- Renkli Butonlar -->
+      <div id="question-buttons" class="flex-1 grid grid-cols-2 grid-rows-2 gap-4 pb-6">
+         <button onclick="handleAnswer(0)" class="shape-btn bg-red-600 shadow-[0_4px_0_#991b1b] rounded-3xl flex items-center justify-center transition-all border-b-4 border-black/20">
+           <svg class="w-24 h-24 fill-white drop-shadow-md" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+         </button>
+         <button onclick="handleAnswer(1)" class="shape-btn bg-blue-600 shadow-[0_4px_0_#1e3a8a] rounded-3xl flex items-center justify-center transition-all border-b-4 border-black/20">
+           <svg class="w-24 h-24 fill-white drop-shadow-md" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
+         </button>
+         <button onclick="handleAnswer(2)" class="shape-btn bg-yellow-500 shadow-[0_4px_0_#a16207] rounded-3xl flex items-center justify-center transition-all border-b-4 border-black/20">
+           <svg class="w-24 h-24 fill-white drop-shadow-md" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+         </button>
+         <button onclick="handleAnswer(3)" class="shape-btn bg-green-600 shadow-[0_4px_0_#166534] rounded-3xl flex items-center justify-center transition-all border-b-4 border-black/20">
+           <svg class="w-24 h-24 fill-white drop-shadow-md" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+         </button>
+      </div>
+    </div>
+
+    <!-- 4. SONUÇ EKRANI (Doğru/Yanlış) -->
+    <div id="screen-reveal" class="hidden flex-1 flex-col items-center justify-center p-8 text-white text-center transition-colors duration-500 bg-gray-500">
+      <div id="reveal-icon-wrapper" class="bg-white/20 p-6 rounded-full mb-6 shadow-inner">
+         <!-- JS ile check veya X ikonu eklenecek -->
+      </div>
+      <h2 id="reveal-title" class="text-5xl font-black mb-4 drop-shadow-sm tracking-wide">SONUÇ</h2>
+      <div id="reveal-points-wrapper" class="bg-black/30 px-8 py-4 rounded-2xl font-black text-4xl mt-6 border border-white/20 shadow-lg hidden">
+        + <span id="reveal-points">0</span> Puan
+      </div>
+      <p id="reveal-message" class="mt-8 text-2xl opacity-90 font-medium bg-black/10 px-6 py-2 rounded-full">Mesaj</p>
+      
+      <div class="absolute bottom-8 w-full px-8">
+         <div class="bg-black/20 w-full py-5 rounded-2xl font-bold flex justify-between px-6 text-xl border border-white/10 backdrop-blur-sm">
+            <span>Sıralama: #<span id="reveal-rank">0</span></span>
+            <span><span id="reveal-score">0</span> Puan</span>
+         </div>
+      </div>
+    </div>
+
+    <!-- 5. SIRALAMA BEKLEME EKRANI -->
+    <div id="screen-leaderboard" class="hidden flex-1 bg-purple-700 flex-col items-center justify-center p-8 text-white text-center">
+       <svg class="w-24 h-24 text-yellow-400 mb-8 drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M19 5h-2V3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v2H5a1 1 0 0 0-1 1v6a5.006 5.006 0 0 0 4.29 4.93A5.986 5.986 0 0 0 11 19.9V21H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-1.1a5.986 5.986 0 0 0 2.71-2.97A5.006 5.006 0 0 0 20 12V6a1 1 0 0 0-1-1ZM6 12V7h1v4.82A3.014 3.014 0 0 1 6 12Zm12 0a3.014 3.014 0 0 1-1-.18V7h1v5Z"/></svg>
+       <h2 class="text-3xl font-bold mb-10">Puan Durumu Tahtada!</h2>
+       <div class="bg-black/30 p-10 rounded-[2rem] w-full border border-white/10 shadow-2xl backdrop-blur-md">
+          <p class="text-sm uppercase tracking-widest text-purple-200 mb-2 font-bold">Mevcut Durumun</p>
+          <div class="text-7xl font-black text-yellow-400 my-4 drop-shadow-md">#<span id="lb-rank">0</span></div>
+          <div class="w-16 h-1 bg-white/20 mx-auto my-6 rounded-full"></div>
+          <p class="text-3xl font-black"><span id="lb-score">0</span> Puan</p>
+       </div>
+    </div>
+
+    <!-- 6. OYUN SONU EKRANI -->
+    <div id="screen-end" class="hidden flex-1 bg-purple-900 flex-col items-center justify-center p-8 text-white text-center">
+       <h2 class="text-5xl font-black mb-10 tracking-wide text-transparent bg-clip-text bg-gradient-to-br from-white to-purple-300">Oyun Bitti!</h2>
+       <div class="bg-white/10 p-12 rounded-[2rem] w-full border border-white/20 shadow-2xl backdrop-blur-md">
+          <p class="text-xl text-purple-200 mb-4 font-medium">Turnuvayı</p>
+          <div class="text-8xl font-black text-yellow-400 mb-4 drop-shadow-xl">#<span id="end-rank">0</span></div>
+          <p class="text-xl text-purple-200 font-medium">sırada tamamladın.</p>
+       </div>
+       <button id="btn-restart" class="mt-12 bg-white text-purple-900 px-10 py-5 rounded-2xl font-black text-2xl hover:bg-gray-100 shadow-xl active:scale-95 transition">Yeni Oyuna Katıl</button>
+    </div>
+
+  </div>
+
+  <script type="module">
+    // Firebase Modüllerini CDN üzerinden içe aktarıyoruz (Kurulum gerektirmez!)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    /* ==========================================
+       ÖNEMLİ: KENDİ FİREBASE BİLGİLERİNİ GİR!
+       Gerçek bir sitede kullanmak için kendi Firebase projenin
+       config bilgilerini aşağıya yapıştırmalısın.
+       (Şu an platformun sağladığı test config'ini kullanıyor)
+    ============================================= */
+    let firebaseConfig = {
+      // apiKey: "SENİN_API_KEYİN",
+      // authDomain: "projen.firebaseapp.com",
+      // projectId: "projen",
+      // ...
+    };
+    
+    // Test ortamı için otomatik config algılama
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+      firebaseConfig = JSON.parse(__firebase_config);
+    }
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Veritabanı Yolları
+    const GAMES_PATH = 'kahootGames';
+    const PLAYERS_PATH = 'kahootPlayers';
+
+    // Uygulama State'i (Durumu)
+    let state = {
+      user: null,
+      joinedPin: '',
+      gameData: null,
+      players: [],
+      localHasAnswered: false,
+      error: ''
+    };
+
+    let unsubGame = null;
+    let unsubPlayers = null;
+
+    // --- DOM ELEMENTLERİ ---
+    const screens = {
+      loading: document.getElementById('screen-loading'),
+      join: document.getElementById('screen-join'),
+      lobby: document.getElementById('screen-lobby'),
+      question: document.getElementById('screen-question'),
+      reveal: document.getElementById('screen-reveal'),
+      leaderboard: document.getElementById('screen-leaderboard'),
+      end: document.getElementById('screen-end')
+    };
+
+    const ui = {
+      btnExit: document.getElementById('btn-exit'),
+      errorMsg: document.getElementById('error-msg'),
+      errorText: document.getElementById('error-text'),
+      lobbyName: document.getElementById('lobby-player-name'),
+      qName: document.getElementById('question-player-name'),
+      qScore: document.getElementById('question-player-score'),
+      qWaiting: document.getElementById('question-waiting'),
+      qButtons: document.getElementById('question-buttons'),
+      revIcon: document.getElementById('reveal-icon-wrapper'),
+      revTitle: document.getElementById('reveal-title'),
+      revPointsWrap: document.getElementById('reveal-points-wrapper'),
+      revPoints: document.getElementById('reveal-points'),
+      revMsg: document.getElementById('reveal-message'),
+      revRank: document.getElementById('reveal-rank'),
+      revScore: document.getElementById('reveal-score'),
+      lbRank: document.getElementById('lb-rank'),
+      lbScore: document.getElementById('lb-score'),
+      endRank: document.getElementById('end-rank')
+    };
+
+    const icons = {
+      check: `<svg class="w-24 h-24 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>`,
+      x: `<svg class="w-24 h-24 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>`
+    };
+
+    // --- UYGULAMA MANTIĞI ---
+
+    // 1. Ekranları Yöneten Fonksiyon
+    function render() {
+      // Bütün ekranları gizle
+      Object.values(screens).forEach(s => {
+        s.classList.remove('flex');
+        s.classList.add('hidden');
+      });
+
+      const myPlayerInfo = state.players.find(p => p.id === state.user?.uid);
+      const sortedPlayers = [...state.players].sort((a,b) => (b.score || 0) - (a.score || 0));
+      const myRank = sortedPlayers.findIndex(p => p.id === state.user?.uid) + 1;
+
+      // Çıkış butonu görünürlüğü
+      if (!state.joinedPin || state.gameData?.state === 'lobby' || state.error) {
+        ui.btnExit.classList.remove('hidden');
+      } else {
+        ui.btnExit.classList.add('hidden');
+      }
+
+      // Hata Mesajı
+      if (state.error && !state.joinedPin) {
+        ui.errorMsg.classList.remove('hidden');
+        ui.errorText.innerText = state.error;
+      } else {
+        ui.errorMsg.classList.add('hidden');
+      }
+
+      // Yönlendirme Mantığı
+      if (!state.user) {
+        screens.loading.classList.remove('hidden');
+        screens.loading.classList.add('flex');
+      } 
+      else if (!state.joinedPin) {
+        screens.join.classList.remove('hidden');
+        screens.join.classList.add('flex');
+      } 
+      else if (state.gameData?.state === 'lobby') {
+        screens.lobby.classList.remove('hidden');
+        screens.lobby.classList.add('flex');
+        ui.lobbyName.innerText = myPlayerInfo?.name || 'Oyuncu';
+      } 
+      else if (state.gameData?.state === 'question') {
+        screens.question.classList.remove('hidden');
+        screens.question.classList.add('flex');
+        ui.qName.innerText = myPlayerInfo?.name || 'Oyuncu';
+        ui.qScore.innerText = myPlayerInfo?.score || 0;
+        
+        if (state.localHasAnswered) {
+          ui.qWaiting.classList.remove('hidden');
+          ui.qWaiting.classList.add('flex');
+          ui.qButtons.classList.add('hidden');
+        } else {
+          ui.qWaiting.classList.add('hidden');
+          ui.qWaiting.classList.remove('flex');
+          ui.qButtons.classList.remove('hidden');
+        }
+      } 
+      else if (state.gameData?.state === 'reveal') {
+        screens.reveal.classList.remove('hidden');
+        screens.reveal.classList.add('flex');
+        
+        const isCorrect = myPlayerInfo?.lastPoints > 0;
+        screens.reveal.className = `flex-1 flex-col items-center justify-center p-8 text-white text-center transition-colors duration-500 flex ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`;
+        
+        ui.revIcon.innerHTML = isCorrect ? icons.check : icons.x;
+        ui.revTitle.innerText = isCorrect ? 'DOĞRU!' : 'YANLIŞ!';
+        ui.revMsg.innerText = isCorrect ? `Şu an ${myRank}. sıradasın!` : 'Bozulma, bir sonrakine!';
+        ui.revRank.innerText = myRank;
+        ui.revScore.innerText = myPlayerInfo?.score || 0;
+
+        if (isCorrect) {
+          ui.revPointsWrap.classList.remove('hidden');
+          ui.revPoints.innerText = myPlayerInfo.lastPoints;
+        } else {
+          ui.revPointsWrap.classList.add('hidden');
+        }
+      } 
+      else if (state.gameData?.state === 'leaderboard') {
+        screens.leaderboard.classList.remove('hidden');
+        screens.leaderboard.classList.add('flex');
+        ui.lbRank.innerText = myRank;
+        ui.lbScore.innerText = myPlayerInfo?.score || 0;
+      } 
+      else if (state.gameData?.state === 'end') {
+        screens.end.classList.remove('hidden');
+        screens.end.classList.add('flex');
+        ui.endRank.innerText = myRank;
+      }
+    }
+
+    // 2. Başlangıç (Firebase Auth)
+    async function initAuth() {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.error("Auth hatası", err);
+      }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      state.user = user;
+      render();
+    });
+
+    initAuth();
+
+    // 3. Dinleyicileri Başlat/Durdur
+    function startListeners(pin) {
+      if(unsubGame) unsubGame();
+      if(unsubPlayers) unsubPlayers();
+
+      // Tahtayı dinle
+      unsubGame = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          state.gameData = data;
+          if (data.state === 'question') state.localHasAnswered = false;
+        } else {
+          handleExit("Oda sunucu tarafından kapatıldı.");
+        }
+        render();
+      });
+
+      // Rakipleri dinle
+      unsubPlayers = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH), (snap) => {
+        const all = snap.docs.map(d => d.data());
+        state.players = all.filter(p => p.pin === pin);
+        render();
+      });
+    }
+
+    // 4. Etkileşim Fonksiyonları
+    document.getElementById('join-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if(!state.user) return;
+      state.error = '';
+      
+      const pin = document.getElementById('input-pin').value;
+      const name = document.getElementById('input-name').value;
+
+      try {
+        const gameDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin));
+        if (!gameDoc.exists() || gameDoc.data().state !== 'lobby') {
+          state.error = "Hatalı PIN veya oyun çoktan başlamış!";
+          render();
+          return;
+        }
+
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, state.user.uid), {
+          id: state.user.uid, pin: pin, name: name, score: 0, currentAnswer: null, lastPoints: 0, answeredAt: null
+        }, { merge: true });
+
+        state.joinedPin = pin;
+        startListeners(pin);
+        render();
+      } catch (err) {
+        state.error = "Bağlantı hatası oluştu.";
+        render();
+      }
+    });
+
+    // Global scope'a çıkarıyoruz ki HTML içinden onclick ile çağrılabilsin
+    window.handleAnswer = async function(shapeId) {
+      if (state.localHasAnswered || state.gameData?.state !== 'question' || !state.user) return;
+      state.localHasAnswered = true;
+      render(); // Hemen bekleme ekranını göster
+
+      await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, state.user.uid), {
+         currentAnswer: shapeId,
+         answeredAt: Date.now()
+      });
+    };
+
+    function handleExit(errMsg = '') {
+      state.joinedPin = '';
+      state.gameData = null;
+      state.error = errMsg;
+      state.localHasAnswered = false;
+      if(unsubGame) unsubGame();
+      if(unsubPlayers) unsubPlayers();
+      render();
+    }
+
+    ui.btnExit.addEventListener('click', () => handleExit());
+    document.getElementById('btn-restart').addEventListener('click', () => handleExit());
+
+  </script>
+</body>
+</html>

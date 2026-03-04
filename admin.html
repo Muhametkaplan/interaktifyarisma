@@ -185,7 +185,14 @@
        Gerçek siten yayına girdiğinde "index.html" ve "admin.html"
        dosyalarına aynı Firebase config kodunu koymalısın.
     ============================================= */
-    let firebaseConfig = {};
+    let firebaseConfig = {
+      apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
+  authDomain: "interaktif-yarisma.firebaseapp.com",
+  projectId: "interaktif-yarisma",
+  storageBucket: "interaktif-yarisma.firebasestorage.app",
+  messagingSenderId: "652081118487",
+  appId: "1:652081118487:web:409c5737ced7cb8377cb52"
+    };
     if (typeof __firebase_config !== 'undefined' && __firebase_config) {
       firebaseConfig = JSON.parse(__firebase_config);
     }
@@ -444,4 +451,5 @@
     }
   </script>
 </body>
+
 </html>

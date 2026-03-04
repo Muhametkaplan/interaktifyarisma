@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yarışma Yönetimi (Öğretmen)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Özel animasyonlar ve stiller */
+    .animate-bounce-short { animation: bounce 1s infinite; }
+    @keyframes bounce { 0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); } 50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); } }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col font-sans text-gray-800">
+
+  <!-- 1. KURULUM / SORU EKLEME EKRANI -->
+  <div id="screen-setup" class="flex-1 flex flex-col p-8 bg-gray-50 overflow-y-auto hidden">
+    <div class="flex justify-between items-center mb-8 max-w-7xl mx-auto w-full">
+      <h1 class="text-4xl font-black text-gray-800">Yarışma Oluştur</h1>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto w-full">
+      <!-- Soru Ekleme Formu -->
+      <div class="flex-[2] bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+        <h2 class="text-2xl font-bold mb-6 text-purple-700">Yeni Soru Ekle</h2>
+        <form id="form-add-q" class="space-y-6">
+           <div>
+             <label class="block text-gray-700 font-bold mb-2">Soru Metni</label>
+             <textarea id="q-text" class="w-full p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500" rows="3" placeholder="Sorduğunuz soruyu buraya yazın..." required></textarea>
+           </div>
+           <div class="grid grid-cols-2 gap-4">
+              <!-- Şık 0 -->
+              <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                 <input type="radio" name="correctAnswer" value="0" checked class="w-6 h-6 text-purple-600 cursor-pointer">
+                 <div class="bg-red-600 p-2 rounded-lg shadow-sm"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg></div>
+                 <input type="text" id="q-opt-0" placeholder="1. Şık (Kırmızı)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium" required>
+              </div>
+              <!-- Şık 1 -->
+              <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                 <input type="radio" name="correctAnswer" value="1" class="w-6 h-6 text-purple-600 cursor-pointer">
+                 <div class="bg-blue-600 p-2 rounded-lg shadow-sm"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg></div>
+                 <input type="text" id="q-opt-1" placeholder="2. Şık (Mavi)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium" required>
+              </div>
+              <!-- Şık 2 -->
+              <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                 <input type="radio" name="correctAnswer" value="2" class="w-6 h-6 text-purple-600 cursor-pointer">
+                 <div class="bg-yellow-500 p-2 rounded-lg shadow-sm"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
+                 <input type="text" id="q-opt-2" placeholder="3. Şık (Sarı)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium" required>
+              </div>
+              <!-- Şık 3 -->
+              <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                 <input type="radio" name="correctAnswer" value="3" class="w-6 h-6 text-purple-600 cursor-pointer">
+                 <div class="bg-green-600 p-2 rounded-lg shadow-sm"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
+                 <input type="text" id="q-opt-3" placeholder="4. Şık (Yeşil)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium" required>
+              </div>
+           </div>
+           <div class="flex items-center justify-between mt-6 pt-6 border-t border-gray-100">
+              <div class="flex items-center space-x-4">
+                <label class="font-bold text-gray-700">Süre Limiti (Sn):</label>
+                <select id="q-time" class="p-2 border-2 border-gray-300 rounded-lg outline-none font-bold cursor-pointer">
+                  <option value="10">10 Saniye</option>
+                  <option value="15">15 Saniye</option>
+                  <option value="20" selected>20 Saniye</option>
+                  <option value="30">30 Saniye</option>
+                  <option value="60">60 Saniye</option>
+                </select>
+              </div>
+              <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-md transition">Listeye Ekle +</button>
+           </div>
+        </form>
+      </div>
+
+      <!-- Eklenen Sorular Listesi -->
+      <div class="flex-1 bg-gray-100 p-6 rounded-2xl border border-gray-300 flex flex-col max-h-[600px]">
+         <h2 class="text-xl font-bold mb-4 text-gray-800">Eklenen Sorular (<span id="q-count">0</span>)</h2>
+         <div id="q-list" class="flex-1 overflow-y-auto space-y-3 pr-2">
+            <div class="text-gray-500 text-center mt-10 italic">Henüz soru eklenmedi.</div>
+         </div>
+         <button id="btn-create-room" class="mt-6 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-xl font-bold text-xl w-full shadow-lg transition" disabled>Odayı Kur ve Başlat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. LOBİ EKRANI -->
+  <div id="screen-lobby" class="flex-1 flex flex-col bg-purple-800 text-white hidden">
+    <div class="p-8 text-center bg-white text-black mt-10 mx-auto rounded-xl shadow-2xl max-w-5xl w-full border-b-8 border-purple-900 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+      
+      <!-- QR KOD BÖLÜMÜ -->
+      <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl border-2 border-gray-100 shadow-sm">
+         <h2 class="text-xl font-black text-purple-800 mb-4 uppercase tracking-wider">Kameranı Okut</h2>
+         <div class="bg-white p-3 rounded-xl shadow-md border border-gray-200">
+            <img id="qr-img" src="" alt="Oyuna Katıl QR" class="w-40 h-40 md:w-52 md:h-52" />
+         </div>
+         <p class="mt-4 font-bold text-gray-500 text-sm">veya tarayıcıdan gir:</p>
+         <p id="qr-url-text" class="font-black text-purple-700 text-lg">site.com</p>
+      </div>
+
+      <div class="w-1 h-48 bg-gray-200 hidden md:block rounded-full"></div>
+
+      <!-- PIN KODU BÖLÜMÜ -->
+      <div class="flex flex-col items-center">
+        <h1 class="text-3xl md:text-4xl font-bold mb-6 text-gray-800">Oyuna Katılmak İçin PIN:</h1>
+        <div id="display-pin" class="text-7xl md:text-9xl font-black tracking-widest text-purple-900 drop-shadow-md bg-purple-100 px-8 py-4 rounded-3xl border-4 border-purple-200">000000</div>
+      </div>
+    </div>
+
+    <div class="flex-1 p-12 flex flex-col">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center space-x-3 text-3xl font-bold bg-purple-900 px-8 py-4 rounded-full">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          <span><span id="player-count">0</span> Yarışmacı</span>
+        </div>
+        <button id="btn-start-game" class="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-12 py-5 rounded-2xl font-bold text-3xl shadow-xl transition transform hover:scale-105" disabled>Yarışmayı Başlat</button>
+      </div>
+      <div id="player-list" class="flex flex-wrap gap-4 mt-8">
+         <!-- Katılan oyuncular buraya eklenecek -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. SORU EKRANI -->
+  <div id="screen-question" class="flex-1 flex flex-col items-center p-8 bg-gray-50 hidden">
+    <h2 id="live-q-text" class="text-5xl font-black text-center bg-white p-10 rounded-2xl shadow-lg w-full max-w-6xl mb-12 border-t-8 border-purple-600 text-gray-800">Soru Metni</h2>
+    
+    <div class="flex-1 flex items-center justify-center w-full">
+      <div id="live-q-timer" class="w-48 h-48 bg-purple-800 rounded-full flex items-center justify-center text-white text-7xl font-black shadow-2xl border-8 border-purple-300">20</div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-6 w-full max-w-6xl mt-12">
+      <div class="bg-red-600 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg><span id="live-opt-0" class="text-4xl font-bold">Şık 1</span></div>
+      <div class="bg-blue-600 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg><span id="live-opt-1" class="text-4xl font-bold">Şık 2</span></div>
+      <div class="bg-yellow-500 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><span id="live-opt-2" class="text-4xl font-bold">Şık 3</span></div>
+      <div class="bg-green-600 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg><span id="live-opt-3" class="text-4xl font-bold">Şık 4</span></div>
+    </div>
+    
+    <div class="absolute bottom-6 left-8 text-2xl font-bold text-gray-600 flex items-center bg-white px-6 py-3 rounded-xl shadow-md">
+       <svg class="w-8 h-8 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+       Cevap Verenler: <span id="answered-count">0</span> / <span id="total-players-q">0</span>
+    </div>
+  </div>
+
+  <!-- 4. CEVAP GÖSTERİMİ -->
+  <div id="screen-reveal" class="flex-1 flex flex-col items-center p-8 bg-gray-50 hidden">
+     <h2 id="rev-q-text" class="text-4xl font-black text-center bg-white p-8 rounded-2xl shadow-lg w-full max-w-6xl mb-12 text-gray-800 opacity-60">Soru</h2>
+
+    <div id="rev-bars" class="flex-1 flex items-end justify-center space-x-12 w-full h-80 mb-16">
+       <!-- Barlar JS ile eklenecek -->
+    </div>
+
+    <button id="btn-next-leaderboard" class="absolute right-12 top-1/2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-bold text-3xl shadow-xl flex items-center transition transform hover:scale-105">
+      Sıralama <svg class="ml-4 w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+    </button>
+  </div>
+
+  <!-- 5. LİDERLİK TABLOSU -->
+  <div id="screen-leaderboard" class="flex-1 flex flex-col items-center p-8 bg-purple-800 text-white hidden">
+    <h2 class="text-5xl font-black mb-16 mt-8">Sıralama Tablosu</h2>
+    <div id="lb-list" class="w-full max-w-4xl space-y-6">
+      <!-- Sıralama JS ile eklenecek -->
+    </div>
+    
+    <button id="btn-next-question" class="absolute right-12 top-1/2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-bold text-3xl shadow-xl flex items-center transition transform hover:scale-105">
+      İleri <svg class="ml-4 w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+    </button>
+  </div>
+
+  <!-- 6. OYUN SONU (PODYUM) -->
+  <div id="screen-end" class="flex-1 flex flex-col items-center justify-center bg-purple-800 text-white p-8 hidden">
+    <svg class="w-64 h-64 text-yellow-400 mb-8 drop-shadow-2xl" fill="currentColor" viewBox="0 0 24 24"><path d="M19 5h-2V3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v2H5a1 1 0 0 0-1 1v6a5.006 5.006 0 0 0 4.29 4.93A5.986 5.986 0 0 0 11 19.9V21H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-1.1a5.986 5.986 0 0 0 2.71-2.97A5.006 5.006 0 0 0 20 12V6a1 1 0 0 0-1-1ZM6 12V7h1v4.82A3.014 3.014 0 0 1 6 12Zm12 0a3.014 3.014 0 0 1-1-.18V7h1v5Z"/></svg>
+    <h1 class="text-7xl font-black mb-20 tracking-widest">PODYUM</h1>
+    
+    <div id="podium-container" class="flex items-end space-x-6 h-80">
+       <!-- Podyum JS ile eklenecek -->
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase Modüllerini CDN üzerinden içe aktarıyoruz
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    /* ==========================================
+       ÖNEMLİ: KENDİ FİREBASE BİLGİLERİNİ GİR!
+       Gerçek siten yayına girdiğinde "index.html" ve "admin.html"
+       dosyalarına aynı Firebase config kodunu koymalısın.
+    ============================================= */
+    let firebaseConfig = {};
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+      firebaseConfig = JSON.parse(__firebase_config);
+    }
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const GAMES_PATH = 'kahootGames';
+    const PLAYERS_PATH = 'kahootPlayers';
+
+    // --- STATE ---
+    let questions = [];
+    let pin = '';
+    let hostId = '';
+    let players = [];
+    let currentQIndex = 0;
+    let timeLeft = 0;
+    let timerInterval = null;
+    let questionStartTime = 0;
+
+    // --- EKRAN GEÇİŞ FONKSİYONU ---
+    const screens = ['setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
+    function showScreen(screenId) {
+      screens.forEach(s => document.getElementById(`screen-${s}`).classList.add('hidden'));
+      document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+      document.getElementById(`screen-${screenId}`).classList.add('flex');
+    }
+
+    // Başlangıçta Setup Ekranını Göster ve Anonim Giriş Yap
+    signInAnonymously(auth).then(userCred => {
+       hostId = userCred.user.uid;
+       showScreen('setup');
+    });
+
+    // --- 1. SORU EKLEME İŞLEMLERİ ---
+    document.getElementById('form-add-q').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const qText = document.getElementById('q-text').value;
+      const opts = [
+        document.getElementById('q-opt-0').value,
+        document.getElementById('q-opt-1').value,
+        document.getElementById('q-opt-2').value,
+        document.getElementById('q-opt-3').value
+      ];
+      const correctIdx = parseInt(document.querySelector('input[name="correctAnswer"]:checked').value);
+      const tLimit = parseInt(document.getElementById('q-time').value);
+
+      questions.push({ question: qText, options: opts, correctAnswerIndex: correctIdx, timeLimit: tLimit });
+      updateQuestionList();
+      e.target.reset(); // Formu temizle
+      document.querySelector('input[name="correctAnswer"][value="0"]').checked = true; // Radio reset
+    });
+
+    function updateQuestionList() {
+      const listDiv = document.getElementById('q-list');
+      document.getElementById('q-count').innerText = questions.length;
+      document.getElementById('btn-create-room').disabled = questions.length === 0;
+      
+      if(questions.length === 0) return;
+      listDiv.innerHTML = '';
+      questions.forEach((q, idx) => {
+        listDiv.innerHTML += `
+          <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-purple-500 flex justify-between items-center">
+            <div>
+              <div class="font-bold text-gray-800 text-sm mb-1">${idx + 1}. Soru</div>
+              <div class="text-gray-600 text-sm">${q.question}</div>
+            </div>
+            <div class="text-xs text-gray-400 font-bold bg-gray-100 px-3 py-1 rounded-full">${q.timeLimit} sn</div>
+          </div>
+        `;
+      });
+    }
+
+    // --- 2. ODA KURMA VE LOBİ ---
+    document.getElementById('btn-create-room').addEventListener('click', async () => {
+      pin = Math.floor(100000 + Math.random() * 900000).toString();
+      document.getElementById('display-pin').innerText = pin;
+
+      // QR Kod için mevcut URL'yi al (admin.html'yi silip yerine kök dizini koy)
+      const studentUrl = window.location.href.replace('admin.html', '').replace(/\/$/, '');
+      document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
+      document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
+
+      // Firebase'e Oyunu Kaydet
+      await setDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
+        pin: pin, state: 'lobby', currentQuestionIndex: 0, hostId: hostId, createdAt: Date.now(), questionCount: questions.length
+      });
+
+      // Öğrencileri Dinle
+      onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH), (snap) => {
+        const all = snap.docs.map(d => d.data());
+        players = all.filter(p => p.pin === pin);
+        updateLobbyUI();
+        
+        // Eğer soru ekranındaysak ve herkes cevapladıysa süreyi erken bitir
+        if (document.getElementById('screen-question').classList.contains('flex')) {
+           document.getElementById('answered-count').innerText = players.filter(p => p.currentAnswer !== null).length;
+           if (players.length > 0 && players.every(p => p.currentAnswer !== null)) {
+              handleTimeUp();
+           }
+        }
+      });
+
+      showScreen('lobby');
+    });
+
+    function updateLobbyUI() {
+      document.getElementById('player-count').innerText = players.length;
+      const btnStart = document.getElementById('btn-start-game');
+      btnStart.disabled = players.length === 0;
+      
+      const list = document.getElementById('player-list');
+      list.innerHTML = players.map(p => `<div class="bg-white text-purple-900 px-6 py-3 rounded-lg text-2xl font-bold shadow-lg animate-bounce-short">${p.name}</div>`).join('');
+    }
+
+    // --- 3. SORU BAŞLATMA ---
+    document.getElementById('btn-start-game').addEventListener('click', () => triggerQuestion(0));
+    document.getElementById('btn-next-question').addEventListener('click', () => triggerQuestion(currentQIndex + 1));
+
+    async function triggerQuestion(index) {
+      if(index >= questions.length) return triggerEndGame();
+      
+      currentQIndex = index;
+      const q = questions[index];
+      timeLeft = q.timeLimit;
+      questionStartTime = Date.now();
+
+      // UI Güncelle
+      document.getElementById('live-q-text').innerText = q.question;
+      document.getElementById('live-opt-0').innerText = q.options[0];
+      document.getElementById('live-opt-1').innerText = q.options[1];
+      document.getElementById('live-opt-2').innerText = q.options[2];
+      document.getElementById('live-opt-3').innerText = q.options[3];
+      document.getElementById('live-q-timer').innerText = timeLeft;
+      document.getElementById('total-players-q').innerText = players.length;
+      document.getElementById('answered-count').innerText = '0';
+      showScreen('question');
+
+      // Veritabanı Güncelle: Oyuncuların cevaplarını sıfırla, state'i değiştir
+      const batch = writeBatch(db);
+      players.forEach(p => {
+        batch.update(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, p.id), { currentAnswer: null, lastPoints: 0 });
+      });
+      batch.update(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), { state: 'question', currentQuestionIndex: index });
+      await batch.commit();
+
+      // Sayaç
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('live-q-timer').innerText = timeLeft;
+        if (timeLeft <= 0) handleTimeUp();
+      }, 1000);
+    }
+
+    // --- 4. SÜRE BİTİMİ (Puan Hesaplama & Bar Grafiği) ---
+    async function handleTimeUp() {
+      clearInterval(timerInterval);
+      if(!document.getElementById('screen-question').classList.contains('flex')) return; // Zaten bitmişse dur
+      
+      const q = questions[currentQIndex];
+      const batch = writeBatch(db);
+      batch.update(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), { state: 'reveal' });
+
+      // Puanları Hesapla
+      players.forEach(p => {
+        const playerRef = doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, p.id);
+        if (p.currentAnswer === q.correctAnswerIndex) {
+          const timeTakenSec = ((p.answeredAt || Date.now()) - questionStartTime) / 1000;
+          const remaining = Math.max(0, q.timeLimit - timeTakenSec);
+          // Kahoot Formülü
+          const points = Math.round((remaining / q.timeLimit) * 500) + 500; 
+          batch.update(playerRef, { score: (p.score || 0) + points, lastPoints: points });
+        } else {
+          batch.update(playerRef, { lastPoints: 0 });
+        }
+      });
+      await batch.commit();
+
+      // Bar Grafiği Çiz
+      document.getElementById('rev-q-text').innerText = q.question;
+      const barsDiv = document.getElementById('rev-bars');
+      barsDiv.innerHTML = '';
+      
+      const colors = ['bg-red-600', 'bg-blue-600', 'bg-yellow-500', 'bg-green-600'];
+      
+      q.options.forEach((_, idx) => {
+        const count = players.filter(p => p.currentAnswer === idx).length;
+        const isCorrect = idx === q.correctAnswerIndex;
+        const opacity = isCorrect ? 'opacity-100' : 'opacity-40';
+        const height = Math.max(60, count * 60);
+        
+        barsDiv.innerHTML += `
+          <div class="flex flex-col items-center ${opacity}">
+            <div class="text-4xl font-black mb-4 text-gray-700">${count}</div>
+            <div class="w-32 ${colors[idx]} rounded-t-xl transition-all duration-1000 flex items-center justify-center relative" style="height: ${height}px">
+              ${isCorrect ? '<svg class="w-16 h-16 text-white absolute -top-8 bg-green-500 rounded-full p-2 border-4 border-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>' : ''}
+            </div>
+          </div>
+        `;
+      });
+      showScreen('reveal');
+    }
+
+    // --- 5. LİDERLİK TABLOSU ---
+    document.getElementById('btn-next-leaderboard').addEventListener('click', async () => {
+      await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), { state: 'leaderboard' });
+      
+      const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+      const lbList = document.getElementById('lb-list');
+      lbList.innerHTML = sorted.slice(0, 5).map((p, idx) => `
+        <div class="flex items-center justify-between bg-white text-black p-6 rounded-xl shadow-lg">
+          <div class="flex items-center text-3xl font-bold">
+            <span class="w-12 text-gray-400">${idx + 1}.</span>${p.name}
+          </div>
+          <div class="text-3xl font-black bg-gray-100 px-6 py-2 rounded-lg">${p.score || 0}</div>
+        </div>
+      `).join('');
+      
+      // Buton yazısını güncelle
+      const isLast = currentQIndex >= questions.length - 1;
+      document.getElementById('btn-next-question').innerHTML = isLast ? 'Bitir <svg class="ml-4 w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3v18h4v-7h10.5l-3-4 3-4H9V3H5z"/></svg>' : 'Sonraki <svg class="ml-4 w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>';
+      
+      showScreen('leaderboard');
+    });
+
+    // --- 6. OYUN SONU (PODYUM) ---
+    async function triggerEndGame() {
+      await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), { state: 'end' });
+      const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+      const p1 = sorted[0]; const p2 = sorted[1]; const p3 = sorted[2];
+      
+      document.getElementById('podium-container').innerHTML = `
+        <!-- 2. -->
+        ${p2 ? `<div class="flex flex-col items-center">
+          <div class="text-4xl font-bold mb-3">${p2.name}</div>
+          <div class="text-2xl mb-4 font-semibold opacity-80">${p2.score || 0}</div>
+          <div class="w-48 h-56 bg-gray-300 rounded-t-xl flex justify-center pt-6 text-6xl font-black text-gray-600 shadow-inner">2</div>
+        </div>` : ''}
+        <!-- 1. -->
+        ${p1 ? `<div class="flex flex-col items-center z-10 -mx-4">
+          <div class="text-5xl font-black mb-3 text-yellow-300 drop-shadow-md">${p1.name}</div>
+          <div class="text-3xl mb-4 font-bold text-yellow-100">${p1.score || 0}</div>
+          <div class="w-56 h-72 bg-yellow-400 rounded-t-xl flex justify-center pt-6 text-7xl font-black text-yellow-700 shadow-2xl">1</div>
+        </div>` : ''}
+        <!-- 3. -->
+        ${p3 ? `<div class="flex flex-col items-center">
+          <div class="text-3xl font-bold mb-3">${p3.name}</div>
+          <div class="text-xl mb-4 font-semibold opacity-80">${p3.score || 0}</div>
+          <div class="w-40 h-40 bg-orange-300 rounded-t-xl flex justify-center pt-4 text-5xl font-black text-orange-700 shadow-inner">3</div>
+        </div>` : ''}
+      `;
+      showScreen('end');
+    }
+  </script>
+</body>
+</html>

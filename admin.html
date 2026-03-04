@@ -180,11 +180,13 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    /* ==========================================
-       ÖNEMLİ: KENDİ FİREBASE BİLGİLERİNİ GİR!
-       Gerçek siten yayına girdiğinde "index.html" ve "admin.html"
-       dosyalarına aynı Firebase config kodunu koymalısın.
-    ============================================= */
+    /* =========================================================================
+       🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
+       Firebase konsolundan aldığın "const firebaseConfig = { ... }"
+       kısmındaki SÜSLÜ PARANTEZ İÇİNİ (sadece içindeki yazıları) 
+       aşağıdaki boşluğa kopyalayıp yapıştır.
+       (Bu işlemi hem index.html hem de admin.html dosyası için yapmalısın)
+    ========================================================================= */
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
   authDomain: "interaktif-yarisma.firebaseapp.com",
@@ -192,11 +194,16 @@
   storageBucket: "interaktif-yarisma.firebasestorage.app",
   messagingSenderId: "652081118487",
   appId: "1:652081118487:web:409c5737ced7cb8377cb52"
+
     };
+
+    // --- CANVAS TEST ORTAMI İÇİN GÜVENLİK ---
+    // Eğer projeyi burada (Canvas'ta) test ediyorsan kendi sistemini kullanmaya devam etmesi için:
     if (typeof __firebase_config !== 'undefined' && __firebase_config) {
       firebaseConfig = JSON.parse(__firebase_config);
     }
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    // ----------------------------------------
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -451,5 +458,4 @@
     }
   </script>
 </body>
-
 </html>

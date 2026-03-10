@@ -16,19 +16,19 @@
   <!-- ============================================== -->
   <!-- 0. ŞİFRELİ GİRİŞ EKRANI -->
   <!-- ============================================== -->
-  <div id="screen-login" class="flex-1 flex flex-col items-center justify-center p-8 bg-purple-900">
-    <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-md w-full text-center">
+  <div id="screen-login" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-purple-900">
+    <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-2xl max-w-md w-full text-center">
       <div class="flex justify-center mb-6 space-x-2">
         <svg class="w-10 h-10 fill-red-600" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
         <svg class="w-10 h-10 fill-blue-600" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
         <svg class="w-10 h-10 fill-yellow-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
       </div>
-      <h1 class="text-3xl font-black text-gray-800 mb-2">Öğretmen Girişi</h1>
-      <p class="text-gray-500 mb-8">Yönetim paneline erişmek için şifrenizi girin.</p>
+      <h1 class="text-2xl sm:text-3xl font-black text-gray-800 mb-2">Öğretmen Girişi</h1>
+      <p class="text-sm sm:text-base text-gray-500 mb-8">Yönetim paneline erişmek için şifrenizi girin.</p>
       
       <form id="form-login" class="space-y-4">
-        <input type="password" id="admin-password" placeholder="Şifre" class="w-full text-center text-xl font-bold p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-600 transition" required>
-        <button type="submit" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold text-xl py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">Giriş Yap</button>
+        <input type="password" id="admin-password" placeholder="Şifre" class="w-full text-center text-lg sm:text-xl font-bold p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-600 transition" required>
+        <button type="submit" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold text-lg sm:text-xl py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">Giriş Yap</button>
       </form>
     </div>
   </div>
@@ -36,29 +36,29 @@
   <!-- ============================================== -->
   <!-- 1. ANA SAYFA (DASHBOARD) -->
   <!-- ============================================== -->
-  <div id="screen-dashboard" class="flex-1 flex flex-col items-center justify-center p-8 bg-gray-100 hidden">
-    <div class="text-center mb-12">
-      <h1 class="text-5xl font-black text-purple-900 mb-4">Yönetim Paneli</h1>
-      <p class="text-xl text-gray-600">Ne yapmak istersiniz?</p>
+  <div id="screen-dashboard" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-gray-100 hidden">
+    <div class="text-center mb-8 sm:mb-12">
+      <h1 class="text-4xl sm:text-5xl font-black text-purple-900 mb-4 break-words">Yönetim Paneli</h1>
+      <p class="text-lg sm:text-xl text-gray-600">Ne yapmak istersiniz?</p>
     </div>
 
-    <div class="flex flex-col md:flex-row gap-8 max-w-4xl w-full">
+    <div class="flex flex-col md:flex-row gap-6 sm:gap-8 max-w-4xl w-full">
       <!-- Seçenek 1: Soru Oluştur -->
-      <button onclick="showScreen('setup')" class="flex-1 bg-white p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-purple-500 group">
+      <button onclick="showScreen('setup')" class="flex-1 bg-white p-8 sm:p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-purple-500 group">
         <div class="bg-purple-100 p-6 rounded-full mb-6 group-hover:bg-purple-200 transition">
-          <svg class="w-16 h-16 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+          <svg class="w-12 h-12 sm:w-16 sm:h-16 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
         </div>
-        <h2 class="text-3xl font-bold text-gray-800 mb-2">Yeni Soru Paketi</h2>
-        <p class="text-gray-500">Yeni sorular yazın ve kaydedin.</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 break-words">Yeni Soru Paketi</h2>
+        <p class="text-sm sm:text-base text-gray-500">Yeni sorular yazın ve kaydedin.</p>
       </button>
 
       <!-- Seçenek 2: Kayıtlı Sorular -->
-      <button onclick="loadSavedQuizzes()" class="flex-1 bg-white p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-blue-500 group">
+      <button onclick="loadSavedQuizzes()" class="flex-1 bg-white p-8 sm:p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-blue-500 group">
         <div class="bg-blue-100 p-6 rounded-full mb-6 group-hover:bg-blue-200 transition">
-          <svg class="w-16 h-16 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <svg class="w-12 h-12 sm:w-16 sm:h-16 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
         </div>
-        <h2 class="text-3xl font-bold text-gray-800 mb-2">Kayıtlı Yarışmalarım</h2>
-        <p class="text-gray-500">Önceden kaydettiğiniz paketlerle sınıfı başlatın.</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 break-words">Kayıtlı Yarışmalarım</h2>
+        <p class="text-sm sm:text-base text-gray-500">Önceden kaydettiğiniz paketlerle sınıfı başlatın.</p>
       </button>
     </div>
   </div>
@@ -66,74 +66,72 @@
   <!-- ============================================== -->
   <!-- 2. KAYITLI YARIŞMALAR LİSTESİ -->
   <!-- ============================================== -->
-  <div id="screen-quiz-list" class="flex-1 flex flex-col p-8 bg-gray-50 overflow-y-auto hidden">
-    <div class="flex justify-between items-center mb-10 max-w-5xl mx-auto w-full">
-      <h1 class="text-4xl font-black text-gray-800">Kayıtlı Yarışma Paketleri</h1>
-      <button onclick="showScreen('dashboard')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-300 transition">Geri Dön</button>
+  <div id="screen-quiz-list" class="flex-1 flex flex-col p-4 sm:p-8 bg-gray-50 overflow-y-auto hidden">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-10 max-w-5xl mx-auto w-full">
+      <h1 class="text-3xl sm:text-4xl font-black text-gray-800 break-words">Kayıtlı Paketler</h1>
+      <button onclick="showScreen('dashboard')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-300 transition w-full sm:w-auto text-center">Geri Dön</button>
     </div>
 
     <div id="saved-quizzes-container" class="max-w-5xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Kayıtlı Quizler JS ile buraya yüklenecek -->
-      <div class="text-center text-gray-500 col-span-2 py-10">Yükleniyor...</div>
+      <div class="text-center text-gray-500 col-span-1 md:col-span-2 py-10">Yükleniyor...</div>
     </div>
   </div>
 
   <!-- ============================================== -->
-  <!-- 3. KURULUM / SORU EKLEME EKRANI (Güncellendi) -->
+  <!-- 3. KURULUM / SORU EKLEME EKRANI -->
   <!-- ============================================== -->
-  <div id="screen-setup" class="flex-1 flex flex-col p-8 bg-gray-50 overflow-y-auto hidden">
-    <div class="flex justify-between items-center mb-8 max-w-7xl mx-auto w-full">
-      <h1 class="text-4xl font-black text-gray-800">Soru Paketi Hazırlayıcı</h1>
-      <button onclick="showScreen('dashboard')" class="bg-red-100 text-red-600 px-6 py-3 rounded-lg font-bold hover:bg-red-200 transition">İptal ve Geri Dön</button>
+  <div id="screen-setup" class="flex-1 flex flex-col p-4 sm:p-8 bg-gray-50 overflow-y-auto hidden">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8 max-w-7xl mx-auto w-full">
+      <h1 class="text-3xl sm:text-4xl font-black text-gray-800 break-words">Paket Hazırlayıcı</h1>
+      <button onclick="showScreen('dashboard')" class="bg-red-100 text-red-600 px-6 py-3 rounded-lg font-bold hover:bg-red-200 transition w-full sm:w-auto text-center">İptal ve Geri Dön</button>
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto w-full">
+    <div class="flex flex-col lg:flex-row gap-6 sm:gap-8 max-w-7xl mx-auto w-full">
       <!-- Soru Ekleme Formu -->
-      <div class="flex-[2] bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
-        <h2 class="text-2xl font-bold mb-6 text-purple-700">Yeni Soru Ekle</h2>
+      <div class="flex-[2] bg-white p-5 sm:p-8 rounded-2xl shadow-lg border border-gray-200">
+        <h2 class="text-xl sm:text-2xl font-bold mb-6 text-purple-700">Yeni Soru Ekle</h2>
         <form id="form-add-q" class="space-y-6">
-           <!-- Soru Tipi Seçimi -->
            <div>
-             <label class="block text-gray-700 font-bold mb-2">Soru Tipi</label>
-             <select id="q-type" class="w-full p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500 font-bold cursor-pointer">
+             <label class="block text-sm sm:text-base text-gray-700 font-bold mb-2">Soru Tipi</label>
+             <select id="q-type" class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500 font-bold cursor-pointer bg-white">
                <option value="multiple">Çoktan Seçmeli (4 Şık)</option>
                <option value="boolean">Doğru / Yanlış (2 Şık)</option>
              </select>
            </div>
            <div>
-             <label class="block text-gray-700 font-bold mb-2">Soru Metni</label>
-             <textarea id="q-text" class="w-full p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500" rows="3" placeholder="Sorduğunuz soruyu buraya yazın..." required></textarea>
+             <label class="block text-sm sm:text-base text-gray-700 font-bold mb-2">Soru Metni</label>
+             <textarea id="q-text" class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500 whitespace-normal break-words" rows="3" placeholder="Sorduğunuz soruyu buraya yazın..." required></textarea>
            </div>
-           <div class="grid grid-cols-2 gap-4">
+           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <!-- Şık 0 -->
               <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
-                 <input type="radio" name="correctAnswer" value="0" checked class="w-6 h-6 text-purple-600 cursor-pointer">
-                 <div class="bg-red-600 p-2 rounded-lg shadow-sm"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg></div>
-                 <input type="text" id="q-opt-0" placeholder="1. Şık (Kırmızı)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium" required>
+                 <input type="radio" name="correctAnswer" value="0" checked class="w-6 h-6 text-purple-600 cursor-pointer flex-shrink-0">
+                 <div class="bg-red-600 p-2 rounded-lg shadow-sm flex-shrink-0"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg></div>
+                 <input type="text" id="q-opt-0" placeholder="1. Şık (Kırmızı)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium w-full break-words" required>
               </div>
               <!-- Şık 1 -->
               <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
-                 <input type="radio" name="correctAnswer" value="1" class="w-6 h-6 text-purple-600 cursor-pointer">
-                 <div class="bg-blue-600 p-2 rounded-lg shadow-sm"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg></div>
-                 <input type="text" id="q-opt-1" placeholder="2. Şık (Mavi)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium" required>
+                 <input type="radio" name="correctAnswer" value="1" class="w-6 h-6 text-purple-600 cursor-pointer flex-shrink-0">
+                 <div class="bg-blue-600 p-2 rounded-lg shadow-sm flex-shrink-0"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg></div>
+                 <input type="text" id="q-opt-1" placeholder="2. Şık (Mavi)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium w-full break-words" required>
               </div>
               <!-- Şık 2 -->
               <div id="container-opt-2" class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200 transition-all">
-                 <input type="radio" name="correctAnswer" value="2" class="w-6 h-6 text-purple-600 cursor-pointer">
-                 <div class="bg-yellow-500 p-2 rounded-lg shadow-sm"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
-                 <input type="text" id="q-opt-2" placeholder="3. Şık (Sarı)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium" required>
+                 <input type="radio" name="correctAnswer" value="2" class="w-6 h-6 text-purple-600 cursor-pointer flex-shrink-0">
+                 <div class="bg-yellow-500 p-2 rounded-lg shadow-sm flex-shrink-0"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
+                 <input type="text" id="q-opt-2" placeholder="3. Şık (Sarı)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium w-full break-words" required>
               </div>
               <!-- Şık 3 -->
               <div id="container-opt-3" class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200 transition-all">
-                 <input type="radio" name="correctAnswer" value="3" class="w-6 h-6 text-purple-600 cursor-pointer">
-                 <div class="bg-green-600 p-2 rounded-lg shadow-sm"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
-                 <input type="text" id="q-opt-3" placeholder="4. Şık (Yeşil)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium" required>
+                 <input type="radio" name="correctAnswer" value="3" class="w-6 h-6 text-purple-600 cursor-pointer flex-shrink-0">
+                 <div class="bg-green-600 p-2 rounded-lg shadow-sm flex-shrink-0"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
+                 <input type="text" id="q-opt-3" placeholder="4. Şık (Yeşil)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium w-full break-words" required>
               </div>
            </div>
-           <div class="flex items-center justify-between mt-6 pt-6 border-t border-gray-100">
-              <div class="flex items-center space-x-4">
-                <label class="font-bold text-gray-700">Süre Limiti (Sn):</label>
-                <select id="q-time" class="p-2 border-2 border-gray-300 rounded-lg outline-none font-bold cursor-pointer">
+           <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mt-6 pt-6 border-t border-gray-100 gap-4">
+              <div class="flex items-center justify-between sm:justify-start space-x-4 w-full sm:w-auto">
+                <label class="font-bold text-gray-700">Süre (Sn):</label>
+                <select id="q-time" class="p-2 border-2 border-gray-300 rounded-lg outline-none font-bold cursor-pointer bg-white">
                   <option value="10">10 Saniye</option>
                   <option value="15">15 Saniye</option>
                   <option value="20" selected>20 Saniye</option>
@@ -141,35 +139,33 @@
                   <option value="60">60 Saniye</option>
                 </select>
               </div>
-              <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-md transition">Listeye Ekle +</button>
+              <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-md transition w-full sm:w-auto">Listeye Ekle +</button>
            </div>
         </form>
       </div>
 
       <!-- Eklenen Sorular ve Kaydetme Bölümü -->
-      <div class="flex-1 bg-gray-100 p-6 rounded-2xl border border-gray-300 flex flex-col max-h-[600px]">
+      <div class="flex-1 bg-gray-100 p-5 sm:p-6 rounded-2xl border border-gray-300 flex flex-col max-h-[600px]">
          <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2">Paket Adı (Örn: Vize Hazırlık)</label>
-            <input type="text" id="input-quiz-name" placeholder="Yarışma Paketinin Adı..." class="w-full p-3 border-2 border-gray-300 rounded-xl outline-none focus:border-green-500 font-bold text-lg">
+            <label class="block text-gray-700 font-bold mb-2">Paket Adı</label>
+            <input type="text" id="input-quiz-name" placeholder="Örn: Vize Hazırlık..." class="w-full p-3 border-2 border-gray-300 rounded-xl outline-none focus:border-green-500 font-bold text-lg break-words">
          </div>
-         <h2 class="text-xl font-bold mb-2 text-gray-800 mt-2">Eklenen Sorular (<span id="q-count">0</span>)</h2>
+         <h2 class="text-lg sm:text-xl font-bold mb-2 text-gray-800 mt-2">Eklenen Sorular (<span id="q-count">0</span>)</h2>
          <div id="q-list" class="flex-1 overflow-y-auto space-y-3 pr-2 mb-4 bg-white p-2 rounded-xl border border-gray-200">
             <div class="text-gray-500 text-center mt-10 italic">Henüz soru eklenmedi.</div>
          </div>
          
-         <!-- Öğrenci Ekranı Ayarı -->
          <div class="mb-4 flex items-center space-x-3 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-            <input type="checkbox" id="input-show-text" class="w-6 h-6 text-purple-600 rounded cursor-pointer">
-            <label for="input-show-text" class="font-bold text-gray-700 cursor-pointer select-none">Öğrenci ekranında soruları ve şıkları göster</label>
+            <input type="checkbox" id="input-show-text" class="w-6 h-6 text-purple-600 rounded cursor-pointer flex-shrink-0">
+            <label for="input-show-text" class="font-bold text-sm sm:text-base text-gray-700 cursor-pointer select-none break-words whitespace-normal">Öğrenci ekranında soruları ve şıkları göster</label>
          </div>
          
-         <!-- Hızlı İşlem Butonları -->
-         <div class="flex gap-4">
-             <button id="btn-save-quiz" class="flex-1 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-xl font-bold text-lg shadow-lg transition" disabled>
+         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+             <button id="btn-save-quiz" class="flex-1 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white p-3 sm:p-4 rounded-xl font-bold text-base sm:text-lg shadow-lg transition text-center" disabled>
                 Sadece Kaydet
              </button>
-             <button id="btn-save-and-start" class="flex-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-xl font-bold text-lg shadow-lg transition" disabled>
-                Kaydet ve Başlat
+             <button id="btn-save-and-start" class="flex-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white p-3 sm:p-4 rounded-xl font-bold text-base sm:text-lg shadow-lg transition text-center" disabled>
+                Kaydet & Başlat
              </button>
          </div>
       </div>
@@ -179,92 +175,108 @@
   <!-- ============================================== -->
   <!-- 4. LOBİ EKRANI -->
   <!-- ============================================== -->
-  <div id="screen-lobby" class="flex-1 flex flex-col bg-purple-800 text-white hidden">
-    <div class="absolute top-4 right-4"><button onclick="showScreen('dashboard')" class="bg-white/20 px-4 py-2 rounded-lg font-bold hover:bg-white/30 transition">Kapat / Çık</button></div>
-    <div class="p-8 text-center bg-white text-black mt-10 mx-auto rounded-xl shadow-2xl max-w-5xl w-full border-b-8 border-purple-900 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+  <div id="screen-lobby" class="flex-1 flex flex-col bg-purple-800 text-white hidden relative">
+    <div class="absolute top-4 right-4 z-10"><button onclick="showScreen('dashboard')" class="bg-white/20 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-bold hover:bg-white/30 transition text-sm sm:text-base">Çık</button></div>
+    <div class="p-6 sm:p-8 text-center bg-white text-black mt-16 sm:mt-10 mx-auto rounded-xl shadow-2xl max-w-5xl w-[90%] sm:w-full border-b-8 border-purple-900 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-16">
       
-      <!-- QR KOD BÖLÜMÜ -->
-      <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl border-2 border-gray-100 shadow-sm">
-         <h2 class="text-xl font-black text-purple-800 mb-4 uppercase tracking-wider">Kameranı Okut</h2>
+      <!-- QR KOD -->
+      <div class="flex flex-col items-center bg-gray-50 p-4 sm:p-6 rounded-2xl border-2 border-gray-100 shadow-sm w-full md:w-auto">
+         <h2 class="text-lg sm:text-xl font-black text-purple-800 mb-3 uppercase tracking-wider">Kameranı Okut</h2>
          <div class="bg-white p-3 rounded-xl shadow-md border border-gray-200">
-            <img id="qr-img" src="" alt="Oyuna Katıl QR" class="w-40 h-40 md:w-52 md:h-52" />
+            <img id="qr-img" src="" alt="Oyuna Katıl QR" class="w-32 h-32 sm:w-40 sm:h-40 md:w-52 md:h-52" />
          </div>
-         <p class="mt-4 font-bold text-gray-500 text-sm">veya tarayıcıdan gir:</p>
-         <p id="qr-url-text" class="font-black text-purple-700 text-lg">site.com</p>
+         <p class="mt-4 font-bold text-gray-500 text-xs sm:text-sm">veya tarayıcıdan gir:</p>
+         <p id="qr-url-text" class="font-black text-purple-700 text-sm sm:text-lg break-words w-full px-2">site.com</p>
       </div>
 
-      <div class="w-1 h-48 bg-gray-200 hidden md:block rounded-full"></div>
+      <div class="w-full h-1 md:w-1 md:h-48 bg-gray-200 rounded-full md:block"></div>
 
-      <!-- PIN KODU BÖLÜMÜ -->
-      <div class="flex flex-col items-center">
-        <h1 class="text-3xl md:text-4xl font-bold mb-6 text-gray-800">Oyuna Katılmak İçin PIN:</h1>
-        <div id="display-pin" class="text-7xl md:text-9xl font-black tracking-widest text-purple-900 drop-shadow-md bg-purple-100 px-8 py-4 rounded-3xl border-4 border-purple-200">000000</div>
-        <p class="mt-4 font-bold text-gray-500">Seçilen Paket: <span id="lobby-quiz-name" class="text-purple-600">Bilinmiyor</span></p>
+      <!-- PIN -->
+      <div class="flex flex-col items-center w-full md:w-auto">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">Katılım PIN Kodu:</h1>
+        <div id="display-pin" class="text-5xl sm:text-7xl md:text-9xl font-black tracking-widest text-purple-900 drop-shadow-md bg-purple-100 px-6 py-3 sm:px-8 sm:py-4 rounded-2xl sm:rounded-3xl border-4 border-purple-200">000000</div>
+        <p class="mt-4 font-bold text-gray-500 text-sm sm:text-base text-center px-4">Paket: <span id="lobby-quiz-name" class="text-purple-600 break-words whitespace-normal">Bilinmiyor</span></p>
       </div>
     </div>
 
-    <div class="flex-1 p-12 flex flex-col">
-      <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center space-x-3 text-3xl font-bold bg-purple-900 px-8 py-4 rounded-full">
-          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+    <div class="flex-1 p-6 sm:p-12 flex flex-col">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 sm:mb-8">
+        <div class="flex items-center space-x-3 text-xl sm:text-3xl font-bold bg-purple-900 px-6 py-3 sm:px-8 sm:py-4 rounded-full w-full sm:w-auto justify-center">
+          <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
           <span><span id="player-count">0</span> Yarışmacı</span>
         </div>
-        <button id="btn-start-game" class="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-12 py-5 rounded-2xl font-bold text-3xl shadow-xl transition transform hover:scale-105" disabled>Yarışmayı Başlat</button>
+        <button id="btn-start-game" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-8 py-4 sm:px-12 sm:py-5 rounded-2xl font-bold text-xl sm:text-3xl shadow-xl transition transform hover:scale-105" disabled>Başlat</button>
       </div>
-      <div id="player-list" class="flex flex-wrap gap-4 mt-8">
+      <div id="player-list" class="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-4 mt-4 sm:mt-8">
          <!-- Katılan oyuncular buraya eklenecek -->
       </div>
     </div>
   </div>
 
   <!-- 5. SORU EKRANI -->
-  <div id="screen-question" class="flex-1 flex flex-col items-center p-8 bg-gray-50 hidden">
-    <h2 id="live-q-text" class="text-5xl font-black text-center bg-white p-10 rounded-2xl shadow-lg w-full max-w-6xl mb-12 border-t-8 border-purple-600 text-gray-800">Soru Metni</h2>
-    <div class="flex-1 flex items-center justify-center w-full">
-      <div id="live-q-timer" class="w-48 h-48 bg-purple-800 rounded-full flex items-center justify-center text-white text-7xl font-black shadow-2xl border-8 border-purple-300">20</div>
+  <div id="screen-question" class="flex-1 flex flex-col items-center p-4 sm:p-8 bg-gray-50 hidden overflow-y-auto">
+    <h2 id="live-q-text" class="text-2xl sm:text-4xl md:text-5xl font-black text-center bg-white p-6 sm:p-10 rounded-2xl shadow-lg w-full max-w-6xl mb-6 sm:mb-12 border-t-8 border-purple-600 text-gray-800 break-words whitespace-normal">Soru Metni</h2>
+    
+    <div class="flex-1 flex items-center justify-center w-full min-h-[120px] sm:min-h-[200px]">
+      <div id="live-q-timer" class="w-28 h-28 sm:w-40 sm:h-40 md:w-48 md:h-48 bg-purple-800 rounded-full flex items-center justify-center text-white text-5xl sm:text-6xl md:text-7xl font-black shadow-2xl border-[6px] sm:border-8 border-purple-300">20</div>
     </div>
-    <div class="grid grid-cols-2 gap-6 w-full max-w-6xl mt-12">
-      <div id="live-container-opt-0" class="bg-red-600 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg><span id="live-opt-0" class="text-4xl font-bold">Şık 1</span></div>
-      <div id="live-container-opt-1" class="bg-blue-600 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg><span id="live-opt-1" class="text-4xl font-bold">Şık 2</span></div>
-      <div id="live-container-opt-2" class="bg-yellow-500 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><span id="live-opt-2" class="text-4xl font-bold">Şık 3</span></div>
-      <div id="live-container-opt-3" class="bg-green-600 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg><span id="live-opt-3" class="text-4xl font-bold">Şık 4</span></div>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full max-w-6xl mt-6 sm:mt-12 mb-16 sm:mb-0">
+      <div id="live-container-opt-0" class="bg-red-600 text-white p-4 sm:p-6 md:p-8 rounded-xl shadow-lg flex items-center min-h-[80px] w-full">
+         <svg class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mr-4 sm:mr-6 fill-white flex-shrink-0" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+         <span id="live-opt-0" class="text-lg sm:text-2xl md:text-4xl font-bold break-words whitespace-normal w-full text-left">Şık 1</span>
+      </div>
+      <div id="live-container-opt-1" class="bg-blue-600 text-white p-4 sm:p-6 md:p-8 rounded-xl shadow-lg flex items-center min-h-[80px] w-full">
+         <svg class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mr-4 sm:mr-6 fill-white flex-shrink-0" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
+         <span id="live-opt-1" class="text-lg sm:text-2xl md:text-4xl font-bold break-words whitespace-normal w-full text-left">Şık 2</span>
+      </div>
+      <div id="live-container-opt-2" class="bg-yellow-500 text-white p-4 sm:p-6 md:p-8 rounded-xl shadow-lg flex items-center min-h-[80px] w-full">
+         <svg class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mr-4 sm:mr-6 fill-white flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+         <span id="live-opt-2" class="text-lg sm:text-2xl md:text-4xl font-bold break-words whitespace-normal w-full text-left">Şık 3</span>
+      </div>
+      <div id="live-container-opt-3" class="bg-green-600 text-white p-4 sm:p-6 md:p-8 rounded-xl shadow-lg flex items-center min-h-[80px] w-full">
+         <svg class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 mr-4 sm:mr-6 fill-white flex-shrink-0" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+         <span id="live-opt-3" class="text-lg sm:text-2xl md:text-4xl font-bold break-words whitespace-normal w-full text-left">Şık 4</span>
+      </div>
     </div>
-    <div class="absolute bottom-6 left-8 text-2xl font-bold text-gray-600 flex items-center bg-white px-6 py-3 rounded-xl shadow-md">
-       <svg class="w-8 h-8 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-       Cevap Verenler: <span id="answered-count">0</span> / <span id="total-players-q">0</span>
+    
+    <div class="absolute bottom-4 sm:bottom-6 left-4 sm:left-8 text-base sm:text-2xl font-bold text-gray-600 flex items-center bg-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl shadow-md">
+       <svg class="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+       Cevaplayan: <span id="answered-count" class="ml-1">0</span> / <span id="total-players-q">0</span>
     </div>
   </div>
 
   <!-- 6. CEVAP GÖSTERİMİ -->
-  <div id="screen-reveal" class="flex-1 flex flex-col items-center p-8 bg-gray-50 hidden">
-     <h2 id="rev-q-text" class="text-4xl font-black text-center bg-white p-8 rounded-2xl shadow-lg w-full max-w-6xl mb-12 text-gray-800 opacity-60">Soru</h2>
-    <div id="rev-bars" class="flex-1 flex items-end justify-center space-x-12 w-full h-80 mb-16">
+  <div id="screen-reveal" class="flex-1 flex flex-col items-center p-4 sm:p-8 bg-gray-50 hidden overflow-y-auto">
+     <h2 id="rev-q-text" class="text-2xl sm:text-3xl md:text-4xl font-black text-center bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-6xl mb-8 sm:mb-12 text-gray-800 opacity-60 break-words whitespace-normal">Soru</h2>
+     
+    <div id="rev-bars" class="flex-1 flex items-end justify-center space-x-4 sm:space-x-8 md:space-x-12 w-full min-h-[200px] mb-20 sm:mb-16">
        <!-- Barlar JS ile eklenecek -->
     </div>
-    <button id="btn-next-leaderboard" class="absolute right-12 top-1/2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-bold text-3xl shadow-xl flex items-center transition transform hover:scale-105">
-      Sıralama <svg class="ml-4 w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+    <button id="btn-next-leaderboard" class="fixed sm:absolute bottom-6 sm:bottom-auto sm:right-12 sm:top-1/2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 sm:px-10 sm:py-5 rounded-2xl font-bold text-xl sm:text-3xl shadow-xl flex items-center transition transform hover:scale-105 z-10 w-11/12 sm:w-auto justify-center">
+      Sıralama <svg class="ml-3 sm:ml-4 w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
     </button>
   </div>
 
   <!-- 7. LİDERLİK TABLOSU -->
-  <div id="screen-leaderboard" class="flex-1 flex flex-col items-center p-8 bg-purple-800 text-white hidden">
-    <h2 class="text-5xl font-black mb-16 mt-8">Sıralama Tablosu</h2>
-    <div id="lb-list" class="w-full max-w-4xl space-y-6">
+  <div id="screen-leaderboard" class="flex-1 flex flex-col items-center p-4 sm:p-8 bg-purple-800 text-white hidden overflow-y-auto">
+    <h2 class="text-4xl sm:text-5xl font-black mb-8 sm:mb-16 mt-4 sm:mt-8 break-words text-center">Sıralama Tablosu</h2>
+    <div id="lb-list" class="w-full max-w-4xl space-y-4 sm:space-y-6 mb-24 sm:mb-0">
       <!-- Sıralama JS ile eklenecek -->
     </div>
-    <button id="btn-next-question" class="absolute right-12 top-1/2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-bold text-3xl shadow-xl flex items-center transition transform hover:scale-105">
-      İleri <svg class="ml-4 w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+    <button id="btn-next-question" class="fixed sm:absolute bottom-6 sm:bottom-auto sm:right-12 sm:top-1/2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 sm:px-10 sm:py-5 rounded-2xl font-bold text-xl sm:text-3xl shadow-xl flex items-center transition transform hover:scale-105 z-10 w-11/12 sm:w-auto justify-center">
+      İleri <svg class="ml-3 sm:ml-4 w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
     </button>
   </div>
 
   <!-- 8. OYUN SONU (PODYUM) -->
-  <div id="screen-end" class="flex-1 flex flex-col items-center justify-center bg-purple-800 text-white p-8 hidden">
-    <svg class="w-64 h-64 text-yellow-400 mb-8 drop-shadow-2xl" fill="currentColor" viewBox="0 0 24 24"><path d="M19 5h-2V3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v2H5a1 1 0 0 0-1 1v6a5.006 5.006 0 0 0 4.29 4.93A5.986 5.986 0 0 0 11 19.9V21H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-1.1a5.986 5.986 0 0 0 2.71-2.97A5.006 5.006 0 0 0 20 12V6a1 1 0 0 0-1-1ZM6 12V7h1v4.82A3.014 3.014 0 0 1 6 12Zm12 0a3.014 3.014 0 0 1-1-.18V7h1v5Z"/></svg>
-    <h1 class="text-7xl font-black mb-10 tracking-widest">PODYUM</h1>
-    <div id="podium-container" class="flex items-end space-x-6 h-80">
+  <div id="screen-end" class="flex-1 flex flex-col items-center justify-center bg-purple-800 text-white p-4 sm:p-8 hidden overflow-y-auto">
+    <svg class="w-40 h-40 sm:w-64 sm:h-64 text-yellow-400 mb-6 sm:mb-8 drop-shadow-2xl" fill="currentColor" viewBox="0 0 24 24"><path d="M19 5h-2V3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v2H5a1 1 0 0 0-1 1v6a5.006 5.006 0 0 0 4.29 4.93A5.986 5.986 0 0 0 11 19.9V21H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-1.1a5.986 5.986 0 0 0 2.71-2.97A5.006 5.006 0 0 0 20 12V6a1 1 0 0 0-1-1ZM6 12V7h1v4.82A3.014 3.014 0 0 1 6 12Zm12 0a3.014 3.014 0 0 1-1-.18V7h1v5Z"/></svg>
+    <h1 class="text-5xl sm:text-7xl font-black mb-10 sm:mb-20 tracking-widest break-words text-center">PODYUM</h1>
+    <div id="podium-container" class="flex items-end justify-center space-x-2 sm:space-x-6 h-60 sm:h-80 w-full">
        <!-- Podyum JS ile eklenecek -->
     </div>
-    <button onclick="showScreen('dashboard')" class="mt-16 bg-white text-purple-900 px-10 py-4 rounded-full font-bold text-2xl hover:bg-gray-100 shadow-lg transition">Ana Panele Dön</button>
+    <button onclick="showScreen('dashboard')" class="mt-12 sm:mt-16 bg-white text-purple-900 px-8 py-3 sm:px-10 sm:py-4 rounded-full font-bold text-xl sm:text-2xl hover:bg-gray-100 shadow-lg transition text-center break-words w-full sm:w-auto">Ana Panele Dön</button>
   </div>
 
   <script type="module">
@@ -272,9 +284,6 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    /* =========================================================================
-       🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
-    ========================================================================= */
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
       authDomain: "interaktif-yarisma.firebaseapp.com",
@@ -297,10 +306,8 @@
     const PLAYERS_PATH = 'kahootPlayers';
     const QUIZZES_PATH = 'kahootQuizzes'; 
 
-    // --- ÖĞRETMEN ŞİFRESİ ---
     const ADMIN_PASSWORD = "1234"; 
 
-    // --- STATE ---
     let questions = []; 
     let pin = '';
     let hostId = '';
@@ -349,7 +356,6 @@
 
     showScreen('login');
 
-    // Soru tipi değiştiğinde UI güncellemesi
     document.getElementById('q-type').addEventListener('change', (e) => {
        const type = e.target.value;
        const opt2Container = document.getElementById('container-opt-2');
@@ -419,27 +425,26 @@
       const listDiv = document.getElementById('q-list');
       document.getElementById('q-count').innerText = questions.length;
       document.getElementById('btn-save-quiz').disabled = questions.length === 0;
-      document.getElementById('btn-save-and-start').disabled = questions.length === 0; // Buton kilidi
+      document.getElementById('btn-save-and-start').disabled = questions.length === 0;
       
       if(questions.length === 0) return;
       listDiv.innerHTML = '';
       questions.forEach((q, idx) => {
         listDiv.innerHTML += `
-          <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-purple-500 flex justify-between items-center shadow-sm">
-            <div>
-              <div class="font-bold text-gray-800 text-sm mb-1">
+          <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-purple-500 flex flex-col sm:flex-row sm:justify-between sm:items-center shadow-sm gap-2 break-words">
+            <div class="w-full sm:w-auto">
+              <div class="font-bold text-gray-800 text-sm mb-1 flex flex-wrap items-center gap-2">
                 ${idx + 1}. Soru 
-                <span class="text-xs font-normal bg-purple-100 text-purple-700 px-2 py-0.5 rounded ml-2">${q.type === 'boolean' ? 'Doğru / Yanlış' : 'Çoktan Seçmeli'}</span>
+                <span class="text-xs font-normal bg-purple-100 text-purple-700 px-2 py-0.5 rounded break-words">${q.type === 'boolean' ? 'Doğru / Yanlış' : 'Çoktan Seçmeli'}</span>
               </div>
-              <div class="text-gray-600 text-sm truncate max-w-md">${q.question}</div>
+              <div class="text-gray-600 text-sm break-words whitespace-normal line-clamp-3">${q.question}</div>
             </div>
-            <div class="text-xs text-purple-600 font-bold bg-purple-100 px-2 py-1 rounded-md">${q.timeLimit} sn</div>
+            <div class="text-xs text-purple-600 font-bold bg-purple-100 px-3 py-1.5 rounded-md self-start sm:self-auto flex-shrink-0">${q.timeLimit} sn</div>
           </div>
         `;
       });
     }
 
-    // Ortak Kaydetme Fonksiyonu
     async function saveQuizToDB() {
       const quizName = document.getElementById('input-quiz-name').value.trim();
       const showText = document.getElementById('input-show-text').checked;
@@ -464,7 +469,6 @@
             createdAt: Date.now()
          });
 
-         // Listemize de ekleyelim
          savedQuizzes.push({
             id: newQuizRef.id,
             name: quizName,
@@ -482,7 +486,6 @@
       }
     }
 
-    // YENİ: Sadece Kaydet Butonu
     document.getElementById('btn-save-quiz').addEventListener('click', async () => {
        const savedId = await saveQuizToDB();
        if (savedId) {
@@ -495,7 +498,6 @@
        }
     });
 
-    // YENİ: Kaydet ve Başlat Butonu
     document.getElementById('btn-save-and-start').addEventListener('click', async () => {
        const savedId = await saveQuizToDB();
        if (savedId) {
@@ -503,7 +505,6 @@
            document.getElementById('input-quiz-name').value = '';
            document.getElementById('input-show-text').checked = false;
            updateQuestionList();
-           // Doğrudan odayı kur
            await startRoomFromQuiz(savedId);
        }
     });
@@ -511,7 +512,7 @@
     window.loadSavedQuizzes = async function() {
        showScreen('quiz-list');
        const container = document.getElementById('saved-quizzes-container');
-       container.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-10 font-bold text-xl">Kayıtlar Yükleniyor...</div>';
+       container.innerHTML = '<div class="text-center text-gray-500 col-span-1 md:col-span-2 py-10 font-bold text-xl">Kayıtlar Yükleniyor...</div>';
        
        try {
           const quizzesSnapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH));
@@ -519,10 +520,10 @@
           
           if (savedQuizzes.length === 0) {
              container.innerHTML = `
-               <div class="text-center bg-white p-10 rounded-2xl border border-gray-200 col-span-2 shadow-sm">
-                 <h3 class="text-2xl font-bold text-gray-600 mb-2">Hiç kayıtlı paketiniz yok.</h3>
-                 <p class="text-gray-500 mb-6">Sınıfa yarışma başlatabilmek için önce bir Soru Paketi oluşturup kaydetmelisiniz.</p>
-                 <button onclick="showScreen('setup')" class="bg-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition">Hemen Yeni Paket Oluştur</button>
+               <div class="text-center bg-white p-6 sm:p-10 rounded-2xl border border-gray-200 col-span-1 md:col-span-2 shadow-sm break-words">
+                 <h3 class="text-xl sm:text-2xl font-bold text-gray-600 mb-2">Hiç kayıtlı paketiniz yok.</h3>
+                 <p class="text-gray-500 mb-6 text-sm sm:text-base">Sınıfa yarışma başlatabilmek için önce bir Soru Paketi oluşturup kaydetmelisiniz.</p>
+                 <button onclick="showScreen('setup')" class="bg-purple-600 text-white px-6 sm:px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition w-full sm:w-auto">Hemen Yeni Paket Oluştur</button>
                </div>
              `;
              return;
@@ -532,26 +533,26 @@
           savedQuizzes.sort((a,b) => b.createdAt - a.createdAt).forEach(quiz => {
              const dateStr = new Date(quiz.createdAt).toLocaleDateString('tr-TR');
              container.innerHTML += `
-               <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition flex flex-col justify-between relative">
-                 <button onclick="deleteQuiz('${quiz.id}')" class="absolute top-4 right-4 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Paketi Sil">
-                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+               <div class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition flex flex-col justify-between relative break-words">
+                 <button onclick="deleteQuiz('${quiz.id}')" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Paketi Sil">
+                   <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                  </button>
                  <div>
-                   <h3 class="text-2xl font-black text-purple-800 mb-2 truncate pr-10">${quiz.name}</h3>
-                   <div class="flex items-center space-x-4 mb-6">
-                     <span class="bg-gray-100 text-gray-600 text-sm font-bold px-3 py-1 rounded-full">${quiz.questions.length} Soru</span>
-                     <span class="text-gray-400 text-sm">Tarih: ${dateStr}</span>
+                   <h3 class="text-xl sm:text-2xl font-black text-purple-800 mb-2 break-words whitespace-normal pr-10">${quiz.name}</h3>
+                   <div class="flex flex-wrap items-center gap-2 sm:gap-4 mb-6">
+                     <span class="bg-gray-100 text-gray-600 text-xs sm:text-sm font-bold px-2 py-1 sm:px-3 sm:py-1 rounded-full whitespace-nowrap">${quiz.questions.length} Soru</span>
+                     <span class="text-gray-400 text-xs sm:text-sm whitespace-nowrap">Tarih: ${dateStr}</span>
                    </div>
                  </div>
-                 <button onclick="startRoomFromQuiz('${quiz.id}')" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold text-lg py-3 rounded-xl shadow-md transition transform hover:-translate-y-1">
-                   Bu Paket İle Sınıfı Başlat
+                 <button onclick="startRoomFromQuiz('${quiz.id}')" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold text-base sm:text-lg py-3 rounded-xl shadow-md transition transform hover:-translate-y-1 text-center whitespace-normal break-words">
+                   Bu Paket İle Başlat
                  </button>
                </div>
              `;
           });
        } catch (err) {
           console.error("Quizleri çekerken hata:", err);
-          container.innerHTML = '<div class="text-center text-red-500 font-bold col-span-2 py-10">Veriler yüklenirken bir hata oluştu.</div>';
+          container.innerHTML = '<div class="text-center text-red-500 font-bold col-span-1 md:col-span-2 py-10">Veriler yüklenirken bir hata oluştu.</div>';
        }
     };
 
@@ -617,7 +618,7 @@
       btnStart.disabled = players.length === 0;
       
       const list = document.getElementById('player-list');
-      list.innerHTML = players.map(p => `<div class="bg-white text-purple-900 px-6 py-3 rounded-lg text-2xl font-bold shadow-lg animate-bounce-short">${p.name}</div>`).join('');
+      list.innerHTML = players.map(p => `<div class="bg-white text-purple-900 px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-lg sm:text-2xl font-bold shadow-lg animate-bounce-short break-words text-center whitespace-normal max-w-full">${p.name}</div>`).join('');
     }
 
     document.getElementById('btn-start-game').addEventListener('click', () => triggerQuestion(0));
@@ -709,13 +710,13 @@
         const count = players.filter(p => p.currentAnswer === idx).length;
         const isCorrect = idx === q.correctAnswerIndex;
         const opacity = isCorrect ? 'opacity-100' : 'opacity-40';
-        const height = Math.max(60, count * 60);
+        const height = Math.max(40, count * 60);
         
         barsDiv.innerHTML += `
           <div class="flex flex-col items-center ${opacity}">
-            <div class="text-4xl font-black mb-4 text-gray-700">${count}</div>
-            <div class="w-32 ${colors[idx]} rounded-t-xl transition-all duration-1000 flex items-center justify-center relative" style="height: ${height}px">
-              ${isCorrect ? '<svg class="w-16 h-16 text-white absolute -top-8 bg-green-500 rounded-full p-2 border-4 border-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>' : ''}
+            <div class="text-2xl sm:text-4xl font-black mb-2 sm:mb-4 text-gray-700">${count}</div>
+            <div class="w-16 sm:w-24 md:w-32 ${colors[idx]} rounded-t-xl transition-all duration-1000 flex items-center justify-center relative" style="height: ${height}px">
+              ${isCorrect ? '<svg class="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 text-white absolute -top-6 sm:-top-8 bg-green-500 rounded-full p-1 sm:p-2 border-2 sm:border-4 border-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>' : ''}
             </div>
           </div>
         `;
@@ -730,16 +731,17 @@
       const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
       const lbList = document.getElementById('lb-list');
       lbList.innerHTML = sorted.slice(0, 5).map((p, idx) => `
-        <div class="flex items-center justify-between bg-white text-black p-6 rounded-xl shadow-lg">
-          <div class="flex items-center text-3xl font-bold">
-            <span class="w-12 text-gray-400">${idx + 1}.</span>${p.name}
+        <div class="flex items-center justify-between bg-white text-black p-4 sm:p-6 rounded-xl shadow-lg break-words w-full">
+          <div class="flex items-center text-xl sm:text-3xl font-bold flex-1 min-w-0 pr-4">
+            <span class="w-8 sm:w-12 text-gray-400 flex-shrink-0">${idx + 1}.</span>
+            <span class="truncate">${p.name}</span>
           </div>
-          <div class="text-3xl font-black bg-gray-100 px-6 py-2 rounded-lg">${p.score || 0}</div>
+          <div class="text-xl sm:text-3xl font-black bg-gray-100 px-4 py-2 sm:px-6 sm:py-2 rounded-lg flex-shrink-0">${p.score || 0}</div>
         </div>
       `).join('');
       
       const isLast = currentQIndex >= questions.length - 1;
-      document.getElementById('btn-next-question').innerHTML = isLast ? 'Bitir <svg class="ml-4 w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3v18h4v-7h10.5l-3-4 3-4H9V3H5z"/></svg>' : 'Sonraki <svg class="ml-4 w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>';
+      document.getElementById('btn-next-question').innerHTML = isLast ? 'Bitir <svg class="ml-2 sm:ml-4 w-6 h-6 sm:w-10 sm:h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3v18h4v-7h10.5l-3-4 3-4H9V3H5z"/></svg>' : 'Sonraki <svg class="ml-2 sm:ml-4 w-6 h-6 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>';
       
       showScreen('leaderboard');
     });
@@ -751,20 +753,20 @@
       const p1 = sorted[0]; const p2 = sorted[1]; const p3 = sorted[2];
       
       document.getElementById('podium-container').innerHTML = `
-        ${p2 ? `<div class="flex flex-col items-center">
-          <div class="text-4xl font-bold mb-3">${p2.name}</div>
-          <div class="text-2xl mb-4 font-semibold opacity-80">${p2.score || 0}</div>
-          <div class="w-48 h-56 bg-gray-300 rounded-t-xl flex justify-center pt-6 text-6xl font-black text-gray-600 shadow-inner">2</div>
+        ${p2 ? `<div class="flex flex-col items-center w-1/3">
+          <div class="text-lg sm:text-2xl md:text-4xl font-bold mb-1 sm:mb-3 break-words whitespace-normal text-center w-full px-1">${p2.name}</div>
+          <div class="text-sm sm:text-xl md:text-2xl mb-2 sm:mb-4 font-semibold opacity-80">${p2.score || 0}</div>
+          <div class="w-full max-w-[120px] sm:max-w-[192px] h-32 sm:h-44 md:h-56 bg-gray-300 rounded-t-xl flex justify-center pt-4 sm:pt-6 text-4xl sm:text-6xl font-black text-gray-600 shadow-inner">2</div>
         </div>` : ''}
-        ${p1 ? `<div class="flex flex-col items-center z-10 -mx-4">
-          <div class="text-5xl font-black mb-3 text-yellow-300 drop-shadow-md">${p1.name}</div>
-          <div class="text-3xl mb-4 font-bold text-yellow-100">${p1.score || 0}</div>
-          <div class="w-56 h-72 bg-yellow-400 rounded-t-xl flex justify-center pt-6 text-7xl font-black text-yellow-700 shadow-2xl">1</div>
+        ${p1 ? `<div class="flex flex-col items-center z-10 w-1/3 -mx-2 sm:-mx-4">
+          <div class="text-xl sm:text-3xl md:text-5xl font-black mb-1 sm:mb-3 text-yellow-300 drop-shadow-md break-words whitespace-normal text-center w-full px-1">${p1.name}</div>
+          <div class="text-base sm:text-2xl md:text-3xl mb-2 sm:mb-4 font-bold text-yellow-100">${p1.score || 0}</div>
+          <div class="w-full max-w-[140px] sm:max-w-[224px] h-40 sm:h-56 md:h-72 bg-yellow-400 rounded-t-xl flex justify-center pt-4 sm:pt-6 text-5xl sm:text-7xl font-black text-yellow-700 shadow-2xl">1</div>
         </div>` : ''}
-        ${p3 ? `<div class="flex flex-col items-center">
-          <div class="text-3xl font-bold mb-3">${p3.name}</div>
-          <div class="text-xl mb-4 font-semibold opacity-80">${p3.score || 0}</div>
-          <div class="w-40 h-40 bg-orange-300 rounded-t-xl flex justify-center pt-4 text-5xl font-black text-orange-700 shadow-inner">3</div>
+        ${p3 ? `<div class="flex flex-col items-center w-1/3">
+          <div class="text-base sm:text-xl md:text-3xl font-bold mb-1 sm:mb-3 break-words whitespace-normal text-center w-full px-1">${p3.name}</div>
+          <div class="text-xs sm:text-lg md:text-xl mb-2 sm:mb-4 font-semibold opacity-80">${p3.score || 0}</div>
+          <div class="w-full max-w-[100px] sm:max-w-[160px] h-24 sm:h-32 md:h-40 bg-orange-300 rounded-t-xl flex justify-center pt-3 sm:pt-4 text-3xl sm:text-5xl font-black text-orange-700 shadow-inner">3</div>
         </div>` : ''}
       `;
       showScreen('end');

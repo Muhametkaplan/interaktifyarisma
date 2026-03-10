@@ -6,7 +6,6 @@
   <title>Yarışmaya Katıl</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Dokunmatik ekranlarda butonlara basmayı kolaylaştıran özel ayarlar */
     button { touch-action: manipulation; }
     .shape-btn:active { transform: translateY(4px); box-shadow: none !important; }
   </style>
@@ -65,12 +64,12 @@
          <span id="question-player-score" class="font-black text-2xl bg-purple-100 text-purple-800 px-4 py-2 rounded-xl flex-shrink-0">0</span>
       </div>
 
-      <!-- YENİ: Soru Metni Gösterge Alanı (Öğretmen izin verirse açılır) -->
+      <!-- Soru Metni Gösterge Alanı -->
       <div id="question-text-box" class="hidden bg-white p-4 rounded-2xl shadow-sm mb-4 border border-gray-200 text-center">
          <h3 id="student-q-text" class="text-lg font-bold text-gray-800">Soru Metni</h3>
       </div>
 
-      <!-- Cevap Bekleme (Öğrenci cevapladıktan sonra) -->
+      <!-- Cevap Bekleme -->
       <div id="question-waiting" class="hidden flex-1 bg-gray-200 rounded-3xl flex-col items-center justify-center text-gray-600 text-center p-8 border-4 border-dashed border-gray-300 shadow-inner">
          <svg class="w-16 h-16 animate-spin mb-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
          <h2 class="text-3xl font-black mb-2">Harika!</h2>
@@ -79,7 +78,6 @@
 
       <!-- Renkli Butonlar -->
       <div id="question-buttons" class="flex-1 grid grid-cols-2 grid-rows-2 gap-4 pb-6">
-         <!-- Butonlar metin sığsın diye flex-col yapıldı -->
          <button onclick="handleAnswer(0)" class="shape-btn bg-red-600 shadow-[0_4px_0_#991b1b] rounded-3xl flex flex-col items-center justify-center p-3 transition-all border-b-4 border-black/20">
            <svg class="w-14 h-14 fill-white drop-shadow-md" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
            <span id="student-opt-0" class="hidden text-white font-bold text-sm md:text-base mt-2 px-1 text-center w-full leading-tight">Şık 1</span>
@@ -142,6 +140,7 @@
   </div>
 
   <script type="module">
+    // Firebase CDN İçe Aktarımları
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -158,7 +157,7 @@
       appId: "1:652081118487:web:409c5737ced7cb8377cb52"
     };
     
-    // Test ortamı için
+    // Canvas test ortamı uyumluluğu
     if (typeof __firebase_config !== 'undefined' && __firebase_config) {
       firebaseConfig = JSON.parse(__firebase_config);
     }
@@ -262,7 +261,7 @@
         ui.qName.innerText = myPlayerInfo?.name || 'Oyuncu';
         ui.qScore.innerText = myPlayerInfo?.score || 0;
         
-        // YENİ: Öğretmen metni göster seçeneğini işaretlediyse
+        // Öğretmen izin verdiyse soru metnini ve şıkları göster
         if (state.gameData.showTextOnStudent) {
            document.getElementById('question-text-box').classList.remove('hidden');
            document.getElementById('student-q-text').innerText = state.gameData.currentQuestionText || '';
@@ -282,7 +281,7 @@
            }
         }
 
-        // YENİ: Doğru/Yanlış soru tiplerinde 3. ve 4. şıkları gizle
+        // Doğru/Yanlış soru tiplerinde son 2 butonu gizle
         const btnElements = document.querySelectorAll('.shape-btn');
         if (state.gameData?.currentQuestionType === 'boolean') {
            btnElements[2].classList.add('hidden');

@@ -510,24 +510,23 @@
           savedQuizzes.sort((a,b) => b.createdAt - a.createdAt).forEach(quiz => {
              const dateStr = new Date(quiz.createdAt).toLocaleDateString('tr-TR');
              container.innerHTML += `
-    // Odayı Hızlı Kur ve Başlat (Varsa diye)
-    document.getElementById('btn-create-room').addEventListener('click', async () => {
-      try {
-        pin = Math.floor(100000 + Math.random() * 900000).toString();
-        document.getElementById('display-pin').innerText = pin;
-        
-        localGameState = 'lobby'; 
-        const showText = document.getElementById('input-show-text').checked;
-
-        // QR Kod için mevcut URL'yi al (admin.html'yi silip yerine kök dizini koy)
-        const studentUrl = window.location.href.replace('admin.html', '').replace(/\/$/, '');
-        document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
-        document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
-
-        // Firebase'e Oyunu Kaydet
-        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
-          pin: pin, state: 'lobby', currentQuestionIndex: 0, hostId: hostId, createdAt: Date.now(), questionCount: questions.length, showTextOnStudent: showText
-        });
+               <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition flex flex-col justify-between relative">
+                 <button onclick="deleteQuiz('${quiz.id}')" class="absolute top-4 right-4 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Paketi Sil">
+                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                 </button>
+                 <div>
+                   <h3 class="text-2xl font-black text-purple-800 mb-2 truncate pr-10">${quiz.name}</h3>
+                   <div class="flex items-center space-x-4 mb-6">
+                     <span class="bg-gray-100 text-gray-600 text-sm font-bold px-3 py-1 rounded-full">${quiz.questions.length} Soru</span>
+                     <span class="text-gray-400 text-sm">Tarih: ${dateStr}</span>
+                   </div>
+                 </div>
+                 <button onclick="startRoomFromQuiz('${quiz.id}')" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold text-lg py-3 rounded-xl shadow-md transition transform hover:-translate-y-1">
+                   Bu Paket İle Sınıfı Başlat
+                 </button>
+               </div>
+             `;
+          });
        } catch (err) {
           console.error("Quizleri çekerken hata:", err);
           container.innerHTML = '<div class="text-center text-red-500 font-bold col-span-2 py-10">Veriler yüklenirken bir hata oluştu.</div>';
@@ -546,6 +545,48 @@
           }
        }
     };
+
+    // Odayı Hızlı Kur ve Başlat (Yeni paket sekmesinden)
+    document.getElementById('btn-create-room').addEventListener('click', async () => {
+      try {
+        pin = Math.floor(100000 + Math.random() * 900000).toString();
+        document.getElementById('display-pin').innerText = pin;
+        
+        localGameState = 'lobby'; 
+        const showText = document.getElementById('input-show-text').checked;
+
+        // QR Kod için mevcut URL'yi al (admin.html'yi silip yerine kök dizini koy)
+        const studentUrl = window.location.href.replace('admin.html', '').replace(/\/$/, '');
+        document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
+        document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
+
+        // Firebase'e Oyunu Kaydet
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
+          pin: pin, state: 'lobby', currentQuestionIndex: 0, hostId: hostId, createdAt: Date.now(), questionCount: questions.length, showTextOnStudent: showText
+        });
+        
+        // Öğrencileri Dinle
+        onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH), (snap) => {
+          const all = snap.docs.map(d => d.data());
+          players = all.filter(p => p.pin === pin);
+          updateLobbyUI();
+          
+          if (localGameState === 'question') {
+             const answeredPlayers = players.filter(p => p.currentAnswer !== null && p.currentAnswer !== undefined);
+             document.getElementById('answered-count').innerText = answeredPlayers.length;
+             
+             if (players.length > 0 && answeredPlayers.length === players.length) {
+                handleTimeUp(); // Herkes cevapladıysa süreyi bitir
+             }
+          }
+        });
+
+        showScreen('lobby');
+      } catch (err) {
+         console.error("Oda oluşturulurken hata:", err);
+         alert("Oda oluşturulurken hata oluştu!");
+      }
+    });
 
     // --- 2. SEÇİLEN PAKET İLE ODA KURMA VE LOBİ ---
     window.startRoomFromQuiz = async function(quizId) {

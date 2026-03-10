@@ -226,6 +226,14 @@
       Object.values(screens).forEach(s => {
         s.classList.remove('flex');
         s.classList.add('hidden');
+        const btnElements = document.querySelectorAll('.shape-btn');
+if (state.gameData?.currentQuestionType === 'boolean') {
+   btnElements[2].classList.add('hidden'); // Sarı gizle
+   btnElements[3].classList.add('hidden'); // Yeşil gizle
+} else {
+   btnElements[2].classList.remove('hidden'); // Sarı göster
+   btnElements[3].classList.remove('hidden'); // Yeşil göster
+}
       });
 
       const myPlayerInfo = state.players.find(p => p.id === state.user?.uid);
@@ -414,3 +422,4 @@
 </body>
 
 </html>
+

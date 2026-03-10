@@ -13,10 +13,78 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col font-sans text-gray-800">
 
-  <!-- 1. KURULUM / SORU EKLEME EKRANI -->
+  <!-- ============================================== -->
+  <!-- 0. ŞİFRELİ GİRİŞ EKRANI -->
+  <!-- ============================================== -->
+  <div id="screen-login" class="flex-1 flex flex-col items-center justify-center p-8 bg-purple-900">
+    <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-md w-full text-center">
+      <div class="flex justify-center mb-6 space-x-2">
+        <svg class="w-10 h-10 fill-red-600" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+        <svg class="w-10 h-10 fill-blue-600" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
+        <svg class="w-10 h-10 fill-yellow-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+      </div>
+      <h1 class="text-3xl font-black text-gray-800 mb-2">Öğretmen Girişi</h1>
+      <p class="text-gray-500 mb-8">Yönetim paneline erişmek için şifrenizi girin.</p>
+      
+      <form id="form-login" class="space-y-4">
+        <input type="password" id="admin-password" placeholder="Şifre" class="w-full text-center text-xl font-bold p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-600 transition" required>
+        <button type="submit" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold text-xl py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">Giriş Yap</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- 1. ANA SAYFA (DASHBOARD) -->
+  <!-- ============================================== -->
+  <div id="screen-dashboard" class="flex-1 flex flex-col items-center justify-center p-8 bg-gray-100 hidden">
+    <div class="text-center mb-12">
+      <h1 class="text-5xl font-black text-purple-900 mb-4">Yönetim Paneli</h1>
+      <p class="text-xl text-gray-600">Ne yapmak istersiniz?</p>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-8 max-w-4xl w-full">
+      <!-- Seçenek 1: Soru Oluştur -->
+      <button onclick="showScreen('setup')" class="flex-1 bg-white p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-purple-500 group">
+        <div class="bg-purple-100 p-6 rounded-full mb-6 group-hover:bg-purple-200 transition">
+          <svg class="w-16 h-16 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+        </div>
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Yeni Soru Paketi</h2>
+        <p class="text-gray-500">Yeni sorular yazın ve kaydedin.</p>
+      </button>
+
+      <!-- Seçenek 2: Kayıtlı Sorular -->
+      <button onclick="loadSavedQuizzes()" class="flex-1 bg-white p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-blue-500 group">
+        <div class="bg-blue-100 p-6 rounded-full mb-6 group-hover:bg-blue-200 transition">
+          <svg class="w-16 h-16 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        </div>
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Kayıtlı Yarışmalarım</h2>
+        <p class="text-gray-500">Önceden kaydettiğiniz paketlerle sınıfı başlatın.</p>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- 2. KAYITLI YARIŞMALAR LİSTESİ -->
+  <!-- ============================================== -->
+  <div id="screen-quiz-list" class="flex-1 flex flex-col p-8 bg-gray-50 overflow-y-auto hidden">
+    <div class="flex justify-between items-center mb-10 max-w-5xl mx-auto w-full">
+      <h1 class="text-4xl font-black text-gray-800">Kayıtlı Yarışma Paketleri</h1>
+      <button onclick="showScreen('dashboard')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-300 transition">Geri Dön</button>
+    </div>
+
+    <div id="saved-quizzes-container" class="max-w-5xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Kayıtlı Quizler JS ile buraya yüklenecek -->
+      <div class="text-center text-gray-500 col-span-2 py-10">Yükleniyor...</div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- 3. KURULUM / SORU EKLEME EKRANI (Güncellendi) -->
+  <!-- ============================================== -->
   <div id="screen-setup" class="flex-1 flex flex-col p-8 bg-gray-50 overflow-y-auto hidden">
     <div class="flex justify-between items-center mb-8 max-w-7xl mx-auto w-full">
-      <h1 class="text-4xl font-black text-gray-800">Yarışma Oluştur</h1>
+      <h1 class="text-4xl font-black text-gray-800">Soru Paketi Hazırlayıcı</h1>
+      <button onclick="showScreen('dashboard')" class="bg-red-100 text-red-600 px-6 py-3 rounded-lg font-bold hover:bg-red-200 transition">İptal ve Geri Dön</button>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto w-full">
@@ -70,19 +138,30 @@
         </form>
       </div>
 
-      <!-- Eklenen Sorular Listesi -->
+      <!-- Eklenen Sorular ve Kaydetme Bölümü -->
       <div class="flex-1 bg-gray-100 p-6 rounded-2xl border border-gray-300 flex flex-col max-h-[600px]">
-         <h2 class="text-xl font-bold mb-4 text-gray-800">Eklenen Sorular (<span id="q-count">0</span>)</h2>
-         <div id="q-list" class="flex-1 overflow-y-auto space-y-3 pr-2">
+         <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">Paket Adı (Örn: Vize Hazırlık)</label>
+            <input type="text" id="input-quiz-name" placeholder="Yarışma Paketinin Adı..." class="w-full p-3 border-2 border-gray-300 rounded-xl outline-none focus:border-green-500 font-bold text-lg">
+         </div>
+         <h2 class="text-xl font-bold mb-2 text-gray-800 mt-2">Eklenen Sorular (<span id="q-count">0</span>)</h2>
+         <div id="q-list" class="flex-1 overflow-y-auto space-y-3 pr-2 mb-4 bg-white p-2 rounded-xl border border-gray-200">
             <div class="text-gray-500 text-center mt-10 italic">Henüz soru eklenmedi.</div>
          </div>
-         <button id="btn-create-room" class="mt-6 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-xl font-bold text-xl w-full shadow-lg transition" disabled>Odayı Kur ve Başlat</button>
+         
+         <!-- YENİ: Veritabanına Kaydet Butonu -->
+         <button id="btn-save-quiz" class="bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-xl font-bold text-xl w-full shadow-lg transition" disabled>
+            Paketi Veritabanına Kaydet
+         </button>
       </div>
     </div>
   </div>
 
-  <!-- 2. LOBİ EKRANI -->
+  <!-- ============================================== -->
+  <!-- 4. LOBİ EKRANI -->
+  <!-- ============================================== -->
   <div id="screen-lobby" class="flex-1 flex flex-col bg-purple-800 text-white hidden">
+    <div class="absolute top-4 right-4"><button onclick="showScreen('dashboard')" class="bg-white/20 px-4 py-2 rounded-lg font-bold hover:bg-white/30 transition">Kapat / Çık</button></div>
     <div class="p-8 text-center bg-white text-black mt-10 mx-auto rounded-xl shadow-2xl max-w-5xl w-full border-b-8 border-purple-900 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
       
       <!-- QR KOD BÖLÜMÜ -->
@@ -101,6 +180,7 @@
       <div class="flex flex-col items-center">
         <h1 class="text-3xl md:text-4xl font-bold mb-6 text-gray-800">Oyuna Katılmak İçin PIN:</h1>
         <div id="display-pin" class="text-7xl md:text-9xl font-black tracking-widest text-purple-900 drop-shadow-md bg-purple-100 px-8 py-4 rounded-3xl border-4 border-purple-200">000000</div>
+        <p class="mt-4 font-bold text-gray-500">Seçilen Paket: <span id="lobby-quiz-name" class="text-purple-600">Bilinmiyor</span></p>
       </div>
     </div>
 
@@ -118,68 +198,65 @@
     </div>
   </div>
 
-  <!-- 3. SORU EKRANI -->
+  <!-- 5. SORU EKRANI -->
   <div id="screen-question" class="flex-1 flex flex-col items-center p-8 bg-gray-50 hidden">
     <h2 id="live-q-text" class="text-5xl font-black text-center bg-white p-10 rounded-2xl shadow-lg w-full max-w-6xl mb-12 border-t-8 border-purple-600 text-gray-800">Soru Metni</h2>
-    
     <div class="flex-1 flex items-center justify-center w-full">
       <div id="live-q-timer" class="w-48 h-48 bg-purple-800 rounded-full flex items-center justify-center text-white text-7xl font-black shadow-2xl border-8 border-purple-300">20</div>
     </div>
-
     <div class="grid grid-cols-2 gap-6 w-full max-w-6xl mt-12">
       <div class="bg-red-600 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg><span id="live-opt-0" class="text-4xl font-bold">Şık 1</span></div>
       <div class="bg-blue-600 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg><span id="live-opt-1" class="text-4xl font-bold">Şık 2</span></div>
       <div class="bg-yellow-500 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg><span id="live-opt-2" class="text-4xl font-bold">Şık 3</span></div>
       <div class="bg-green-600 text-white p-8 rounded-xl shadow-lg flex items-center"><svg class="w-16 h-16 mr-6 fill-white" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg><span id="live-opt-3" class="text-4xl font-bold">Şık 4</span></div>
     </div>
-    
     <div class="absolute bottom-6 left-8 text-2xl font-bold text-gray-600 flex items-center bg-white px-6 py-3 rounded-xl shadow-md">
        <svg class="w-8 h-8 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
        Cevap Verenler: <span id="answered-count">0</span> / <span id="total-players-q">0</span>
     </div>
   </div>
 
-  <!-- 4. CEVAP GÖSTERİMİ -->
+  <!-- 6. CEVAP GÖSTERİMİ -->
   <div id="screen-reveal" class="flex-1 flex flex-col items-center p-8 bg-gray-50 hidden">
      <h2 id="rev-q-text" class="text-4xl font-black text-center bg-white p-8 rounded-2xl shadow-lg w-full max-w-6xl mb-12 text-gray-800 opacity-60">Soru</h2>
-
     <div id="rev-bars" class="flex-1 flex items-end justify-center space-x-12 w-full h-80 mb-16">
        <!-- Barlar JS ile eklenecek -->
     </div>
-
     <button id="btn-next-leaderboard" class="absolute right-12 top-1/2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-bold text-3xl shadow-xl flex items-center transition transform hover:scale-105">
       Sıralama <svg class="ml-4 w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
     </button>
   </div>
 
-  <!-- 5. LİDERLİK TABLOSU -->
+  <!-- 7. LİDERLİK TABLOSU -->
   <div id="screen-leaderboard" class="flex-1 flex flex-col items-center p-8 bg-purple-800 text-white hidden">
     <h2 class="text-5xl font-black mb-16 mt-8">Sıralama Tablosu</h2>
     <div id="lb-list" class="w-full max-w-4xl space-y-6">
       <!-- Sıralama JS ile eklenecek -->
     </div>
-    
     <button id="btn-next-question" class="absolute right-12 top-1/2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-5 rounded-2xl font-bold text-3xl shadow-xl flex items-center transition transform hover:scale-105">
       İleri <svg class="ml-4 w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
     </button>
   </div>
 
-  <!-- 6. OYUN SONU (PODYUM) -->
+  <!-- 8. OYUN SONU (PODYUM) -->
   <div id="screen-end" class="flex-1 flex flex-col items-center justify-center bg-purple-800 text-white p-8 hidden">
     <svg class="w-64 h-64 text-yellow-400 mb-8 drop-shadow-2xl" fill="currentColor" viewBox="0 0 24 24"><path d="M19 5h-2V3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v2H5a1 1 0 0 0-1 1v6a5.006 5.006 0 0 0 4.29 4.93A5.986 5.986 0 0 0 11 19.9V21H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-1.1a5.986 5.986 0 0 0 2.71-2.97A5.006 5.006 0 0 0 20 12V6a1 1 0 0 0-1-1ZM6 12V7h1v4.82A3.014 3.014 0 0 1 6 12Zm12 0a3.014 3.014 0 0 1-1-.18V7h1v5Z"/></svg>
-    <h1 class="text-7xl font-black mb-20 tracking-widest">PODYUM</h1>
-    
+    <h1 class="text-7xl font-black mb-10 tracking-widest">PODYUM</h1>
     <div id="podium-container" class="flex items-end space-x-6 h-80">
        <!-- Podyum JS ile eklenecek -->
     </div>
+    <button onclick="showScreen('dashboard')" class="mt-16 bg-white text-purple-900 px-10 py-4 rounded-full font-bold text-2xl hover:bg-gray-100 shadow-lg transition">Ana Panele Dön</button>
   </div>
 
   <script type="module">
     // Firebase Modüllerini CDN üzerinden içe aktarıyoruz
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+    /* =========================================================================
+       🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
+    ========================================================================= */
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
       authDomain: "interaktif-yarisma.firebaseapp.com",
@@ -198,11 +275,16 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // GÜVENLİ YOLLAR (Strict Paths)
     const GAMES_PATH = 'kahootGames';
     const PLAYERS_PATH = 'kahootPlayers';
+    const QUIZZES_PATH = 'kahootQuizzes'; // Yeni: Kayıtlı Quizler için
+
+    // --- ÖĞRETMEN ŞİFRESİ ---
+    const ADMIN_PASSWORD = "1234"; 
 
     // --- STATE ---
-    let questions = [];
+    let questions = []; // Anlık oluşturulan sorular
     let pin = '';
     let hostId = '';
     let players = [];
@@ -210,26 +292,52 @@
     let timeLeft = 0;
     let timerInterval = null;
     let questionStartTime = 0;
-    let localGameState = 'setup'; // YENİ: Sonsuz döngüleri engelleyen yerel kilit
+    let localGameState = 'login'; 
 
-    // --- EKRAN GEÇİŞ FONKSİYONU ---
-    const screens = ['setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
-    function showScreen(screenId) {
-      screens.forEach(s => document.getElementById(`screen-${s}`).classList.add('hidden'));
-      document.getElementById(`screen-${screenId}`).classList.remove('hidden');
-      document.getElementById(`screen-${screenId}`).classList.add('flex');
-    }
+    // Tüm kaydedilmiş paketleri tutacağımız liste
+    let savedQuizzes = []; 
 
-    // Başlangıçta Setup Ekranını Göster ve Anonim Giriş Yap
-    signInAnonymously(auth).then(userCred => {
-       hostId = userCred.user.uid;
-       showScreen('setup');
-    }).catch(error => {
-       alert("Sisteme giriş yapılırken (Kimlik Doğrulama) bir hata oluştu:\n" + error.message + "\n\nLütfen Firebase üzerinden 'Anonymous' (Anonim) girişlerin açık olduğundan emin olun.");
-       console.error("Auth error:", error);
+    // Ekranları Yönetme (Global yapıyoruz ki HTML butonlarından onclick ile çağrılsın)
+    window.showScreen = function(screenId) {
+      const screens = ['login', 'dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
+      screens.forEach(s => {
+         const el = document.getElementById(`screen-${s}`);
+         if(el) {
+           el.classList.add('hidden');
+           el.classList.remove('flex');
+         }
+      });
+      const targetEl = document.getElementById(`screen-${screenId}`);
+      if(targetEl) {
+         targetEl.classList.remove('hidden');
+         targetEl.classList.add('flex');
+      }
+      localGameState = screenId;
+    };
+
+    // --- 0. ŞİFRELİ GİRİŞ İŞLEMİ ---
+    document.getElementById('form-login').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const enteredPass = document.getElementById('admin-password').value;
+      
+      if (enteredPass === ADMIN_PASSWORD) {
+         // Şifre doğruysa Firebase Anonim giriş yap ve panele geç
+         signInAnonymously(auth).then(userCred => {
+           hostId = userCred.user.uid;
+           showScreen('dashboard');
+         }).catch(error => {
+           alert("Sisteme bağlanılamadı. Lütfen Firebase Authentication (Anonim Giriş) ayarlarını kontrol edin.\nHata: " + error.message);
+         });
+      } else {
+         alert("Hatalı şifre! Lütfen tekrar deneyin.");
+         document.getElementById('admin-password').value = '';
+      }
     });
 
-    // --- 1. SORU EKLEME İŞLEMLERİ ---
+    // Sayfa açıldığında giriş ekranını göster
+    showScreen('login');
+
+    // --- 1. SORU EKLEME İŞLEMLERİ (Kurulum Ekranı) ---
     document.getElementById('form-add-q').addEventListener('submit', (e) => {
       e.preventDefault();
       const qText = document.getElementById('q-text').value;
@@ -251,48 +359,142 @@
     function updateQuestionList() {
       const listDiv = document.getElementById('q-list');
       document.getElementById('q-count').innerText = questions.length;
-      document.getElementById('btn-create-room').disabled = questions.length === 0;
+      document.getElementById('btn-save-quiz').disabled = questions.length === 0;
       
       if(questions.length === 0) return;
       listDiv.innerHTML = '';
       questions.forEach((q, idx) => {
         listDiv.innerHTML += `
-          <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-purple-500 flex justify-between items-center">
+          <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-purple-500 flex justify-between items-center shadow-sm">
             <div>
-              <div class="font-bold text-gray-800 text-sm mb-1">${idx + 1}. Soru</div>
-              <div class="text-gray-600 text-sm">${q.question}</div>
+              <div class="font-bold text-gray-800 text-sm">${idx + 1}. Soru</div>
+              <div class="text-gray-600 text-sm truncate max-w-md">${q.question}</div>
             </div>
-            <div class="text-xs text-gray-400 font-bold bg-gray-100 px-3 py-1 rounded-full">${q.timeLimit} sn</div>
+            <div class="text-xs text-purple-600 font-bold bg-purple-100 px-2 py-1 rounded-md">${q.timeLimit} sn</div>
           </div>
         `;
       });
     }
 
-    // --- 2. ODA KURMA VE LOBİ ---
-    document.getElementById('btn-create-room').addEventListener('click', async () => {
+    // --- YENİ: PAKETİ VERİTABANINA KAYDETME İŞLEMİ ---
+    document.getElementById('btn-save-quiz').addEventListener('click', async () => {
+      const quizName = document.getElementById('input-quiz-name').value.trim();
+      
+      if (!quizName) {
+         return alert("Lütfen bu soru paketi için bir isim girin! (Örn: Vize Hazırlık - Biyoloji)");
+      }
+      if (questions.length === 0) {
+         return alert("Paketi kaydetmek için en az 1 soru eklemelisiniz.");
+      }
+
       try {
+         // Quiz'i Firestore'a Kaydet
+         const newQuizRef = doc(collection(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH));
+         await setDoc(newQuizRef, {
+            id: newQuizRef.id,
+            name: quizName,
+            questions: questions,
+            hostId: hostId,
+            createdAt: Date.now()
+         });
+
+         alert(`"${quizName}" isimli paket başarıyla veritabanına kaydedildi!\n\nArtık "Kayıtlı Yarışmalarım" bölümünden bu yarışmayı istediğiniz zaman başlatabilirsiniz.`);
+         
+         // Formları ve listeyi temizleyip ana panele dön
+         questions = [];
+         document.getElementById('input-quiz-name').value = '';
+         updateQuestionList();
+         showScreen('dashboard');
+
+      } catch (err) {
+         console.error("Quiz kaydetme hatası:", err);
+         alert("Soru paketi kaydedilirken hata oluştu. Lütfen veritabanı kurallarınızı kontrol edin.");
+      }
+    });
+
+
+    // --- YENİ: KAYITLI PAKETLERİ YÜKLEME VE LİSTELEME ---
+    window.loadSavedQuizzes = async function() {
+       showScreen('quiz-list');
+       const container = document.getElementById('saved-quizzes-container');
+       container.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-10 font-bold text-xl">Kayıtlar Yükleniyor...</div>';
+       
+       try {
+          // Firestore'dan Kayıtlı Quizleri Çek
+          const quizzesSnapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH));
+          savedQuizzes = quizzesSnapshot.docs.map(doc => doc.data());
+          
+          if (savedQuizzes.length === 0) {
+             container.innerHTML = `
+               <div class="text-center bg-white p-10 rounded-2xl border border-gray-200 col-span-2 shadow-sm">
+                 <h3 class="text-2xl font-bold text-gray-600 mb-2">Hiç kayıtlı paketiniz yok.</h3>
+                 <p class="text-gray-500 mb-6">Sınıfa yarışma başlatabilmek için önce bir Soru Paketi oluşturup kaydetmelisiniz.</p>
+                 <button onclick="showScreen('setup')" class="bg-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition">Hemen Yeni Paket Oluştur</button>
+               </div>
+             `;
+             return;
+          }
+
+          // Kayıtlı Quizleri Ekrana Çiz
+          container.innerHTML = '';
+          // En yeni eklenen en üstte çıksın diye sıralıyoruz
+          savedQuizzes.sort((a,b) => b.createdAt - a.createdAt).forEach(quiz => {
+             const dateStr = new Date(quiz.createdAt).toLocaleDateString('tr-TR');
+             container.innerHTML += `
+               <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition flex flex-col justify-between">
+                 <div>
+                   <h3 class="text-2xl font-black text-purple-800 mb-2 truncate">${quiz.name}</h3>
+                   <div class="flex items-center space-x-4 mb-6">
+                     <span class="bg-gray-100 text-gray-600 text-sm font-bold px-3 py-1 rounded-full">${quiz.questions.length} Soru</span>
+                     <span class="text-gray-400 text-sm">Tarih: ${dateStr}</span>
+                   </div>
+                 </div>
+                 <button onclick="startRoomFromQuiz('${quiz.id}')" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold text-lg py-3 rounded-xl shadow-md transition transform hover:-translate-y-1">
+                   Bu Paket İle Sınıfı Başlat
+                 </button>
+               </div>
+             `;
+          });
+       } catch (err) {
+          console.error("Quizleri çekerken hata:", err);
+          container.innerHTML = '<div class="text-center text-red-500 font-bold col-span-2 py-10">Veriler yüklenirken bir hata oluştu.</div>';
+       }
+    };
+
+
+    // --- 2. SEÇİLEN PAKET İLE ODA KURMA VE LOBİ ---
+    window.startRoomFromQuiz = async function(quizId) {
+      try {
+        // İlgili quizi bul ve seç
+        const selectedQuiz = savedQuizzes.find(q => q.id === quizId);
+        if(!selectedQuiz) return alert("Quiz bulunamadı!");
+        
+        // Oyun için soruları bu paketten al
+        questions = selectedQuiz.questions;
+        document.getElementById('lobby-quiz-name').innerText = selectedQuiz.name;
+
+        // PIN Oluştur
         pin = Math.floor(100000 + Math.random() * 900000).toString();
         document.getElementById('display-pin').innerText = pin;
         
-        localGameState = 'lobby'; // Lobi durumuna geçtik
+        localGameState = 'lobby'; 
 
         // QR Kod için mevcut URL'yi al
         const studentUrl = window.location.href.replace('admin.html', '').replace(/\/$/, '');
         document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
         document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
 
-        // Firebase'e Oyunu Kaydet
+        // Firebase'e Oyunu Kaydet (Odayı Aç)
         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
           pin: pin, state: 'lobby', currentQuestionIndex: 0, hostId: hostId, createdAt: Date.now(), questionCount: questions.length
         });
 
-        // Öğrencileri Dinle
+        // Öğrencileri Dinle (Lobiye Katılanlar)
         onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH), (snap) => {
           const all = snap.docs.map(d => d.data());
           players = all.filter(p => p.pin === pin);
           updateLobbyUI();
           
-          // GÜNCELLEME: Sonsuz döngüyü engellemek için DOM kontrolü yerine Local State kontrolü
           if (localGameState === 'question') {
              const answeredPlayers = players.filter(p => p.currentAnswer !== null && p.currentAnswer !== undefined);
              document.getElementById('answered-count').innerText = answeredPlayers.length;
@@ -305,10 +507,10 @@
 
         showScreen('lobby');
       } catch (err) {
-        alert("Oda oluşturulurken veritabanına bağlanılamadı:\n" + err.message + "\n\nOlası Nedenler:\n1) API kısıtlaması yaptıysanız, bu dosyayı bilgisayardan (file://) değil GitHub linkinizden açmalısınız.\n2) Firestore veritabanı kurallarınız yazmaya izin vermiyor olabilir.");
-        console.error("Firestore Yazma Hatası:", err);
+        alert("Oda oluşturulurken veritabanına bağlanılamadı:\n" + err.message);
+        console.error("Oda Kurma Hatası:", err);
       }
-    });
+    };
 
     function updateLobbyUI() {
       document.getElementById('player-count').innerText = players.length;
@@ -331,7 +533,7 @@
       timeLeft = q.timeLimit;
       questionStartTime = Date.now();
       
-      localGameState = 'question'; // Soru modunu aktif et
+      localGameState = 'question'; 
 
       // UI Güncelle
       document.getElementById('live-q-text').innerText = q.question;
@@ -365,9 +567,8 @@
     async function handleTimeUp() {
       clearInterval(timerInterval);
       
-      // GÜNCELLEME: Eğer zaten sorudan çıkmışsak, puanları tekrar tekrar ÇARPMA!
       if (localGameState !== 'question') return; 
-      localGameState = 'reveal'; // Hemen kilitle ki tekrar tetiklenmesin
+      localGameState = 'reveal'; 
       
       const q = questions[currentQIndex];
       const batch = writeBatch(db);

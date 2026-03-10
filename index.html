@@ -59,10 +59,15 @@
     </div>
 
     <!-- 3. SORU/CEVAPLAMA EKRANI -->
-    <div id="screen-question" class="hidden flex-1 flex-col bg-gray-100 p-4">
+    <div id="screen-question" class="hidden flex-1 flex-col bg-gray-100 p-4 overflow-y-auto">
        <div class="flex justify-between items-center p-4 bg-white rounded-2xl shadow-sm mb-4 border border-gray-200">
          <span id="question-player-name" class="font-bold text-gray-700 text-xl truncate pr-4">İsim</span>
          <span id="question-player-score" class="font-black text-2xl bg-purple-100 text-purple-800 px-4 py-2 rounded-xl flex-shrink-0">0</span>
+      </div>
+
+      <!-- YENİ: Soru Metni Gösterge Alanı (Öğretmen izin verirse açılır) -->
+      <div id="question-text-box" class="hidden bg-white p-4 rounded-2xl shadow-sm mb-4 border border-gray-200 text-center">
+         <h3 id="student-q-text" class="text-lg font-bold text-gray-800">Soru Metni</h3>
       </div>
 
       <!-- Cevap Bekleme (Öğrenci cevapladıktan sonra) -->
@@ -74,26 +79,29 @@
 
       <!-- Renkli Butonlar -->
       <div id="question-buttons" class="flex-1 grid grid-cols-2 grid-rows-2 gap-4 pb-6">
-         <button onclick="handleAnswer(0)" class="shape-btn bg-red-600 shadow-[0_4px_0_#991b1b] rounded-3xl flex items-center justify-center transition-all border-b-4 border-black/20">
-           <svg class="w-24 h-24 fill-white drop-shadow-md" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+         <!-- Butonlar metin sığsın diye flex-col yapıldı -->
+         <button onclick="handleAnswer(0)" class="shape-btn bg-red-600 shadow-[0_4px_0_#991b1b] rounded-3xl flex flex-col items-center justify-center p-3 transition-all border-b-4 border-black/20">
+           <svg class="w-14 h-14 fill-white drop-shadow-md" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+           <span id="student-opt-0" class="hidden text-white font-bold text-sm md:text-base mt-2 px-1 text-center w-full leading-tight">Şık 1</span>
          </button>
-         <button onclick="handleAnswer(1)" class="shape-btn bg-blue-600 shadow-[0_4px_0_#1e3a8a] rounded-3xl flex items-center justify-center transition-all border-b-4 border-black/20">
-           <svg class="w-24 h-24 fill-white drop-shadow-md" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
+         <button onclick="handleAnswer(1)" class="shape-btn bg-blue-600 shadow-[0_4px_0_#1e3a8a] rounded-3xl flex flex-col items-center justify-center p-3 transition-all border-b-4 border-black/20">
+           <svg class="w-14 h-14 fill-white drop-shadow-md" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
+           <span id="student-opt-1" class="hidden text-white font-bold text-sm md:text-base mt-2 px-1 text-center w-full leading-tight">Şık 2</span>
          </button>
-         <button onclick="handleAnswer(2)" class="shape-btn bg-yellow-500 shadow-[0_4px_0_#a16207] rounded-3xl flex items-center justify-center transition-all border-b-4 border-black/20">
-           <svg class="w-24 h-24 fill-white drop-shadow-md" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+         <button onclick="handleAnswer(2)" class="shape-btn bg-yellow-500 shadow-[0_4px_0_#a16207] rounded-3xl flex flex-col items-center justify-center p-3 transition-all border-b-4 border-black/20">
+           <svg class="w-14 h-14 fill-white drop-shadow-md" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+           <span id="student-opt-2" class="hidden text-white font-bold text-sm md:text-base mt-2 px-1 text-center w-full leading-tight">Şık 3</span>
          </button>
-         <button onclick="handleAnswer(3)" class="shape-btn bg-green-600 shadow-[0_4px_0_#166534] rounded-3xl flex items-center justify-center transition-all border-b-4 border-black/20">
-           <svg class="w-24 h-24 fill-white drop-shadow-md" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+         <button onclick="handleAnswer(3)" class="shape-btn bg-green-600 shadow-[0_4px_0_#166534] rounded-3xl flex flex-col items-center justify-center p-3 transition-all border-b-4 border-black/20">
+           <svg class="w-14 h-14 fill-white drop-shadow-md" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+           <span id="student-opt-3" class="hidden text-white font-bold text-sm md:text-base mt-2 px-1 text-center w-full leading-tight">Şık 4</span>
          </button>
       </div>
     </div>
 
     <!-- 4. SONUÇ EKRANI (Doğru/Yanlış) -->
     <div id="screen-reveal" class="hidden flex-1 flex-col items-center justify-center p-8 text-white text-center transition-colors duration-500 bg-gray-500">
-      <div id="reveal-icon-wrapper" class="bg-white/20 p-6 rounded-full mb-6 shadow-inner">
-         <!-- JS ile check veya X ikonu eklenecek -->
-      </div>
+      <div id="reveal-icon-wrapper" class="bg-white/20 p-6 rounded-full mb-6 shadow-inner"></div>
       <h2 id="reveal-title" class="text-5xl font-black mb-4 drop-shadow-sm tracking-wide">SONUÇ</h2>
       <div id="reveal-points-wrapper" class="bg-black/30 px-8 py-4 rounded-2xl font-black text-4xl mt-6 border border-white/20 shadow-lg hidden">
         + <span id="reveal-points">0</span> Puan
@@ -134,27 +142,23 @@
   </div>
 
   <script type="module">
-    // Firebase Modüllerini CDN üzerinden içe aktarıyoruz (Kurulum gerektirmez!)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    /* ==========================================
-       ÖNEMLİ: KENDİ FİREBASE BİLGİLERİNİ GİR!
-       Gerçek bir sitede kullanmak için kendi Firebase projenin
-       config bilgilerini aşağıya yapıştırmalısın.
-       (Şu an platformun sağladığı test config'ini kullanıyor)
-    ============================================= */
+    /* =========================================================================
+       🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
+    ========================================================================= */
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
-  authDomain: "interaktif-yarisma.firebaseapp.com",
-  projectId: "interaktif-yarisma",
-  storageBucket: "interaktif-yarisma.firebasestorage.app",
-  messagingSenderId: "652081118487",
-  appId: "1:652081118487:web:409c5737ced7cb8377cb52"
+      authDomain: "interaktif-yarisma.firebaseapp.com",
+      projectId: "interaktif-yarisma",
+      storageBucket: "interaktif-yarisma.firebasestorage.app",
+      messagingSenderId: "652081118487",
+      appId: "1:652081118487:web:409c5737ced7cb8377cb52"
     };
     
-    // Test ortamı için otomatik config algılama
+    // Test ortamı için
     if (typeof __firebase_config !== 'undefined' && __firebase_config) {
       firebaseConfig = JSON.parse(__firebase_config);
     }
@@ -164,11 +168,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Veritabanı Yolları
     const GAMES_PATH = 'kahootGames';
     const PLAYERS_PATH = 'kahootPlayers';
 
-    // Uygulama State'i (Durumu)
     let state = {
       user: null,
       joinedPin: '',
@@ -181,7 +183,6 @@
     let unsubGame = null;
     let unsubPlayers = null;
 
-    // --- DOM ELEMENTLERİ ---
     const screens = {
       loading: document.getElementById('screen-loading'),
       join: document.getElementById('screen-join'),
@@ -219,35 +220,22 @@
     };
 
     // --- UYGULAMA MANTIĞI ---
-
-    // 1. Ekranları Yöneten Fonksiyon
     function render() {
-      // Bütün ekranları gizle
       Object.values(screens).forEach(s => {
         s.classList.remove('flex');
         s.classList.add('hidden');
-        const btnElements = document.querySelectorAll('.shape-btn');
-if (state.gameData?.currentQuestionType === 'boolean') {
-   btnElements[2].classList.add('hidden'); // Sarı gizle
-   btnElements[3].classList.add('hidden'); // Yeşil gizle
-} else {
-   btnElements[2].classList.remove('hidden'); // Sarı göster
-   btnElements[3].classList.remove('hidden'); // Yeşil göster
-}
       });
 
       const myPlayerInfo = state.players.find(p => p.id === state.user?.uid);
       const sortedPlayers = [...state.players].sort((a,b) => (b.score || 0) - (a.score || 0));
       const myRank = sortedPlayers.findIndex(p => p.id === state.user?.uid) + 1;
 
-      // Çıkış butonu görünürlüğü
       if (!state.joinedPin || state.gameData?.state === 'lobby' || state.error) {
         ui.btnExit.classList.remove('hidden');
       } else {
         ui.btnExit.classList.add('hidden');
       }
 
-      // Hata Mesajı
       if (state.error && !state.joinedPin) {
         ui.errorMsg.classList.remove('hidden');
         ui.errorText.innerText = state.error;
@@ -255,7 +243,6 @@ if (state.gameData?.currentQuestionType === 'boolean') {
         ui.errorMsg.classList.add('hidden');
       }
 
-      // Yönlendirme Mantığı
       if (!state.user) {
         screens.loading.classList.remove('hidden');
         screens.loading.classList.add('flex');
@@ -275,6 +262,36 @@ if (state.gameData?.currentQuestionType === 'boolean') {
         ui.qName.innerText = myPlayerInfo?.name || 'Oyuncu';
         ui.qScore.innerText = myPlayerInfo?.score || 0;
         
+        // YENİ: Öğretmen metni göster seçeneğini işaretlediyse
+        if (state.gameData.showTextOnStudent) {
+           document.getElementById('question-text-box').classList.remove('hidden');
+           document.getElementById('student-q-text').innerText = state.gameData.currentQuestionText || '';
+           for (let i = 0; i < 4; i++) {
+               const optSpan = document.getElementById(`student-opt-${i}`);
+               if (state.gameData.currentQuestionOptions && state.gameData.currentQuestionOptions[i]) {
+                  optSpan.classList.remove('hidden');
+                  optSpan.innerText = state.gameData.currentQuestionOptions[i];
+               } else {
+                  optSpan.classList.add('hidden');
+               }
+           }
+        } else {
+           document.getElementById('question-text-box').classList.add('hidden');
+           for (let i = 0; i < 4; i++) {
+               document.getElementById(`student-opt-${i}`).classList.add('hidden');
+           }
+        }
+
+        // YENİ: Doğru/Yanlış soru tiplerinde 3. ve 4. şıkları gizle
+        const btnElements = document.querySelectorAll('.shape-btn');
+        if (state.gameData?.currentQuestionType === 'boolean') {
+           btnElements[2].classList.add('hidden');
+           btnElements[3].classList.add('hidden');
+        } else {
+           btnElements[2].classList.remove('hidden');
+           btnElements[3].classList.remove('hidden');
+        }
+
         if (state.localHasAnswered) {
           ui.qWaiting.classList.remove('hidden');
           ui.qWaiting.classList.add('flex');
@@ -283,6 +300,7 @@ if (state.gameData?.currentQuestionType === 'boolean') {
           ui.qWaiting.classList.add('hidden');
           ui.qWaiting.classList.remove('flex');
           ui.qButtons.classList.remove('hidden');
+          ui.qButtons.classList.add('grid');
         }
       } 
       else if (state.gameData?.state === 'reveal') {
@@ -318,7 +336,6 @@ if (state.gameData?.currentQuestionType === 'boolean') {
       }
     }
 
-    // 2. Başlangıç (Firebase Auth)
     async function initAuth() {
       try {
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -338,12 +355,10 @@ if (state.gameData?.currentQuestionType === 'boolean') {
 
     initAuth();
 
-    // 3. Dinleyicileri Başlat/Durdur
     function startListeners(pin) {
       if(unsubGame) unsubGame();
       if(unsubPlayers) unsubPlayers();
 
-      // Tahtayı dinle
       unsubGame = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -355,7 +370,6 @@ if (state.gameData?.currentQuestionType === 'boolean') {
         render();
       });
 
-      // Rakipleri dinle
       unsubPlayers = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH), (snap) => {
         const all = snap.docs.map(d => d.data());
         state.players = all.filter(p => p.pin === pin);
@@ -363,7 +377,6 @@ if (state.gameData?.currentQuestionType === 'boolean') {
       });
     }
 
-    // 4. Etkileşim Fonksiyonları
     document.getElementById('join-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       if(!state.user) return;
@@ -393,11 +406,10 @@ if (state.gameData?.currentQuestionType === 'boolean') {
       }
     });
 
-    // Global scope'a çıkarıyoruz ki HTML içinden onclick ile çağrılabilsin
     window.handleAnswer = async function(shapeId) {
       if (state.localHasAnswered || state.gameData?.state !== 'question' || !state.user) return;
       state.localHasAnswered = true;
-      render(); // Hemen bekleme ekranını göster
+      render(); 
 
       await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, state.user.uid), {
          currentAnswer: shapeId,
@@ -417,9 +429,6 @@ if (state.gameData?.currentQuestionType === 'boolean') {
 
     ui.btnExit.addEventListener('click', () => handleExit());
     document.getElementById('btn-restart').addEventListener('click', () => handleExit());
-
   </script>
 </body>
-
 </html>
-

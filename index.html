@@ -75,7 +75,7 @@
          <span id="question-player-score" class="font-black text-xl sm:text-2xl bg-purple-100 text-purple-800 px-3 sm:px-4 py-1 sm:py-2 rounded-lg flex-shrink-0">0</span>
       </div>
 
-      <!-- Soru Metni Gösterge Alanı (Öğretmen İzin Verirse) -->
+      <!-- Soru Metni Gösterge Alanı -->
       <div id="question-text-box" class="hidden bg-white p-3 sm:p-4 rounded-xl shadow-sm mb-3 sm:mb-4 border border-gray-200 text-center flex-shrink-0 max-h-32 overflow-y-auto">
          <h3 id="student-q-text" class="text-base sm:text-lg font-bold text-gray-800">Soru Metni</h3>
       </div>
@@ -87,23 +87,32 @@
          <p class="text-base sm:text-xl font-medium">Tahtadaki sürenin bitmesi bekleniyor...</p>
       </div>
 
-      <!-- Renkli Butonlar (Flex-1 sayesinde tüm boşluğu doldurur) -->
-      <div id="question-buttons" class="flex-1 grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4 min-h-[250px] pb-2">
-         <button onclick="handleAnswer(0)" class="shape-btn bg-red-600 shadow-[0_4px_0_#991b1b] rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-2 sm:p-3 transition-all border-b-4 border-black/20 overflow-hidden w-full h-full gap-1 sm:gap-2">
-           <svg class="w-10 h-10 sm:w-12 sm:h-12 fill-white drop-shadow-md flex-shrink-0" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
-           <span id="student-opt-0" class="hidden text-white font-bold text-xs sm:text-sm px-1 text-center w-full leading-tight line-clamp-3 break-words">Şık 1</span>
+      <!-- Renkli Butonlar -->
+      <!-- Güncelleme: flex-col kullanılarak alt alta sıralanıyor -->
+      <div id="question-buttons" class="flex-1 flex flex-col gap-3 pb-2 overflow-y-auto">
+         <button onclick="handleAnswer(0)" class="shape-btn bg-red-600 shadow-[0_4px_0_#991b1b] rounded-xl flex items-center p-3 transition-all border-b-4 border-black/20 w-full min-h-[60px]">
+           <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 mr-3">
+             <svg class="w-8 h-8 fill-white drop-shadow-md" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
+           </div>
+           <span id="student-opt-0" class="hidden text-white font-bold text-sm sm:text-base text-left leading-tight break-words flex-1 pr-2">Şık 1</span>
          </button>
-         <button onclick="handleAnswer(1)" class="shape-btn bg-blue-600 shadow-[0_4px_0_#1e3a8a] rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-2 sm:p-3 transition-all border-b-4 border-black/20 overflow-hidden w-full h-full gap-1 sm:gap-2">
-           <svg class="w-10 h-10 sm:w-12 sm:h-12 fill-white drop-shadow-md flex-shrink-0" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
-           <span id="student-opt-1" class="hidden text-white font-bold text-xs sm:text-sm px-1 text-center w-full leading-tight line-clamp-3 break-words">Şık 2</span>
+         <button onclick="handleAnswer(1)" class="shape-btn bg-blue-600 shadow-[0_4px_0_#1e3a8a] rounded-xl flex items-center p-3 transition-all border-b-4 border-black/20 w-full min-h-[60px]">
+           <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 mr-3">
+             <svg class="w-8 h-8 fill-white drop-shadow-md" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
+           </div>
+           <span id="student-opt-1" class="hidden text-white font-bold text-sm sm:text-base text-left leading-tight break-words flex-1 pr-2">Şık 2</span>
          </button>
-         <button onclick="handleAnswer(2)" class="shape-btn bg-yellow-500 shadow-[0_4px_0_#a16207] rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-2 sm:p-3 transition-all border-b-4 border-black/20 overflow-hidden w-full h-full gap-1 sm:gap-2">
-           <svg class="w-10 h-10 sm:w-12 sm:h-12 fill-white drop-shadow-md flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
-           <span id="student-opt-2" class="hidden text-white font-bold text-xs sm:text-sm px-1 text-center w-full leading-tight line-clamp-3 break-words">Şık 3</span>
+         <button onclick="handleAnswer(2)" class="shape-btn bg-yellow-500 shadow-[0_4px_0_#a16207] rounded-xl flex items-center p-3 transition-all border-b-4 border-black/20 w-full min-h-[60px]">
+           <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 mr-3">
+             <svg class="w-8 h-8 fill-white drop-shadow-md" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+           </div>
+           <span id="student-opt-2" class="hidden text-white font-bold text-sm sm:text-base text-left leading-tight break-words flex-1 pr-2">Şık 3</span>
          </button>
-         <button onclick="handleAnswer(3)" class="shape-btn bg-green-600 shadow-[0_4px_0_#166534] rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-2 sm:p-3 transition-all border-b-4 border-black/20 overflow-hidden w-full h-full gap-1 sm:gap-2">
-           <svg class="w-10 h-10 sm:w-12 sm:h-12 fill-white drop-shadow-md flex-shrink-0" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-           <span id="student-opt-3" class="hidden text-white font-bold text-xs sm:text-sm px-1 text-center w-full leading-tight line-clamp-3 break-words">Şık 4</span>
+         <button onclick="handleAnswer(3)" class="shape-btn bg-green-600 shadow-[0_4px_0_#166534] rounded-xl flex items-center p-3 transition-all border-b-4 border-black/20 w-full min-h-[60px]">
+           <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 mr-3">
+             <svg class="w-8 h-8 fill-white drop-shadow-md" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+           </div>
+           <span id="student-opt-3" class="hidden text-white font-bold text-sm sm:text-base text-left leading-tight break-words flex-1 pr-2">Şık 4</span>
          </button>
       </div>
     </div>
@@ -293,12 +302,11 @@
            }
         }
 
-        // Doğru/Yanlış soru tiplerinde son 2 butonu gizle ve flex yapısına uyum sağla
+        // Doğru/Yanlış soru tiplerinde son 2 butonu gizle
         const btnElements = document.querySelectorAll('.shape-btn');
         if (state.gameData?.currentQuestionType === 'boolean') {
            btnElements[2].classList.add('hidden');
            btnElements[3].classList.add('hidden');
-           // Grid'i 2 satır yerine tek satır olacak şekilde güncelle (daha büyük durmaları için isterseniz)
         } else {
            btnElements[2].classList.remove('hidden');
            btnElements[3].classList.remove('hidden');
@@ -308,12 +316,12 @@
           ui.qWaiting.classList.remove('hidden');
           ui.qWaiting.classList.add('flex');
           ui.qButtons.classList.add('hidden');
-          ui.qButtons.classList.remove('grid');
+          ui.qButtons.classList.remove('flex');
         } else {
           ui.qWaiting.classList.add('hidden');
           ui.qWaiting.classList.remove('flex');
           ui.qButtons.classList.remove('hidden');
-          ui.qButtons.classList.add('grid');
+          ui.qButtons.classList.add('flex');
         }
       } 
       else if (state.gameData?.state === 'reveal') {

@@ -70,8 +70,9 @@
     <!-- 3. SORU/CEVAPLAMA EKRANI -->
     <div id="screen-question" class="hidden flex-1 flex-col bg-gray-100 p-4">
        <!-- Üst Bilgi Barı -->
-       <div class="flex justify-between items-center p-3 sm:p-4 bg-white rounded-xl shadow-sm mb-3 sm:mb-4 border border-gray-200 flex-shrink-0 w-full overflow-hidden">
+       <div class="flex justify-between items-center p-3 sm:p-4 bg-white rounded-xl shadow-sm mb-3 sm:mb-4 border border-gray-200 flex-shrink-0 w-full overflow-hidden relative">
          <span id="question-player-name" class="font-bold text-gray-700 text-lg sm:text-xl truncate pr-4">İsim</span>
+         <span id="student-q-info-global" class="absolute left-1/2 transform -translate-x-1/2 font-bold text-gray-500 text-sm sm:text-base whitespace-nowrap">Soru 1/?</span>
          <span id="question-player-score" class="font-black text-xl sm:text-2xl bg-purple-100 text-purple-800 px-3 sm:px-4 py-1 sm:py-2 rounded-lg flex-shrink-0">0</span>
       </div>
 
@@ -281,6 +282,11 @@
         ui.qName.innerText = myPlayerInfo?.name || 'Oyuncu';
         ui.qScore.innerText = myPlayerInfo?.score || 0;
         
+        // Soru numarasını güncelle
+        const qIndex = (state.gameData.currentQuestionIndex || 0) + 1;
+        const qCount = state.gameData.questionCount || '?';
+        document.getElementById('student-q-info-global').innerText = `Soru ${qIndex} / ${qCount}`;
+        
         // Öğretmen izin verdiyse soru metnini ve şıkları göster
         if (state.gameData.showTextOnStudent) {
            document.getElementById('question-text-box').classList.remove('hidden');
@@ -403,7 +409,7 @@
       state.error = '';
       
       const pin = document.getElementById('input-pin').value;
-      const name = document.getElementById('input-name').value;
+      const name = document.getElementById('input-name').value.trim();
 
       try {
         const gameDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin));
@@ -411,6 +417,19 @@
           state.error = "Hatalı PIN veya oyun çoktan başlamış!";
           render();
           return;
+        }
+
+        // Aynı isimde kullanıcı var mı kontrolü
+        const playersSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH));
+        const isDuplicate = playersSnap.docs.find(d => {
+            const p = d.data();
+            return p.pin === pin && p.name.toLowerCase() === name.toLowerCase() && p.id !== state.user.uid;
+        });
+
+        if (isDuplicate) {
+            state.error = "Bu isim oyunda kullanılıyor. Lütfen başka bir isim girin.";
+            render();
+            return;
         }
 
         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, state.user.uid), {

@@ -89,7 +89,7 @@
     <div class="flex flex-col lg:flex-row gap-6 sm:gap-8 max-w-7xl mx-auto w-full">
       <!-- Soru Ekleme Formu -->
       <div class="flex-[2] bg-white p-5 sm:p-8 rounded-2xl shadow-lg border border-gray-200">
-        <h2 class="text-xl sm:text-2xl font-bold mb-6 text-purple-700">Yeni Soru Ekle</h2>
+        <h2 class="text-xl sm:text-2xl font-bold mb-6 text-purple-700" id="form-title">Yeni Soru Ekle</h2>
         <form id="form-add-q" class="space-y-6">
            <div>
              <label class="block text-sm sm:text-base text-gray-700 font-bold mb-2">Soru Tipi</label>
@@ -139,7 +139,10 @@
                   <option value="60">60 Saniye</option>
                 </select>
               </div>
-              <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-md transition w-full sm:w-auto">Listeye Ekle +</button>
+              <div class="flex gap-2 w-full sm:w-auto">
+                 <button type="button" id="btn-cancel-edit" onclick="cancelEdit()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-xl font-bold text-lg shadow-md transition w-full sm:w-auto hidden">İptal</button>
+                 <button type="submit" id="btn-submit-q" class="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-md transition w-full sm:w-auto">Listeye Ekle +</button>
+              </div>
            </div>
         </form>
       </div>
@@ -202,7 +205,7 @@
     <div class="flex-1 p-6 sm:p-12 flex flex-col">
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 sm:mb-8">
         <div class="flex items-center space-x-3 text-xl sm:text-3xl font-bold bg-purple-900 px-6 py-3 sm:px-8 sm:py-4 rounded-full w-full sm:w-auto justify-center">
-          <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          <svg class="w-8 h-8 sm:w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
           <span><span id="player-count">0</span> Yarışmacı</span>
         </div>
         <button id="btn-start-game" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-8 py-4 sm:px-12 sm:py-5 rounded-2xl font-bold text-xl sm:text-3xl shadow-xl transition transform hover:scale-105" disabled>Başlat</button>
@@ -215,8 +218,8 @@
 
   <!-- 5. SORU EKRANI -->
   <div id="screen-question" class="flex-1 flex flex-col items-center p-4 sm:p-8 bg-gray-50 hidden overflow-y-auto">
-    <div class="text-center mb-2 sm:mb-4">
-      <span id="live-q-count" class="bg-purple-200 text-purple-800 font-bold px-4 py-1 rounded-full text-sm sm:text-lg">Soru 1 / ?</span>
+    <div class="text-center mb-2 sm:mb-4 mt-2">
+      <span id="live-q-count" class="bg-purple-200 text-purple-800 font-bold px-4 py-1.5 rounded-full text-sm sm:text-lg">Soru 1 / ?</span>
     </div>
     <h2 id="live-q-text" class="text-2xl sm:text-4xl md:text-5xl font-black text-center bg-white p-6 sm:p-10 rounded-2xl shadow-lg w-full max-w-6xl mb-6 sm:mb-12 border-t-8 border-purple-600 text-gray-800 break-words whitespace-normal">Soru Metni</h2>
     
@@ -244,7 +247,7 @@
     </div>
     
     <div class="absolute bottom-4 sm:bottom-6 left-4 sm:left-8 text-base sm:text-2xl font-bold text-gray-600 flex items-center bg-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl shadow-md">
-       <svg class="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+       <svg class="w-6 h-6 sm:w-8 h-8 mr-2 sm:mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
        Cevaplayan: <span id="answered-count" class="ml-1">0</span> / <span id="total-players-q">0</span>
     </div>
   </div>
@@ -287,6 +290,9 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+    /* =========================================================================
+       🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
+    ========================================================================= */
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
       authDomain: "interaktif-yarisma.firebaseapp.com",
@@ -323,6 +329,7 @@
 
     let savedQuizzes = []; 
     let editingQuizId = null; // YENİ: Düzenlenen paketin ID'si
+    let editingQuestionIdx = -1; // YENİ: Düzenlenen sorunun index'i
 
     window.showScreen = function(screenId) {
       const screens = ['login', 'dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
@@ -386,10 +393,15 @@
        } else {
            opt2Container.classList.remove('hidden');
            opt3Container.classList.remove('hidden');
-           opt0Input.value = "";
            opt0Input.readOnly = false;
-           opt1Input.value = "";
            opt1Input.readOnly = false;
+           
+           // Sadece eğer şu anki değer Doğru/Yanlış ise boşaltalım, edit modundayken içini silmesin
+           if (opt0Input.value === "Doğru" && opt1Input.value === "Yanlış") {
+               opt0Input.value = "";
+               opt1Input.value = "";
+           }
+           
            opt2Input.required = true;
            opt3Input.required = true;
        }
@@ -415,7 +427,18 @@
       const correctIdx = parseInt(document.querySelector('input[name="correctAnswer"]:checked').value);
       const tLimit = parseInt(document.getElementById('q-time').value);
 
-      questions.push({ question: qText, options: opts, correctAnswerIndex: correctIdx, timeLimit: tLimit, type: qType });
+      const newQuestion = { question: qText, options: opts, correctAnswerIndex: correctIdx, timeLimit: tLimit, type: qType };
+
+      if (editingQuestionIdx > -1) {
+          questions[editingQuestionIdx] = newQuestion;
+          editingQuestionIdx = -1;
+          document.getElementById('btn-submit-q').innerText = 'Listeye Ekle +';
+          document.getElementById('btn-cancel-edit').classList.add('hidden');
+          document.getElementById('form-title').innerText = 'Yeni Soru Ekle';
+      } else {
+          questions.push(newQuestion);
+      }
+
       updateQuestionList();
       e.target.reset(); 
       document.querySelector('input[name="correctAnswer"][value="0"]').checked = true; 
@@ -425,35 +448,81 @@
       }
     });
 
+    // YENİ: Eklenen soruyu sil
     window.deleteQuestion = function(idx) {
-        questions.splice(idx, 1);
-        updateQuestionList();
+        if (confirm("Bu soruyu silmek istediğinize emin misiniz?")) {
+            questions.splice(idx, 1);
+            if (editingQuestionIdx === idx) cancelEdit(); // Düzenleneni siliyorsa iptal et
+            updateQuestionList();
+        }
     };
 
+    // YENİ: Soruların sırasını değiştir
     window.moveQuestion = function(idx, dir) {
         if (idx + dir < 0 || idx + dir >= questions.length) return;
         const temp = questions[idx];
         questions[idx] = questions[idx + dir];
         questions[idx + dir] = temp;
+        if (editingQuestionIdx === idx) cancelEdit(); // Taşıma yapılıyorsa düzenleme iptal
         updateQuestionList();
     };
 
+    // YENİ: Soruyu düzenlemek için forma yükle
+    window.loadQuestionForEdit = function(idx) {
+        const q = questions[idx];
+        editingQuestionIdx = idx;
+
+        document.getElementById('form-title').innerText = `${idx + 1}. Soruyu Düzenle`;
+        document.getElementById('q-text').value = q.question;
+        document.getElementById('q-type').value = q.type || 'multiple';
+        document.getElementById('q-type').dispatchEvent(new Event('change'));
+
+        document.getElementById('q-opt-0').value = q.options[0] || '';
+        document.getElementById('q-opt-1').value = q.options[1] || '';
+        if (q.type !== 'boolean') {
+            document.getElementById('q-opt-2').value = q.options[2] || '';
+            document.getElementById('q-opt-3').value = q.options[3] || '';
+        }
+
+        document.querySelector(`input[name="correctAnswer"][value="${q.correctAnswerIndex}"]`).checked = true;
+        document.getElementById('q-time').value = q.timeLimit;
+
+        document.getElementById('btn-submit-q').innerText = 'Soruyu Güncelle';
+        document.getElementById('btn-cancel-edit').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Form en üstte olduğu için yukarı kaydır
+    };
+
+    // YENİ: Soru düzenlemeyi iptal et
+    window.cancelEdit = function() {
+        editingQuestionIdx = -1;
+        document.getElementById('form-add-q').reset();
+        document.querySelector('input[name="correctAnswer"][value="0"]').checked = true; 
+        document.getElementById('q-type').dispatchEvent(new Event('change'));
+        document.getElementById('btn-submit-q').innerText = 'Listeye Ekle +';
+        document.getElementById('btn-cancel-edit').classList.add('hidden');
+        document.getElementById('form-title').innerText = 'Yeni Soru Ekle';
+    };
+
+    // YENİ: Tümüyle yeni bir paket oluşturma menüsünü aç
     window.startNewQuizSetup = function() {
         editingQuizId = null;
         questions = [];
         document.getElementById('input-quiz-name').value = '';
         document.getElementById('input-show-text').checked = false;
+        cancelEdit();
         updateQuestionList();
         showScreen('setup');
     };
 
+    // YENİ: Var olan paketi düzenlemek için aç
     window.editQuiz = function(quizId) {
         const quiz = savedQuizzes.find(q => q.id === quizId);
         if(!quiz) return;
         editingQuizId = quiz.id;
-        questions = [...quiz.questions];
+        questions = [...quiz.questions]; // Deep copy gibi yapalım ki iptal edersek orijinal bozulmasın
         document.getElementById('input-quiz-name').value = quiz.name;
         document.getElementById('input-show-text').checked = quiz.showTextOnStudent || false;
+        cancelEdit();
         updateQuestionList();
         showScreen('setup');
     };
@@ -464,7 +533,11 @@
       document.getElementById('btn-save-quiz').disabled = questions.length === 0;
       document.getElementById('btn-save-and-start').disabled = questions.length === 0;
       
-      if(questions.length === 0) return;
+      if(questions.length === 0) {
+         listDiv.innerHTML = '<div class="text-gray-500 text-center mt-10 italic">Henüz soru eklenmedi.</div>';
+         return;
+      }
+      
       listDiv.innerHTML = '';
       questions.forEach((q, idx) => {
         listDiv.innerHTML += `
@@ -484,6 +557,9 @@
                  </button>
                  <button type="button" onclick="moveQuestion(${idx}, 1)" class="p-1.5 bg-gray-200 hover:bg-gray-300 rounded text-gray-600 transition ${idx === questions.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" title="Aşağı Taşı">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                 </button>
+                 <button type="button" onclick="loadQuestionForEdit(${idx})" class="p-1.5 bg-blue-100 hover:bg-blue-200 rounded text-blue-600 transition" title="Soruyu Düzenle">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                  </button>
                  <button type="button" onclick="deleteQuestion(${idx})" class="p-1.5 bg-red-100 hover:bg-red-200 rounded text-red-600 transition" title="Soruyu Sil">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -510,6 +586,7 @@
 
       try {
          if (editingQuizId) {
+             // Var olan paketi güncelle
              const quizRef = doc(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH, editingQuizId);
              await updateDoc(quizRef, {
                 name: quizName,
@@ -517,6 +594,7 @@
                 showTextOnStudent: showText
              });
              
+             // Yerel diziyi de güncelle
              const qIdx = savedQuizzes.findIndex(q => q.id === editingQuizId);
              if (qIdx > -1) {
                  savedQuizzes[qIdx].name = quizName;
@@ -525,6 +603,7 @@
              }
              return editingQuizId;
          } else {
+             // Yeni paket oluştur
              const newQuizRef = doc(collection(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH));
              await setDoc(newQuizRef, {
                 id: newQuizRef.id,
@@ -556,6 +635,7 @@
        const savedId = await saveQuizToDB();
        if (savedId) {
            alert("Paket başarıyla veritabanına kaydedildi!");
+           cancelEdit();
            questions = [];
            document.getElementById('input-quiz-name').value = '';
            document.getElementById('input-show-text').checked = false;
@@ -567,6 +647,7 @@
     document.getElementById('btn-save-and-start').addEventListener('click', async () => {
        const savedId = await saveQuizToDB();
        if (savedId) {
+           cancelEdit();
            questions = [];
            document.getElementById('input-quiz-name').value = '';
            document.getElementById('input-show-text').checked = false;
@@ -589,7 +670,7 @@
                <div class="text-center bg-white p-6 sm:p-10 rounded-2xl border border-gray-200 col-span-1 md:col-span-2 shadow-sm break-words">
                  <h3 class="text-xl sm:text-2xl font-bold text-gray-600 mb-2">Hiç kayıtlı paketiniz yok.</h3>
                  <p class="text-gray-500 mb-6 text-sm sm:text-base">Sınıfa yarışma başlatabilmek için önce bir Soru Paketi oluşturup kaydetmelisiniz.</p>
-                 <button onclick="showScreen('setup')" class="bg-purple-600 text-white px-6 sm:px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition w-full sm:w-auto">Hemen Yeni Paket Oluştur</button>
+                 <button onclick="startNewQuizSetup()" class="bg-purple-600 text-white px-6 sm:px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition w-full sm:w-auto">Hemen Yeni Paket Oluştur</button>
                </div>
              `;
              return;

@@ -72,6 +72,7 @@
        <!-- Üst Bilgi Barı -->
        <div class="flex justify-between items-center p-3 sm:p-4 bg-white rounded-xl shadow-sm mb-3 sm:mb-4 border border-gray-200 flex-shrink-0 w-full overflow-hidden relative">
          <span id="question-player-name" class="font-bold text-gray-700 text-lg sm:text-xl truncate pr-4">İsim</span>
+         <!-- Soru Sayacı -->
          <span id="student-q-info-global" class="absolute left-1/2 transform -translate-x-1/2 font-bold text-gray-500 text-sm sm:text-base whitespace-nowrap">Soru 1/?</span>
          <span id="question-player-score" class="font-black text-xl sm:text-2xl bg-purple-100 text-purple-800 px-3 sm:px-4 py-1 sm:py-2 rounded-lg flex-shrink-0">0</span>
       </div>
@@ -163,9 +164,10 @@
   </div>
 
   <script type="module">
+    // DİKKAT: getDocs modülü import listesine eklendi!
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     /* =========================================================================
        🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
@@ -179,7 +181,6 @@
       appId: "1:652081118487:web:409c5737ced7cb8377cb52"
     };
     
-    // Canvas test ortamı uyumluluğu
     if (typeof __firebase_config !== 'undefined' && __firebase_config) {
       firebaseConfig = JSON.parse(__firebase_config);
     }
@@ -282,12 +283,10 @@
         ui.qName.innerText = myPlayerInfo?.name || 'Oyuncu';
         ui.qScore.innerText = myPlayerInfo?.score || 0;
         
-        // Soru numarasını güncelle
         const qIndex = (state.gameData.currentQuestionIndex || 0) + 1;
         const qCount = state.gameData.questionCount || '?';
         document.getElementById('student-q-info-global').innerText = `Soru ${qIndex} / ${qCount}`;
         
-        // Öğretmen izin verdiyse soru metnini ve şıkları göster
         if (state.gameData.showTextOnStudent) {
            document.getElementById('question-text-box').classList.remove('hidden');
            document.getElementById('student-q-text').innerText = state.gameData.currentQuestionText || '';
@@ -307,7 +306,6 @@
            }
         }
 
-        // Doğru/Yanlış soru tiplerinde son 2 butonu gizle
         const btnElements = document.querySelectorAll('.shape-btn');
         if (state.gameData?.currentQuestionType === 'boolean') {
            btnElements[2].classList.add('hidden');
@@ -419,7 +417,7 @@
           return;
         }
 
-        // Aynı isimde kullanıcı var mı kontrolü
+        // İSİM ÇAKIŞMA KONTROLÜ
         const playersSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH));
         const isDuplicate = playersSnap.docs.find(d => {
             const p = d.data();
@@ -440,7 +438,8 @@
         startListeners(pin);
         render();
       } catch (err) {
-        state.error = "Bağlantı hatası oluştu.";
+        console.error("Giriş Hatası:", err);
+        state.error = "Bağlantı hatası oluştu: " + err.message;
         render();
       }
     });

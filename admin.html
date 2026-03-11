@@ -179,7 +179,7 @@
   <!-- 4. LOBİ EKRANI -->
   <!-- ============================================== -->
   <div id="screen-lobby" class="flex-1 flex flex-col bg-purple-800 text-white hidden relative">
-    <div class="absolute top-4 right-4 z-10"><button onclick="showScreen('dashboard')" class="bg-white/20 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-bold hover:bg-white/30 transition text-sm sm:text-base">Çık</button></div>
+    <div class="absolute top-4 right-4 z-10"><button onclick="closeRoom()" class="bg-white/20 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-bold hover:bg-white/30 transition text-sm sm:text-base">Odayı Kapat / Çık</button></div>
     <div class="p-6 sm:p-8 text-center bg-white text-black mt-16 sm:mt-10 mx-auto rounded-xl shadow-2xl max-w-5xl w-[90%] sm:w-full border-b-8 border-purple-900 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-16">
       
       <!-- QR KOD -->
@@ -282,7 +282,7 @@
     <div id="podium-container" class="flex items-end justify-center space-x-2 sm:space-x-6 h-60 sm:h-80 w-full">
        <!-- Podyum JS ile eklenecek -->
     </div>
-    <button onclick="showScreen('dashboard')" class="mt-12 sm:mt-16 bg-white text-purple-900 px-8 py-3 sm:px-10 sm:py-4 rounded-full font-bold text-xl sm:text-2xl hover:bg-gray-100 shadow-lg transition text-center break-words w-full sm:w-auto">Ana Panele Dön</button>
+    <button onclick="closeRoom()" class="mt-12 sm:mt-16 bg-white text-purple-900 px-8 py-3 sm:px-10 sm:py-4 rounded-full font-bold text-xl sm:text-2xl hover:bg-gray-100 shadow-lg transition text-center break-words w-full sm:w-auto">Ana Panele Dön</button>
   </div>
 
   <script type="module">
@@ -510,6 +510,20 @@
         cancelEdit();
         updateQuestionList();
         showScreen('setup');
+    };
+
+    // YENİ EKLENEN FONKSİYON: Odayı Veritabanından Silip Kapatma
+    window.closeRoom = async function() {
+        if (pin) {
+            try {
+                // Veritabanından odayı sil. Bu işlem tüm öğrencileri anında atacaktır.
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin));
+            } catch(e) {
+                console.error("Oda silinirken hata:", e);
+            }
+        }
+        pin = ''; // PIN'i sıfırla
+        showScreen('dashboard'); // Ana panele dön
     };
 
     window.editQuiz = function(quizId) {

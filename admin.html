@@ -44,7 +44,7 @@
 
     <div class="flex flex-col md:flex-row gap-6 sm:gap-8 max-w-4xl w-full">
       <!-- Seçenek 1: Soru Oluştur -->
-      <button onclick="showScreen('setup')" class="flex-1 bg-white p-8 sm:p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-purple-500 group">
+      <button onclick="startNewQuizSetup()" class="flex-1 bg-white p-8 sm:p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-purple-500 group">
         <div class="bg-purple-100 p-6 rounded-full mb-6 group-hover:bg-purple-200 transition">
           <svg class="w-12 h-12 sm:w-16 sm:h-16 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
         </div>
@@ -215,6 +215,9 @@
 
   <!-- 5. SORU EKRANI -->
   <div id="screen-question" class="flex-1 flex flex-col items-center p-4 sm:p-8 bg-gray-50 hidden overflow-y-auto">
+    <div class="text-center mb-2 sm:mb-4">
+      <span id="live-q-count" class="bg-purple-200 text-purple-800 font-bold px-4 py-1 rounded-full text-sm sm:text-lg">Soru 1 / ?</span>
+    </div>
     <h2 id="live-q-text" class="text-2xl sm:text-4xl md:text-5xl font-black text-center bg-white p-6 sm:p-10 rounded-2xl shadow-lg w-full max-w-6xl mb-6 sm:mb-12 border-t-8 border-purple-600 text-gray-800 break-words whitespace-normal">Soru Metni</h2>
     
     <div class="flex-1 flex items-center justify-center w-full min-h-[120px] sm:min-h-[200px]">
@@ -319,6 +322,7 @@
     let localGameState = 'login'; 
 
     let savedQuizzes = []; 
+    let editingQuizId = null; // YENİ: Düzenlenen paketin ID'si
 
     window.showScreen = function(screenId) {
       const screens = ['login', 'dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
@@ -421,6 +425,39 @@
       }
     });
 
+    window.deleteQuestion = function(idx) {
+        questions.splice(idx, 1);
+        updateQuestionList();
+    };
+
+    window.moveQuestion = function(idx, dir) {
+        if (idx + dir < 0 || idx + dir >= questions.length) return;
+        const temp = questions[idx];
+        questions[idx] = questions[idx + dir];
+        questions[idx + dir] = temp;
+        updateQuestionList();
+    };
+
+    window.startNewQuizSetup = function() {
+        editingQuizId = null;
+        questions = [];
+        document.getElementById('input-quiz-name').value = '';
+        document.getElementById('input-show-text').checked = false;
+        updateQuestionList();
+        showScreen('setup');
+    };
+
+    window.editQuiz = function(quizId) {
+        const quiz = savedQuizzes.find(q => q.id === quizId);
+        if(!quiz) return;
+        editingQuizId = quiz.id;
+        questions = [...quiz.questions];
+        document.getElementById('input-quiz-name').value = quiz.name;
+        document.getElementById('input-show-text').checked = quiz.showTextOnStudent || false;
+        updateQuestionList();
+        showScreen('setup');
+    };
+
     function updateQuestionList() {
       const listDiv = document.getElementById('q-list');
       document.getElementById('q-count').innerText = questions.length;
@@ -439,7 +476,20 @@
               </div>
               <div class="text-gray-600 text-sm break-words whitespace-normal line-clamp-3">${q.question}</div>
             </div>
-            <div class="text-xs text-purple-600 font-bold bg-purple-100 px-3 py-1.5 rounded-md self-start sm:self-auto flex-shrink-0">${q.timeLimit} sn</div>
+            <div class="flex flex-col items-end gap-2 flex-shrink-0">
+               <div class="text-xs text-purple-600 font-bold bg-purple-100 px-3 py-1.5 rounded-md">${q.timeLimit} sn</div>
+               <div class="flex items-center gap-1 mt-1">
+                 <button type="button" onclick="moveQuestion(${idx}, -1)" class="p-1.5 bg-gray-200 hover:bg-gray-300 rounded text-gray-600 transition ${idx === 0 ? 'opacity-30 cursor-not-allowed' : ''}" title="Yukarı Taşı">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                 </button>
+                 <button type="button" onclick="moveQuestion(${idx}, 1)" class="p-1.5 bg-gray-200 hover:bg-gray-300 rounded text-gray-600 transition ${idx === questions.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" title="Aşağı Taşı">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                 </button>
+                 <button type="button" onclick="deleteQuestion(${idx})" class="p-1.5 bg-red-100 hover:bg-red-200 rounded text-red-600 transition" title="Soruyu Sil">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                 </button>
+               </div>
+            </div>
           </div>
         `;
       });
@@ -459,26 +509,42 @@
       }
 
       try {
-         const newQuizRef = doc(collection(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH));
-         await setDoc(newQuizRef, {
-            id: newQuizRef.id,
-            name: quizName,
-            questions: questions,
-            showTextOnStudent: showText,
-            hostId: hostId,
-            createdAt: Date.now()
-         });
+         if (editingQuizId) {
+             const quizRef = doc(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH, editingQuizId);
+             await updateDoc(quizRef, {
+                name: quizName,
+                questions: questions,
+                showTextOnStudent: showText
+             });
+             
+             const qIdx = savedQuizzes.findIndex(q => q.id === editingQuizId);
+             if (qIdx > -1) {
+                 savedQuizzes[qIdx].name = quizName;
+                 savedQuizzes[qIdx].questions = [...questions];
+                 savedQuizzes[qIdx].showTextOnStudent = showText;
+             }
+             return editingQuizId;
+         } else {
+             const newQuizRef = doc(collection(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH));
+             await setDoc(newQuizRef, {
+                id: newQuizRef.id,
+                name: quizName,
+                questions: questions,
+                showTextOnStudent: showText,
+                hostId: hostId,
+                createdAt: Date.now()
+             });
 
-         savedQuizzes.push({
-            id: newQuizRef.id,
-            name: quizName,
-            questions: [...questions],
-            showTextOnStudent: showText,
-            hostId: hostId,
-            createdAt: Date.now()
-         });
-         return newQuizRef.id;
-
+             savedQuizzes.push({
+                id: newQuizRef.id,
+                name: quizName,
+                questions: [...questions],
+                showTextOnStudent: showText,
+                hostId: hostId,
+                createdAt: Date.now()
+             });
+             return newQuizRef.id;
+         }
       } catch (err) {
          console.error("Quiz kaydetme hatası:", err);
          alert("Soru paketi kaydedilirken hata oluştu. Lütfen veritabanı kurallarınızı kontrol edin.");
@@ -534,11 +600,16 @@
              const dateStr = new Date(quiz.createdAt).toLocaleDateString('tr-TR');
              container.innerHTML += `
                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-lg transition flex flex-col justify-between relative break-words">
-                 <button onclick="deleteQuiz('${quiz.id}')" class="absolute top-3 right-3 sm:top-4 sm:right-4 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Paketi Sil">
-                   <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                 </button>
+                 <div class="absolute top-3 right-3 sm:top-4 sm:right-4 flex gap-2">
+                     <button onclick="editQuiz('${quiz.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition" title="Paketi Düzenle">
+                       <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                     </button>
+                     <button onclick="deleteQuiz('${quiz.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Paketi Sil">
+                       <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                     </button>
+                 </div>
                  <div>
-                   <h3 class="text-xl sm:text-2xl font-black text-purple-800 mb-2 break-words whitespace-normal pr-10">${quiz.name}</h3>
+                   <h3 class="text-xl sm:text-2xl font-black text-purple-800 mb-2 break-words whitespace-normal pr-20">${quiz.name}</h3>
                    <div class="flex flex-wrap items-center gap-2 sm:gap-4 mb-6">
                      <span class="bg-gray-100 text-gray-600 text-xs sm:text-sm font-bold px-2 py-1 sm:px-3 sm:py-1 rounded-full whitespace-nowrap">${quiz.questions.length} Soru</span>
                      <span class="text-gray-400 text-xs sm:text-sm whitespace-nowrap">Tarih: ${dateStr}</span>
@@ -634,6 +705,7 @@
       
       localGameState = 'question'; 
 
+      document.getElementById('live-q-count').innerText = `Soru ${index + 1} / ${questions.length}`;
       document.getElementById('live-q-text').innerText = q.question;
       
       for(let i=0; i<4; i++) {

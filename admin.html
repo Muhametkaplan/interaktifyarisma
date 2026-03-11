@@ -865,13 +865,23 @@
       
       const colors = ['bg-red-600', 'bg-blue-600', 'bg-yellow-500', 'bg-green-600'];
       
+      // YENİ: Yükseklikleri orantılı hesaplamak için maksimum cevap sayısını bul
+      const counts = q.options.map((_, idx) => players.filter(p => p.currentAnswer === idx).length);
+      const maxCount = Math.max(...counts, 1); // 0'a bölünmeyi önlemek için en az 1
+      const MAX_BAR_HEIGHT = 200; // Sütunun çıkabileceği maksimum piksel yüksekliği (Ekrana sığması için)
+      
       q.options.forEach((optText, idx) => {
         if (!optText) return; 
         
-        const count = players.filter(p => p.currentAnswer === idx).length;
+        const count = counts[idx];
         const isCorrect = idx === q.correctAnswerIndex;
         const opacity = isCorrect ? 'opacity-100' : 'opacity-40';
-        const height = Math.max(40, count * 60);
+        
+        // YENİ: Orantılı yükseklik hesaplaması (En yüksek sütun tam 200px olur)
+        let height = 40; // minimum 40px (sıfır olanlar bile hafif görünsün diye)
+        if (count > 0) {
+            height = Math.max(40, (count / maxCount) * MAX_BAR_HEIGHT);
+        }
         
         barsDiv.innerHTML += `
           <div class="flex flex-col items-center ${opacity}">

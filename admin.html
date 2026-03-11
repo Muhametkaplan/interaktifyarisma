@@ -286,8 +286,9 @@
   </div>
 
   <script type="module">
+    // Değişiklik: "signInWithEmailAndPassword" eklendi. (signInAnonymously kaldırıldı)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     /* =========================================================================
@@ -315,8 +316,6 @@
     const PLAYERS_PATH = 'kahootPlayers';
     const QUIZZES_PATH = 'kahootQuizzes'; 
 
-    const ADMIN_PASSWORD = "1234"; 
-
     let questions = []; 
     let pin = '';
     let hostId = '';
@@ -328,8 +327,8 @@
     let localGameState = 'login'; 
 
     let savedQuizzes = []; 
-    let editingQuizId = null; // YENİ: Düzenlenen paketin ID'si
-    let editingQuestionIdx = -1; // YENİ: Düzenlenen sorunun index'i
+    let editingQuizId = null; 
+    let editingQuestionIdx = -1; 
 
     window.showScreen = function(screenId) {
       const screens = ['login', 'dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
@@ -348,21 +347,26 @@
       localGameState = screenId;
     };
 
+    // GÜVENLİK GÜNCELLEMESİ: Firebase Email/Password kimlik doğrulaması
     document.getElementById('form-login').addEventListener('submit', (e) => {
       e.preventDefault();
       const enteredPass = document.getElementById('admin-password').value;
       
-      if (enteredPass === ADMIN_PASSWORD) {
-         signInAnonymously(auth).then(userCred => {
+      // Güvenliği sağlamak için arka planda yöneticiye ait özel bir e-posta belirliyoruz.
+      // Bu e-postayı Firebase "Authentication" panelinden eklemelisiniz!
+      const adminEmail = "admin@yarisma.com";
+
+      // Şifreyi Firebase sunucusunda doğruluyoruz.
+      signInWithEmailAndPassword(auth, adminEmail, enteredPass)
+         .then((userCred) => {
            hostId = userCred.user.uid;
            showScreen('dashboard');
-         }).catch(error => {
-           alert("Sisteme bağlanılamadı. Lütfen Firebase Authentication ayarlarını kontrol edin.\nHata: " + error.message);
+         })
+         .catch((error) => {
+           alert("Hatalı şifre veya yönetici hesabı oluşturulmamış!\nLütfen Firebase Authentication panelinden 'Email/Password' girişini aktif edip '" + adminEmail + "' adresiyle bir kullanıcı oluşturduğunuzdan emin olun.");
+           document.getElementById('admin-password').value = '';
+           console.error("Giriş Hatası:", error);
          });
-      } else {
-         alert("Hatalı şifre! Lütfen tekrar deneyin.");
-         document.getElementById('admin-password').value = '';
-      }
     });
 
     showScreen('login');
@@ -396,7 +400,6 @@
            opt0Input.readOnly = false;
            opt1Input.readOnly = false;
            
-           // Sadece eğer şu anki değer Doğru/Yanlış ise boşaltalım, edit modundayken içini silmesin
            if (opt0Input.value === "Doğru" && opt1Input.value === "Yanlış") {
                opt0Input.value = "";
                opt1Input.value = "";
@@ -448,26 +451,23 @@
       }
     });
 
-    // YENİ: Eklenen soruyu sil
     window.deleteQuestion = function(idx) {
         if (confirm("Bu soruyu silmek istediğinize emin misiniz?")) {
             questions.splice(idx, 1);
-            if (editingQuestionIdx === idx) cancelEdit(); // Düzenleneni siliyorsa iptal et
+            if (editingQuestionIdx === idx) cancelEdit(); 
             updateQuestionList();
         }
     };
 
-    // YENİ: Soruların sırasını değiştir
     window.moveQuestion = function(idx, dir) {
         if (idx + dir < 0 || idx + dir >= questions.length) return;
         const temp = questions[idx];
         questions[idx] = questions[idx + dir];
         questions[idx + dir] = temp;
-        if (editingQuestionIdx === idx) cancelEdit(); // Taşıma yapılıyorsa düzenleme iptal
+        if (editingQuestionIdx === idx) cancelEdit(); 
         updateQuestionList();
     };
 
-    // YENİ: Soruyu düzenlemek için forma yükle
     window.loadQuestionForEdit = function(idx) {
         const q = questions[idx];
         editingQuestionIdx = idx;
@@ -489,10 +489,9 @@
 
         document.getElementById('btn-submit-q').innerText = 'Soruyu Güncelle';
         document.getElementById('btn-cancel-edit').classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Form en üstte olduğu için yukarı kaydır
+        window.scrollTo({ top: 0, behavior: 'smooth' }); 
     };
 
-    // YENİ: Soru düzenlemeyi iptal et
     window.cancelEdit = function() {
         editingQuestionIdx = -1;
         document.getElementById('form-add-q').reset();
@@ -503,7 +502,6 @@
         document.getElementById('form-title').innerText = 'Yeni Soru Ekle';
     };
 
-    // YENİ: Tümüyle yeni bir paket oluşturma menüsünü aç
     window.startNewQuizSetup = function() {
         editingQuizId = null;
         questions = [];
@@ -514,12 +512,11 @@
         showScreen('setup');
     };
 
-    // YENİ: Var olan paketi düzenlemek için aç
     window.editQuiz = function(quizId) {
         const quiz = savedQuizzes.find(q => q.id === quizId);
         if(!quiz) return;
         editingQuizId = quiz.id;
-        questions = [...quiz.questions]; // Deep copy gibi yapalım ki iptal edersek orijinal bozulmasın
+        questions = [...quiz.questions]; 
         document.getElementById('input-quiz-name').value = quiz.name;
         document.getElementById('input-show-text').checked = quiz.showTextOnStudent || false;
         cancelEdit();
@@ -586,7 +583,6 @@
 
       try {
          if (editingQuizId) {
-             // Var olan paketi güncelle
              const quizRef = doc(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH, editingQuizId);
              await updateDoc(quizRef, {
                 name: quizName,
@@ -594,7 +590,6 @@
                 showTextOnStudent: showText
              });
              
-             // Yerel diziyi de güncelle
              const qIdx = savedQuizzes.findIndex(q => q.id === editingQuizId);
              if (qIdx > -1) {
                  savedQuizzes[qIdx].name = quizName;
@@ -603,7 +598,6 @@
              }
              return editingQuizId;
          } else {
-             // Yeni paket oluştur
              const newQuizRef = doc(collection(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH));
              await setDoc(newQuizRef, {
                 id: newQuizRef.id,

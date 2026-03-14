@@ -14,7 +14,7 @@
 <body class="bg-gray-100 min-h-screen flex flex-col font-sans text-gray-800">
 
   <!-- ============================================== -->
-  <!-- 0. ŞİFRELİ GİRİŞ EKRANI -->
+  <!-- 0. GOOGLE İLE GİRİŞ EKRANI (YENİLENDİ) -->
   <!-- ============================================== -->
   <div id="screen-login" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-purple-900">
     <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-2xl max-w-md w-full text-center">
@@ -24,19 +24,26 @@
         <svg class="w-10 h-10 fill-yellow-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
       </div>
       <h1 class="text-2xl sm:text-3xl font-black text-gray-800 mb-2">Öğretmen Girişi</h1>
-      <p class="text-sm sm:text-base text-gray-500 mb-8">Yönetim paneline erişmek için şifrenizi girin.</p>
+      <p class="text-sm sm:text-base text-gray-500 mb-8">Kendi soru paketlerinize ulaşmak için Google hesabınızla güvenli giriş yapın.</p>
       
-      <form id="form-login" class="space-y-4">
-        <input type="password" id="admin-password" placeholder="Şifre" class="w-full text-center text-lg sm:text-xl font-bold p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-600 transition" required>
-        <button type="submit" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold text-lg sm:text-xl py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">Giriş Yap</button>
-      </form>
+      <button id="btn-google-login" class="w-full flex items-center justify-center bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-lg sm:text-xl py-4 rounded-xl shadow-sm transition transform hover:-translate-y-1 gap-3">
+        <svg class="w-6 h-6" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Google ile Giriş Yap
+      </button>
     </div>
   </div>
 
   <!-- ============================================== -->
   <!-- 1. ANA SAYFA (DASHBOARD) -->
   <!-- ============================================== -->
-  <div id="screen-dashboard" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-gray-100 hidden">
+  <div id="screen-dashboard" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-gray-100 hidden relative">
+    <div class="absolute top-4 right-4 sm:top-8 sm:right-8 z-10">
+      <button id="btn-logout" class="bg-red-100 hover:bg-red-200 text-red-600 font-bold px-4 py-2 sm:px-6 sm:py-3 rounded-xl transition text-sm sm:text-base shadow-sm flex items-center">
+        <svg class="w-5 h-5 mr-2 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        Hesaptan Çıkış Yap
+      </button>
+    </div>
+
     <div class="text-center mb-8 sm:mb-12">
       <h1 class="text-4xl sm:text-5xl font-black text-purple-900 mb-4 break-words">Yönetim Paneli</h1>
       <p class="text-lg sm:text-xl text-gray-600">Ne yapmak istersiniz?</p>
@@ -68,7 +75,7 @@
   <!-- ============================================== -->
   <div id="screen-quiz-list" class="flex-1 flex flex-col p-4 sm:p-8 bg-gray-50 overflow-y-auto hidden">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-10 max-w-5xl mx-auto w-full">
-      <h1 class="text-3xl sm:text-4xl font-black text-gray-800 break-words">Kayıtlı Paketler</h1>
+      <h1 class="text-3xl sm:text-4xl font-black text-gray-800 break-words">Kayıtlı Paketleriniz</h1>
       <button onclick="showScreen('dashboard')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-300 transition w-full sm:w-auto text-center">Geri Dön</button>
     </div>
 
@@ -286,9 +293,9 @@
   </div>
 
   <script type="module">
-    // Değişiklik: "signInWithEmailAndPassword" eklendi. (signInAnonymously kaldırıldı)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    // YENİ: Firebase Google Giriş Modülleri Eklendi
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     /* =========================================================================
@@ -312,9 +319,10 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const GAMES_PATH = 'kahootGames';
-    const PLAYERS_PATH = 'kahootPlayers';
-    const QUIZZES_PATH = 'kahootQuizzes'; 
+    // Yollar
+    const GAMES_PATH = 'kahootGames'; // Öğrencilerin girebilmesi için Public (Genel)
+    const PLAYERS_PATH = 'kahootPlayers'; // Öğrencilerin verisi için Public (Genel)
+    const QUIZZES_PATH = 'kahootQuizzes'; // Sorular her öğretmenin kendi klasörüne gidecek (Private)
 
     let questions = []; 
     let pin = '';
@@ -347,30 +355,43 @@
       localGameState = screenId;
     };
 
-    // GÜVENLİK GÜNCELLEMESİ: Firebase Email/Password kimlik doğrulaması
-    document.getElementById('form-login').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const enteredPass = document.getElementById('admin-password').value;
-      
-      // Güvenliği sağlamak için arka planda yöneticiye ait özel bir e-posta belirliyoruz.
-      // Bu e-postayı Firebase "Authentication" panelinden eklemelisiniz!
-      const adminEmail = "admin@yarisma.com";
+    // ==========================================
+    // YENİ: GOOGLE İLE GİRİŞ & ÇIKIŞ SİSTEMİ
+    // ==========================================
+    const provider = new GoogleAuthProvider();
 
-      // Şifreyi Firebase sunucusunda doğruluyoruz.
-      signInWithEmailAndPassword(auth, adminEmail, enteredPass)
-         .then((userCred) => {
-           hostId = userCred.user.uid;
+    document.getElementById('btn-google-login').addEventListener('click', () => {
+      signInWithPopup(auth, provider)
+         .then((result) => {
+           hostId = result.user.uid;
            showScreen('dashboard');
          })
          .catch((error) => {
-           alert("Hatalı şifre veya yönetici hesabı oluşturulmamış!\nLütfen Firebase Authentication panelinden 'Email/Password' girişini aktif edip '" + adminEmail + "' adresiyle bir kullanıcı oluşturduğunuzdan emin olun.");
-           document.getElementById('admin-password').value = '';
+           alert("Google Girişi başarısız oldu.\nLütfen Firebase Authentication panelinden 'Google' sağlayıcısının aktif olduğundan emin olun!\n\nHata: " + error.message);
            console.error("Giriş Hatası:", error);
          });
     });
 
-    showScreen('login');
+    document.getElementById('btn-logout').addEventListener('click', () => {
+       signOut(auth).then(() => {
+           hostId = '';
+           savedQuizzes = [];
+           showScreen('login');
+       });
+    });
 
+    // Sayfa yenilendiğinde eğer zaten giriş yapmışsa direkt panele at
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            hostId = user.uid;
+            if (localGameState === 'login') showScreen('dashboard');
+        } else {
+            hostId = '';
+            showScreen('login');
+        }
+    });
+
+    // ... (Diğer tüm Soru Ekleme / Silme UI işlemleri aynı kalır)
     document.getElementById('q-type').addEventListener('change', (e) => {
        const type = e.target.value;
        const opt2Container = document.getElementById('container-opt-2');
@@ -512,18 +533,17 @@
         showScreen('setup');
     };
 
-    // YENİ EKLENEN FONKSİYON: Odayı Veritabanından Silip Kapatma
     window.closeRoom = async function() {
         if (pin) {
             try {
-                // Veritabanından odayı sil. Bu işlem tüm öğrencileri anında atacaktır.
+                // Oda tamamen silindiğinde, index.html tarafındaki onSnapshot() bunu algılayıp öğrenciyi dışarı atar.
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin));
             } catch(e) {
                 console.error("Oda silinirken hata:", e);
             }
         }
-        pin = ''; // PIN'i sıfırla
-        showScreen('dashboard'); // Ana panele dön
+        pin = ''; 
+        showScreen('dashboard'); 
     };
 
     window.editQuiz = function(quizId) {
@@ -582,12 +602,15 @@
       });
     }
 
+    // ==========================================
+    // YENİ: VERİTABANI YOLLARI KİŞİSELLEŞTİRİLDİ (users/hostId/...)
+    // ==========================================
     async function saveQuizToDB() {
       const quizName = document.getElementById('input-quiz-name').value.trim();
       const showText = document.getElementById('input-show-text').checked;
       
       if (!quizName) {
-         alert("Lütfen bu soru paketi için bir isim girin! (Örn: Vize Hazırlık)");
+         alert("Lütfen bu soru paketi için bir isim girin!");
          return null;
       }
       if (questions.length === 0) {
@@ -597,7 +620,8 @@
 
       try {
          if (editingQuizId) {
-             const quizRef = doc(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH, editingQuizId);
+             // Sadece bu öğretmene ait yola kaydet
+             const quizRef = doc(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH, editingQuizId);
              await updateDoc(quizRef, {
                 name: quizName,
                 questions: questions,
@@ -612,7 +636,8 @@
              }
              return editingQuizId;
          } else {
-             const newQuizRef = doc(collection(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH));
+             // Yeni paketi, oturum açan öğretmenin kendi "users" klasörü altına koy
+             const newQuizRef = doc(collection(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH));
              await setDoc(newQuizRef, {
                 id: newQuizRef.id,
                 name: quizName,
@@ -670,13 +695,14 @@
        container.innerHTML = '<div class="text-center text-gray-500 col-span-1 md:col-span-2 py-10 font-bold text-xl">Kayıtlar Yükleniyor...</div>';
        
        try {
-          const quizzesSnapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH));
+          // Öğretmen sadece KENDİ oluşturduğu soruları veritabanından çekiyor
+          const quizzesSnapshot = await getDocs(collection(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH));
           savedQuizzes = quizzesSnapshot.docs.map(doc => doc.data());
           
           if (savedQuizzes.length === 0) {
              container.innerHTML = `
                <div class="text-center bg-white p-6 sm:p-10 rounded-2xl border border-gray-200 col-span-1 md:col-span-2 shadow-sm break-words">
-                 <h3 class="text-xl sm:text-2xl font-bold text-gray-600 mb-2">Hiç kayıtlı paketiniz yok.</h3>
+                 <h3 class="text-xl sm:text-2xl font-bold text-gray-600 mb-2">Size Ait Kayıtlı Bir Paket Yok.</h3>
                  <p class="text-gray-500 mb-6 text-sm sm:text-base">Sınıfa yarışma başlatabilmek için önce bir Soru Paketi oluşturup kaydetmelisiniz.</p>
                  <button onclick="startNewQuizSetup()" class="bg-purple-600 text-white px-6 sm:px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition w-full sm:w-auto">Hemen Yeni Paket Oluştur</button>
                </div>
@@ -719,7 +745,8 @@
     window.deleteQuiz = async function(quizId) {
        if (confirm("Bu yarışma paketini tamamen silmek istediğinize emin misiniz?")) {
           try {
-             await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', QUIZZES_PATH, quizId));
+             // Kendi klasöründen siliyor
+             await deleteDoc(doc(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH, quizId));
              loadSavedQuizzes(); 
           } catch (err) {
              console.error("Paket silinirken hata:", err);
@@ -746,6 +773,7 @@
         document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
         document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
 
+        // ODA HER ZAMAN PUBLIC KALMAK ZORUNDA (Öğrencilerin görebilmesi için)
         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
           pin: pin, state: 'lobby', currentQuestionIndex: 0, hostId: hostId, createdAt: Date.now(), questionCount: questions.length, showTextOnStudent: showText
         });
@@ -865,10 +893,9 @@
       
       const colors = ['bg-red-600', 'bg-blue-600', 'bg-yellow-500', 'bg-green-600'];
       
-      // YENİ: Yükseklikleri orantılı hesaplamak için maksimum cevap sayısını bul
       const counts = q.options.map((_, idx) => players.filter(p => p.currentAnswer === idx).length);
-      const maxCount = Math.max(...counts, 1); // 0'a bölünmeyi önlemek için en az 1
-      const MAX_BAR_HEIGHT = 200; // Sütunun çıkabileceği maksimum piksel yüksekliği (Ekrana sığması için)
+      const maxCount = Math.max(...counts, 1);
+      const MAX_BAR_HEIGHT = 200; 
       
       q.options.forEach((optText, idx) => {
         if (!optText) return; 
@@ -877,8 +904,7 @@
         const isCorrect = idx === q.correctAnswerIndex;
         const opacity = isCorrect ? 'opacity-100' : 'opacity-40';
         
-        // YENİ: Orantılı yükseklik hesaplaması (En yüksek sütun tam 200px olur)
-        let height = 40; // minimum 40px (sıfır olanlar bile hafif görünsün diye)
+        let height = 40; 
         if (count > 0) {
             height = Math.max(40, (count / maxCount) * MAX_BAR_HEIGHT);
         }

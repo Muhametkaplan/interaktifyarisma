@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Çarkıfelek | Kampüs Etkinlik</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Özel Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    /* Çark Okunun Animasyonu */
+    @keyframes pointer-tick {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(-15deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .ticking { animation: pointer-tick 0.1s ease-in-out; transform-origin: top center; }
+    
+    /* Kazanan Modalı Animasyonu */
+    @keyframes pop-in {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-pop { animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800 flex flex-col selection:bg-pink-300">
+
+  <!-- Üst Bar -->
+  <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
+    <div class="flex items-center gap-3">
+      <div class="bg-pink-100 p-2 rounded-lg">
+        <svg class="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      </div>
+      <h1 class="text-2xl font-black text-gray-800 tracking-tight">Çarkıfelek</h1>
+    </div>
+    <a href="index.html" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 text-sm sm:text-base">
+      <svg class="w-5 h-5 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Ana Sayfa
+    </a>
+  </header>
+
+  <!-- Ana İçerik -->
+  <main class="flex-1 flex flex-col lg:flex-row max-w-7xl mx-auto w-full p-4 sm:p-6 gap-6 lg:gap-10 h-full">
+    
+    <!-- SOL: Kontrol Paneli -->
+    <div class="w-full lg:w-1/3 flex flex-col bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden h-fit lg:sticky lg:top-24 z-10">
+      <div class="bg-pink-600 text-white p-6">
+        <h2 class="text-2xl font-bold mb-2">Katılımcı Listesi</h2>
+        <p class="text-pink-100 text-sm">Her satıra bir isim gelecek şekilde listeyi yapıştırın.</p>
+      </div>
+      <div class="p-6 flex flex-col flex-1">
+        <textarea 
+          id="names-input" 
+          class="w-full flex-1 min-h-[200px] lg:min-h-[350px] p-4 border-2 border-gray-200 rounded-xl outline-none focus:border-pink-500 transition resize-none font-medium leading-relaxed"
+          placeholder="Örnek:&#10;Ahmet Yılmaz&#10;Ayşe Demir&#10;Mehmet Kaya&#10;Fatma Çelik"
+        >Ahmet Yılmaz
+Ayşe Demir
+Mehmet Kaya
+Fatma Çelik
+Mustafa Öztürk
+Zeynep Şahin
+Ali Yıldız
+Elif Doğan</textarea>
+        
+        <div class="flex items-center justify-between mt-4 text-sm font-bold text-gray-500">
+          <span>Toplam: <span id="item-count" class="text-pink-600 text-lg">8</span> Kişi</span>
+        </div>
+
+        <button 
+          id="btn-update" 
+          class="w-full bg-pink-100 hover:bg-pink-200 text-pink-700 font-bold text-lg py-4 rounded-xl mt-4 transition flex items-center justify-center gap-2"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          Çarkı Güncelle
+        </button>
+      </div>
+    </div>
+
+    <!-- SAĞ: Çark Alanı -->
+    <div class="w-full lg:w-2/3 flex flex-col items-center justify-center bg-white rounded-3xl shadow-lg border border-gray-100 p-6 sm:p-10 min-h-[500px] relative overflow-hidden">
+      
+      <!-- Çark Konteyneri -->
+      <div class="relative w-full max-w-[400px] sm:max-w-[500px] aspect-square flex justify-center items-center">
+        
+        <!-- Üst Ok (Pointer) -->
+        <div id="wheel-pointer" class="absolute -top-4 sm:-top-6 z-20 w-10 h-12 sm:w-14 sm:h-16 flex flex-col items-center drop-shadow-xl">
+          <div class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-800 rounded-full border-4 border-white shadow-md z-10"></div>
+          <div class="w-0 h-0 border-l-[12px] sm:border-l-[16px] border-l-transparent border-r-[12px] sm:border-r-[16px] border-r-transparent border-t-[20px] sm:border-t-[30px] border-t-gray-800 -mt-2"></div>
+        </div>
+
+        <!-- Canvas Çark -->
+        <canvas id="wheel-canvas" width="600" height="600" class="w-full h-full rounded-full shadow-2xl border-8 border-white bg-gray-50"></canvas>
+        
+        <!-- Merkez Düğme / Kapak -->
+        <div class="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full shadow-lg border-4 border-gray-100 flex items-center justify-center z-10">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 bg-pink-100 rounded-full"></div>
+        </div>
+      </div>
+
+      <!-- Çevir Butonu -->
+      <button 
+        id="btn-spin" 
+        class="mt-10 sm:mt-16 w-full max-w-[300px] bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-500 hover:to-rose-400 text-white font-black text-2xl sm:text-3xl py-4 sm:py-5 rounded-2xl shadow-[0_6px_0_#9f1239] active:shadow-[0_0px_0_#9f1239] active:translate-y-[6px] transition-all tracking-wide"
+      >
+        ÇEVİR!
+      </button>
+    </div>
+  </main>
+
+  <!-- KAZANAN MODALI (Gizli) -->
+  <div id="modal-winner" class="fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl flex flex-col items-center p-8 sm:p-12 text-center animate-pop border-t-8 border-pink-500 relative overflow-hidden">
+      
+      <!-- Dekoratif Arka Plan Şekilleri -->
+      <div class="absolute -top-10 -left-10 w-32 h-32 bg-pink-100 rounded-full opacity-50"></div>
+      <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-yellow-100 rounded-full opacity-50"></div>
+
+      <div class="w-24 h-24 bg-pink-100 rounded-full flex items-center justify-center mb-6 relative z-10">
+        <span class="text-5xl">🎉</span>
+      </div>
+      
+      <h3 class="text-xl sm:text-2xl font-bold text-gray-500 uppercase tracking-widest mb-2 relative z-10">KAZANAN</h3>
+      <h2 id="winner-name" class="text-4xl sm:text-5xl font-black text-gray-800 mb-10 break-words w-full px-4 relative z-10">İsim Soyisim</h2>
+
+      <div class="w-full flex flex-col sm:flex-row gap-4 relative z-10">
+        <button id="btn-remove-winner" class="flex-1 bg-red-100 hover:bg-red-200 text-red-600 font-bold py-4 rounded-xl transition text-lg">
+          Listeden Çıkar
+        </button>
+        <button id="btn-keep-winner" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white font-bold py-4 rounded-xl transition text-lg shadow-lg">
+          Kapat & Devam Et
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- UYARI MODALI (Gizli) -->
+  <div id="modal-alert" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full p-6 rounded-2xl shadow-xl text-center">
+      <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      </div>
+      <h3 id="alert-text" class="text-lg font-bold text-gray-800 mb-6">Uyarı mesajı buraya gelecek.</h3>
+      <button onclick="document.getElementById('modal-alert').classList.add('hidden')" class="w-full bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-gray-900 transition">Anladım</button>
+    </div>
+  </div>
+
+  <script>
+    // --- TEMEL DEĞİŞKENLER VE AYARLAR ---
+    const canvas = document.getElementById('wheel-canvas');
+    const ctx = canvas.getContext('2d');
+    const namesInput = document.getElementById('names-input');
+    const btnUpdate = document.getElementById('btn-update');
+    const btnSpin = document.getElementById('btn-spin');
+    const itemCountSpan = document.getElementById('item-count');
+    const pointer = document.getElementById('wheel-pointer');
+    
+    // Modallar
+    const modalWinner = document.getElementById('modal-winner');
+    const winnerNameEl = document.getElementById('winner-name');
+    const btnRemoveWinner = document.getElementById('btn-remove-winner');
+    const btnKeepWinner = document.getElementById('btn-keep-winner');
+    const modalAlert = document.getElementById('modal-alert');
+    const alertText = document.getElementById('alert-text');
+
+    // Renk Paleti (Canlı Renkler)
+    const colors = ['#f43f5e', '#3b82f6', '#eab308', '#22c55e', '#a855f7', '#ec4899', '#f97316', '#06b6d4', '#84cc16', '#6366f1'];
+    
+    let items = [];
+    let currentAngle = 0; // Çarkın mevcut dönüş açısı (Radyan)
+    let isSpinning = false;
+    let spinVelocity = 0;
+    let animationFrameId;
+    let lastWinnerIndex = -1;
+
+    // --- FONKSİYONLAR ---
+
+    // Metin Kutusundan İsimleri Al
+    function getNamesFromInput() {
+      const rawText = namesInput.value;
+      // Satırlara böl, boşlukları temizle, boş olanları at
+      const rawItems = rawText.split('\n').map(item => item.trim()).filter(item => item !== '');
+      
+      if (rawItems.length < 2) {
+        showAlert("Çarkı çevirebilmek için en az 2 isim girmelisiniz.");
+        return false;
+      }
+      
+      items = rawItems;
+      itemCountSpan.innerText = items.length;
+      return true;
+    }
+
+    // Uyarı Göster
+    function showAlert(msg) {
+      alertText.innerText = msg;
+      modalAlert.classList.remove('hidden');
+    }
+
+    // Çarkı Çiz
+    function drawWheel() {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = Math.min(centerX, centerY) - 10;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (items.length === 0) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.stroke();
+        return;
+      }
+
+      const sliceAngle = (2 * Math.PI) / items.length;
+
+      for (let i = 0; i < items.length; i++) {
+        const startAngle = currentAngle + i * sliceAngle;
+        const endAngle = startAngle + sliceAngle;
+
+        // Dilimi Çiz
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fill();
+
+        // Dilim Çizgileri
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.stroke();
+
+        // Metni Çiz
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(startAngle + sliceAngle / 2);
+        
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#ffffff';
+        
+        // Font büyüklüğünü item sayısına göre ayarla
+        let fontSize = 24;
+        if (items.length > 15) fontSize = 20;
+        if (items.length > 30) fontSize = 16;
+        if (items.length > 50) fontSize = 12;
+        
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        
+        // Metin çok uzunsa kes
+        let text = items[i];
+        if (text.length > 20) text = text.substring(0, 18) + '...';
+        
+        ctx.fillText(text, radius - 30, 0);
+        ctx.restore();
+      }
+    }
+
+    // Döndürme Animasyonu Döngüsü
+    function spinAnimation() {
+      if (spinVelocity <= 0.001) {
+        // Çark Durdu
+        isSpinning = false;
+        cancelAnimationFrame(animationFrameId);
+        finishSpin();
+        return;
+      }
+
+      // Hızı yavaşlat (Sürtünme)
+      spinVelocity *= 0.985;
+      currentAngle += spinVelocity;
+
+      // Pointer "Tık" animasyonu (Dilim geçişlerini hesapla)
+      const sliceAngle = (2 * Math.PI) / items.length;
+      // Ok her zaman en üstte (270 derece veya -PI/2)
+      const topAngle = (3 * Math.PI) / 2;
+      
+      // Mevcut açının modunu alarak hangi dilimin geçildiğini bul
+      // (Bunu tam tutturmak zor olduğundan basitleştirilmiş bir tık efekti yapıyoruz)
+      
+      drawWheel();
+      animationFrameId = requestAnimationFrame(spinAnimation);
+    }
+
+    // Döndürmeyi Başlat
+    function startSpin() {
+      if (isSpinning) return;
+      if (!getNamesFromInput()) return;
+
+      isSpinning = true;
+      btnSpin.disabled = true;
+      btnSpin.classList.add('opacity-50', 'cursor-not-allowed');
+      
+      // Rastgele başlangıç hızı (Farklı yerlerde durması için)
+      spinVelocity = Math.random() * 0.2 + 0.4; // 0.4 ile 0.6 arası radyan/frame
+      
+      spinAnimation();
+    }
+
+    // Çark Durduğunda Çalışır
+    function finishSpin() {
+      btnSpin.disabled = false;
+      btnSpin.classList.remove('opacity-50', 'cursor-not-allowed');
+
+      // Kazananı Hesapla
+      // Çarkın en üst noktası 270 Derece = 1.5 * PI (veya -0.5 * PI)
+      const sliceAngle = (2 * Math.PI) / items.length;
+      
+      // currentAngle ne kadar dönüldüğünü gösterir. Çark saat yönünde dönüyor.
+      // Dilimler 0 açısından çizilmeye başlar.
+      // Okun gösterdiği yer: (1.5 * PI) - currentAngle
+      let offset = (1.5 * Math.PI) - (currentAngle % (2 * Math.PI));
+      if (offset < 0) {
+        offset += 2 * Math.PI; // Pozitif yap
+      }
+
+      lastWinnerIndex = Math.floor(offset / sliceAngle);
+      
+      // Index güvenliği
+      if(lastWinnerIndex >= items.length) lastWinnerIndex = items.length - 1;
+      if(lastWinnerIndex < 0) lastWinnerIndex = 0;
+
+      const winner = items[lastWinnerIndex];
+
+      // Kazananı Göster
+      winnerNameEl.innerText = winner;
+      modalWinner.classList.remove('hidden');
+      
+      // Konfeti fırlat
+      throwConfetti();
+    }
+
+    // Basit HTML Konfeti Efekti
+    function throwConfetti() {
+      for(let i=0; i<50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'absolute w-3 h-3 rounded-sm z-50 pointer-events-none';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = '50%';
+        confetti.style.top = '50%';
+        confetti.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 360}deg)`;
+        
+        // Rastgele fırlama vektörü
+        const tx = (Math.random() - 0.5) * window.innerWidth;
+        const ty = (Math.random() - 0.5) * window.innerHeight - 200;
+        
+        confetti.animate([
+          { transform: `translate(-50%, -50%) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) rotate(${Math.random()*720}deg)`, opacity: 0 }
+        ], {
+          duration: 1000 + Math.random() * 1000,
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          fill: 'forwards'
+        });
+        
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 2000);
+      }
+    }
+
+    // --- EVENT LİSTENER'LAR ---
+
+    btnUpdate.addEventListener('click', () => {
+      if(getNamesFromInput()) {
+        currentAngle = 0; // Çarkı sıfırla
+        drawWheel();
+      }
+    });
+
+    btnSpin.addEventListener('click', startSpin);
+
+    // Kapat ve Devam Et
+    btnKeepWinner.addEventListener('click', () => {
+      modalWinner.classList.add('hidden');
+    });
+
+    // Listeden Çıkar
+    btnRemoveWinner.addEventListener('click', () => {
+      if (lastWinnerIndex > -1 && lastWinnerIndex < items.length) {
+        items.splice(lastWinnerIndex, 1); // Diziden çıkar
+        
+        // Textarea'yı da güncelle
+        namesInput.value = items.join('\n');
+        itemCountSpan.innerText = items.length;
+        
+        // Çarkı Yeniden Çiz
+        drawWheel();
+      }
+      modalWinner.classList.add('hidden');
+    });
+
+    // İlk Yüklemede Çiz
+    getNamesFromInput();
+    drawWheel();
+
+    // Pencere boyutu değiştiğinde Canvas'ın CSS boyutu değiştiği için sorun olmaz, 
+    // ama piksellenmeyi önlemek için yeniden çizebiliriz.
+    window.addEventListener('resize', drawWheel);
+
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-#🎓 Kampüs Etkinlik Platformu
+🎓 Kampüs Etkinlik Platformu
 
 Üniversite toplulukları, kulüpler, sınıflar ve etkinlikler için geliştirilmiş; gerçek zamanlı (real-time), interaktif ve mobil uyumlu web tabanlı bir etkinlik yönetim platformudur. Öğretmenler ve moderatörler dev ekranda etkinlikleri yönetirken, öğrenciler hiçbir uygulama indirmeden sadece bir PIN kodu ile telefonlarından anında katılabilirler.
 

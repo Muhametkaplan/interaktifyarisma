@@ -72,7 +72,14 @@
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    let firebaseConfig = {};
+    let firebaseConfig = {
+      apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
+      authDomain: "interaktif-yarisma.firebaseapp.com",
+      projectId: "interaktif-yarisma",
+      storageBucket: "interaktif-yarisma.firebasestorage.app",
+      messagingSenderId: "652081118487",
+      appId: "1:652081118487:web:409c5737ced7cb8377cb52"
+    };
     if (typeof __firebase_config !== 'undefined' && __firebase_config) firebaseConfig = JSON.parse(__firebase_config);
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 

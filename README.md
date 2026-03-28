@@ -1,4 +1,4 @@
-🎓 Kampüs Etkinlik Platformu
+#🎓 Kampüs Etkinlik Platformu
 
 Üniversite toplulukları, kulüpler, sınıflar ve etkinlikler için geliştirilmiş; gerçek zamanlı (real-time), interaktif ve mobil uyumlu web tabanlı bir etkinlik yönetim platformudur. Öğretmenler ve moderatörler dev ekranda etkinlikleri yönetirken, öğrenciler hiçbir uygulama indirmeden sadece bir PIN kodu ile telefonlarından anında katılabilirler.
 
@@ -89,14 +89,23 @@ Proje klasörünü doğrudan GitHub Pages, Vercel veya Netlify üzerinden ücret
 
 📁 kampus-etkinlik-platformu
 ├── index.html          # Ana Menü (Tüm araçlara yönlendirme ve Google Login)
-├── admin.html          # Bilgi Yarışması (Yönetici / Öğretmen Paneli)
+
+├── admin.html          # Bilgi Yarışması (Yönetici Paneli)
+
 ├── yarisma.html        # Bilgi Yarışması (Öğrenci / Katılımcı Arayüzü)
+
 ├── anket-admin.html    # Canlı Anket (Yönetici Paneli)
+
 ├── anket.html          # Canlı Anket (Katılımcı Arayüzü)
+
 ├── qa-admin.html       # Soru-Cevap (Yönetici / Projeksiyon Ekranı)
+
 ├── qa.html             # Soru-Cevap (Öğrenci Soru Sorma Ekranı)
+
 ├── takim-kurucu.html   # Rastgele Takım Dağıtıcı
+
 ├── carkifelek.html     # Çarkıfelek Uygulaması
+
 └── cekilis.html        # Animasyonlu Çekiliş Aracı
 
 

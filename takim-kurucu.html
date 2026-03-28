@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rastgele Takım Kurucu | Kampüs Etkinlik</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fade-in-up 0.5s ease-out forwards; }
+    
+    .motion-blur { filter: blur(2px); opacity: 0.7; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800 flex flex-col selection:bg-indigo-300">
+
+  <!-- Üst Bar -->
+  <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm sticky top-0 z-30">
+    <div class="flex items-center gap-3">
+      <div class="bg-indigo-100 p-2 rounded-lg">
+        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+      </div>
+      <h1 class="text-2xl font-black text-gray-800 tracking-tight">Takım Kurucu</h1>
+    </div>
+    <a href="index.html" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 text-sm sm:text-base">
+      <svg class="w-5 h-5 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Ana Sayfa
+    </a>
+  </header>
+
+  <!-- Ana İçerik -->
+  <main class="flex-1 flex flex-col lg:flex-row max-w-7xl mx-auto w-full p-4 sm:p-6 gap-6 lg:gap-10 h-full">
+    
+    <!-- SOL: Kontrol Paneli -->
+    <div class="w-full lg:w-1/3 flex flex-col bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden h-fit lg:sticky lg:top-24 z-10">
+      <div class="bg-indigo-600 text-white p-6">
+        <h2 class="text-2xl font-bold mb-2">Grup Ayarları</h2>
+        <p class="text-indigo-200 text-sm">Listeyi yapıştırıp kaç takım istediğinizi belirtin.</p>
+      </div>
+      
+      <div class="p-6 flex flex-col flex-1">
+        <label class="font-bold text-gray-700 mb-2 block">Katılımcı Listesi</label>
+        <textarea 
+          id="names-input" 
+          class="w-full min-h-[250px] lg:min-h-[300px] p-4 border-2 border-gray-200 rounded-xl outline-none focus:border-indigo-500 transition resize-none font-medium leading-relaxed mb-2"
+          placeholder="Her satıra bir isim girin..."
+        >Ahmet Yılmaz
+Ayşe Demir
+Mehmet Kaya
+Fatma Çelik
+Mustafa Öztürk
+Zeynep Şahin
+Ali Yıldız
+Elif Doğan
+Hasan Kara
+Emine Polat
+Burak Kaplan
+Ceren Yıldırım
+Oğuz Şen
+Gizem Avcı</textarea>
+        
+        <div class="flex items-center justify-between text-sm font-bold text-gray-500 mb-6">
+          <span>Toplam: <span id="item-count" class="text-indigo-600 text-lg">14</span> Kişi</span>
+        </div>
+
+        <div class="mb-6">
+           <label class="font-bold text-gray-700 mb-2 block text-sm">Oluşturulacak Takım Sayısı</label>
+           <input type="number" id="team-count" value="4" min="2" max="20" class="w-full p-4 border-2 border-gray-200 rounded-xl outline-none focus:border-indigo-500 text-center font-black text-2xl text-indigo-700">
+        </div>
+
+        <button 
+          id="btn-generate" 
+          class="w-full bg-gradient-to-r from-indigo-600 to-violet-500 hover:from-indigo-500 hover:to-violet-400 text-white font-black text-xl py-4 rounded-xl transition-all shadow-[0_4px_0_#4338ca] active:shadow-[0_0px_0_#4338ca] active:translate-y-1 flex items-center justify-center gap-2"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+          TAKIMLARI KUR
+        </button>
+      </div>
+    </div>
+
+    <!-- SAĞ: Sonuç Ekranı -->
+    <div class="w-full lg:w-2/3 flex flex-col bg-white rounded-3xl shadow-lg border border-gray-100 p-6 sm:p-10 min-h-[500px] relative overflow-hidden">
+      
+      <!-- Durum 1: Bekleme -->
+      <div id="state-waiting" class="flex-1 flex flex-col items-center justify-center text-center opacity-100 transition-opacity duration-300">
+         <div class="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 border-4 border-indigo-100">
+           <svg class="w-16 h-16 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+         </div>
+         <h2 class="text-3xl font-black text-gray-300 mb-2">Takımlar Bekleniyor</h2>
+         <p class="text-gray-400">Listeyi doldurun ve "Takımları Kur" butonuna basın.</p>
+      </div>
+
+      <!-- Durum 2: Animasyon (Karıştırma) -->
+      <div id="state-animating" class="hidden flex-1 flex-col items-center justify-center text-center">
+         <h2 class="text-2xl font-bold text-gray-500 mb-8 uppercase tracking-widest animate-pulse">Gruplar Dağıtılıyor...</h2>
+         <div class="grid grid-cols-2 gap-4 w-full max-w-md">
+            <div class="bg-indigo-100 h-24 rounded-2xl flex items-center justify-center shadow-inner motion-blur">
+               <span class="text-3xl">🔀</span>
+            </div>
+            <div class="bg-purple-100 h-24 rounded-2xl flex items-center justify-center shadow-inner motion-blur" style="animation-delay: 0.1s">
+               <span class="text-3xl">👥</span>
+            </div>
+            <div class="bg-fuchsia-100 h-24 rounded-2xl flex items-center justify-center shadow-inner motion-blur" style="animation-delay: 0.2s">
+               <span class="text-3xl">🔀</span>
+            </div>
+            <div class="bg-blue-100 h-24 rounded-2xl flex items-center justify-center shadow-inner motion-blur" style="animation-delay: 0.3s">
+               <span class="text-3xl">👥</span>
+            </div>
+         </div>
+      </div>
+
+      <!-- Durum 3: Sonuçlar -->
+      <div id="state-results" class="hidden flex-1 flex-col h-full overflow-y-auto">
+         <div class="text-center mb-8">
+           <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full mb-4 shadow-sm">
+             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+           </div>
+           <h2 class="text-4xl font-black text-gray-800">Takımlar Hazır!</h2>
+         </div>
+
+         <!-- Takım Kartları Konteyneri -->
+         <div id="teams-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4">
+            <!-- Takımlar JS ile buraya eklenecek -->
+         </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- UYARI MODALI -->
+  <div id="modal-alert" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full p-6 rounded-2xl shadow-xl text-center">
+      <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      </div>
+      <h3 id="alert-text" class="text-lg font-bold text-gray-800 mb-6">Uyarı mesajı buraya gelecek.</h3>
+      <button onclick="document.getElementById('modal-alert').classList.add('hidden')" class="w-full bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-gray-900 transition">Anladım</button>
+    </div>
+  </div>
+
+  <script>
+    // --- DOM ELEMENTLERİ ---
+    const namesInput = document.getElementById('names-input');
+    const itemCountSpan = document.getElementById('item-count');
+    const teamCountInput = document.getElementById('team-count');
+    const btnGenerate = document.getElementById('btn-generate');
+    
+    const stateWaiting = document.getElementById('state-waiting');
+    const stateAnimating = document.getElementById('state-animating');
+    const stateResults = document.getElementById('state-results');
+    const teamsContainer = document.getElementById('teams-container');
+    
+    const modalAlert = document.getElementById('modal-alert');
+    const alertText = document.getElementById('alert-text');
+
+    // Harika Takım Renkleri (Başlıklar İçin)
+    const teamColors = [
+      { bg: 'bg-blue-600', border: 'border-blue-200', text: 'text-blue-600', lightBg: 'bg-blue-50' },
+      { bg: 'bg-rose-600', border: 'border-rose-200', text: 'text-rose-600', lightBg: 'bg-rose-50' },
+      { bg: 'bg-emerald-600', border: 'border-emerald-200', text: 'text-emerald-600', lightBg: 'bg-emerald-50' },
+      { bg: 'bg-amber-500', border: 'border-amber-200', text: 'text-amber-600', lightBg: 'bg-amber-50' },
+      { bg: 'bg-purple-600', border: 'border-purple-200', text: 'text-purple-600', lightBg: 'bg-purple-50' },
+      { bg: 'bg-cyan-600', border: 'border-cyan-200', text: 'text-cyan-600', lightBg: 'bg-cyan-50' },
+      { bg: 'bg-pink-600', border: 'border-pink-200', text: 'text-pink-600', lightBg: 'bg-pink-50' },
+      { bg: 'bg-lime-600', border: 'border-lime-200', text: 'text-lime-600', lightBg: 'bg-lime-50' },
+      { bg: 'bg-indigo-600', border: 'border-indigo-200', text: 'text-indigo-600', lightBg: 'bg-indigo-50' },
+      { bg: 'bg-fuchsia-600', border: 'border-fuchsia-200', text: 'text-fuchsia-600', lightBg: 'bg-fuchsia-50' },
+    ];
+
+    // Konfeti Renkleri
+    const confettiColors = ['#4f46e5', '#6366f1', '#8b5cf6', '#d946ef', '#f43f5e'];
+
+    // --- YARDIMCI FONKSİYONLAR ---
+
+    namesInput.addEventListener('input', () => {
+      const items = getValidNames();
+      itemCountSpan.innerText = items.length;
+    });
+
+    function getValidNames() {
+      const rawText = namesInput.value;
+      return rawText.split('\n').map(item => item.trim()).filter(item => item !== '');
+    }
+
+    function showAlert(msg) {
+      alertText.innerText = msg;
+      modalAlert.classList.remove('hidden');
+    }
+
+    // Fisher-Yates Karıştırma Algoritması
+    function shuffleArray(array) {
+      const newArr = [...array];
+      for (let i = newArr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+      }
+      return newArr;
+    }
+
+    function throwConfetti() {
+      for(let i=0; i<60; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'fixed w-2 h-4 rounded-sm z-50 pointer-events-none';
+        confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        confetti.style.left = '50%';
+        confetti.style.top = '30%';
+        confetti.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 360}deg)`;
+        
+        const tx = (Math.random() - 0.5) * window.innerWidth;
+        const ty = (Math.random() + 0.2) * window.innerHeight; 
+        
+        confetti.animate([
+          { transform: `translate(-50%, -50%) rotate(0deg)`, opacity: 1 },
+          { transform: `translate(calc(-50% + ${tx}px), ${ty}px) rotate(${Math.random()*720}deg)`, opacity: 0 }
+        ], {
+          duration: 1500 + Math.random() * 1500,
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          fill: 'forwards'
+        });
+        
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3000);
+      }
+    }
+
+    // --- TAKIM KURMA MANTIĞI ---
+    btnGenerate.addEventListener('click', () => {
+      const items = getValidNames();
+      const numTeams = parseInt(teamCountInput.value);
+
+      if (items.length < 2) {
+        showAlert("Lütfen en az 2 kişi ekleyin.");
+        return;
+      }
+      if (isNaN(numTeams) || numTeams < 2) {
+        showAlert("En az 2 takım oluşturmalısınız.");
+        return;
+      }
+      if (numTeams > items.length) {
+        showAlert(`Kişi sayısından (${items.length}) daha fazla takım (${numTeams}) oluşturamazsınız!`);
+        return;
+      }
+
+      btnGenerate.disabled = true;
+      btnGenerate.classList.add('opacity-50', 'cursor-not-allowed');
+
+      stateWaiting.classList.add('hidden');
+      stateResults.classList.add('hidden');
+      stateAnimating.classList.remove('hidden');
+      stateAnimating.classList.add('flex');
+
+      // Animasyon Süresi (1.5 Saniye)
+      setTimeout(() => {
+         generateTeams(items, numTeams);
+      }, 1500);
+    });
+
+    function generateTeams(items, numTeams) {
+      // 1. Listeyi Karıştır
+      const shuffledItems = shuffleArray(items);
+      
+      // 2. Takım Dizilerini Hazırla
+      const teams = Array.from({ length: numTeams }, () => []);
+      
+      // 3. Round-Robin Dağıtım (Kart dağıtır gibi sırayla 1-2-3-1-2-3 şeklinde dağıt)
+      shuffledItems.forEach((item, index) => {
+         const teamIndex = index % numTeams;
+         teams[teamIndex].push(item);
+      });
+
+      // 4. Arayüzü Oluştur
+      teamsContainer.innerHTML = '';
+      
+      teams.forEach((teamMembers, index) => {
+         const colorInfo = teamColors[index % teamColors.length];
+         
+         let membersHtml = '';
+         teamMembers.forEach((member) => {
+            membersHtml += `
+              <div class="py-2 border-b border-gray-100 last:border-0 font-medium text-gray-700 flex items-center">
+                 <div class="w-1.5 h-1.5 rounded-full ${colorInfo.bg} mr-3 opacity-60"></div>
+                 ${member}
+              </div>
+            `;
+         });
+
+         const teamCard = document.createElement('div');
+         teamCard.className = `bg-white border-2 ${colorInfo.border} rounded-2xl overflow-hidden shadow-md opacity-0 flex flex-col`;
+         // Kademeli geliş animasyonu
+         teamCard.style.animation = `fade-in-up 0.4s ease-out ${index * 0.1}s forwards`;
+         
+         teamCard.innerHTML = `
+           <div class="${colorInfo.bg} text-white font-black text-xl px-5 py-4 flex justify-between items-center">
+             <span>TAKIM ${index + 1}</span>
+             <span class="bg-white/20 text-sm px-3 py-1 rounded-full">${teamMembers.length} Kişi</span>
+           </div>
+           <div class="${colorInfo.lightBg} p-5 flex-1 flex flex-col justify-start">
+             ${membersHtml}
+           </div>
+         `;
+         
+         teamsContainer.appendChild(teamCard);
+      });
+
+      stateAnimating.classList.add('hidden');
+      stateAnimating.classList.remove('flex');
+      stateResults.classList.remove('hidden');
+      stateResults.classList.add('flex');
+
+      throwConfetti();
+      btnGenerate.disabled = false;
+      btnGenerate.classList.remove('opacity-50', 'cursor-not-allowed');
+      btnGenerate.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> YENİDEN DAĞIT`;
+    }
+    
+    itemCountSpan.innerText = getValidNames().length;
+  </script>
+</body>
+</html>

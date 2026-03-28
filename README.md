@@ -62,28 +62,19 @@ Kimlik Doğrulama: Firebase Authentication (Google Sign-In ve Anonim Giriş)
 
 ⚙️ Kurulum ve Dağıtım (Deployment)
 
-Bu proje doğrudan tarayıcı üzerinde (Statik HTML/JS olarak) çalışır. Node.js veya sunucu kurulumuna ihtiyaç yoktur. Ancak Firebase servislerinin çalışması için kendi Firebase projenizi bağlamanız gereklidir.
+Bu proje doğrudan tarayıcı üzerinde (Statik HTML/JS olarak) çalışır. Node.js veya sunucu kurulumuna ihtiyaç yoktur.
 
-1. Firebase Ayarları
 
-Firebase Console üzerinden yeni bir proje oluşturun.
-
-Firestore Database oluşturun ve güvenlik kurallarını (Rules) uygun şekilde ayarlayın.
-
-Authentication sekmesinden Google ve Anonymous (Anonim) giriş yöntemlerini aktif edin.
-
-Settings > Authorized Domains kısmına projenizi yayınlayacağınız alan adını (örn: username.github.io) ekleyin.
-
-2. Projeyi Klonlama ve Ayarlama
+1. Projeyi Klonlama ve Ayarlama
 
 git clone [https://github.com/KULLANICI_ADINIZ/kampus-etkinlik-platformu.git](https://github.com/KULLANICI_ADINIZ/kampus-etkinlik-platformu.git)
 
 
 Her bir HTML dosyasının <script type="module"> etiketi içerisindeki firebaseConfig değişkenini kendi Firebase proje ayarlarınızla değiştirin.
 
-3. Yayınlama (Hosting)
+2. Yayınlama (Hosting)
 
-Proje klasörünü doğrudan GitHub Pages, Vercel veya Netlify üzerinden ücretsiz yayınlayabilirsiniz. Sadece index.html dosyasının ana dizinde olduğundan emin olun.
+Proje klasörünü doğrudan GitHub Pages ücretsiz yayınlanmaktadır.
 
 📂 Dosya Yapısı
 

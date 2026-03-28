@@ -6,36 +6,13 @@
   <title>Yarışma Yönetimi (Öğretmen)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Özel animasyonlar ve stiller */
     .animate-bounce-short { animation: bounce 1s infinite; }
     @keyframes bounce { 0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); } 50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); } }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col font-sans text-gray-800">
 
-  <!-- ============================================== -->
-  <!-- 0. GOOGLE İLE GİRİŞ EKRANI (YENİLENDİ) -->
-  <!-- ============================================== -->
-  <div id="screen-login" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-purple-900">
-    <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-2xl max-w-md w-full text-center">
-      <div class="flex justify-center mb-6 space-x-2">
-        <svg class="w-10 h-10 fill-red-600" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
-        <svg class="w-10 h-10 fill-blue-600" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
-        <svg class="w-10 h-10 fill-yellow-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
-      </div>
-      <h1 class="text-2xl sm:text-3xl font-black text-gray-800 mb-2">Öğretmen Girişi</h1>
-      <p class="text-sm sm:text-base text-gray-500 mb-8">Kendi soru paketlerinize ulaşmak için Google hesabınızla güvenli giriş yapın.</p>
-      
-      <button id="btn-google-login" class="w-full flex items-center justify-center bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-lg sm:text-xl py-4 rounded-xl shadow-sm transition transform hover:-translate-y-1 gap-3">
-        <svg class="w-6 h-6" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Google ile Giriş Yap
-      </button>
-    </div>
-  </div>
-
-  <!-- ============================================== -->
   <!-- 1. ANA SAYFA (DASHBOARD) -->
-  <!-- ============================================== -->
   <div id="screen-dashboard" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-gray-100 hidden relative">
     <div class="absolute top-4 right-4 sm:top-8 sm:right-8 z-10">
       <button id="btn-logout" class="bg-red-100 hover:bg-red-200 text-red-600 font-bold px-4 py-2 sm:px-6 sm:py-3 rounded-xl transition text-sm sm:text-base shadow-sm flex items-center">
@@ -50,7 +27,6 @@
     </div>
 
     <div class="flex flex-col md:flex-row gap-6 sm:gap-8 max-w-4xl w-full">
-      <!-- Seçenek 1: Soru Oluştur -->
       <button onclick="startNewQuizSetup()" class="flex-1 bg-white p-8 sm:p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-purple-500 group">
         <div class="bg-purple-100 p-6 rounded-full mb-6 group-hover:bg-purple-200 transition">
           <svg class="w-12 h-12 sm:w-16 sm:h-16 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
@@ -59,7 +35,6 @@
         <p class="text-sm sm:text-base text-gray-500">Yeni sorular yazın ve kaydedin.</p>
       </button>
 
-      <!-- Seçenek 2: Kayıtlı Sorular -->
       <button onclick="loadSavedQuizzes()" class="flex-1 bg-white p-8 sm:p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-blue-500 group">
         <div class="bg-blue-100 p-6 rounded-full mb-6 group-hover:bg-blue-200 transition">
           <svg class="w-12 h-12 sm:w-16 sm:h-16 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
@@ -70,9 +45,7 @@
     </div>
   </div>
 
-  <!-- ============================================== -->
   <!-- 2. KAYITLI YARIŞMALAR LİSTESİ -->
-  <!-- ============================================== -->
   <div id="screen-quiz-list" class="flex-1 flex flex-col p-4 sm:p-8 bg-gray-50 overflow-y-auto hidden">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-10 max-w-5xl mx-auto w-full">
       <h1 class="text-3xl sm:text-4xl font-black text-gray-800 break-words">Kayıtlı Paketleriniz</h1>
@@ -84,9 +57,7 @@
     </div>
   </div>
 
-  <!-- ============================================== -->
   <!-- 3. KURULUM / SORU EKLEME EKRANI -->
-  <!-- ============================================== -->
   <div id="screen-setup" class="flex-1 flex flex-col p-4 sm:p-8 bg-gray-50 overflow-y-auto hidden">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8 max-w-7xl mx-auto w-full">
       <h1 class="text-3xl sm:text-4xl font-black text-gray-800 break-words">Paket Hazırlayıcı</h1>
@@ -94,7 +65,6 @@
     </div>
 
     <div class="flex flex-col lg:flex-row gap-6 sm:gap-8 max-w-7xl mx-auto w-full">
-      <!-- Soru Ekleme Formu -->
       <div class="flex-[2] bg-white p-5 sm:p-8 rounded-2xl shadow-lg border border-gray-200">
         <h2 class="text-xl sm:text-2xl font-bold mb-6 text-purple-700" id="form-title">Yeni Soru Ekle</h2>
         <form id="form-add-q" class="space-y-6">
@@ -110,25 +80,21 @@
              <textarea id="q-text" class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500 whitespace-normal break-words" rows="3" placeholder="Sorduğunuz soruyu buraya yazın..." required></textarea>
            </div>
            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <!-- Şık 0 -->
               <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
                  <input type="radio" name="correctAnswer" value="0" checked class="w-6 h-6 text-purple-600 cursor-pointer flex-shrink-0">
                  <div class="bg-red-600 p-2 rounded-lg shadow-sm flex-shrink-0"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg></div>
                  <input type="text" id="q-opt-0" placeholder="1. Şık (Kırmızı)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium w-full break-words" required>
               </div>
-              <!-- Şık 1 -->
               <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
                  <input type="radio" name="correctAnswer" value="1" class="w-6 h-6 text-purple-600 cursor-pointer flex-shrink-0">
                  <div class="bg-blue-600 p-2 rounded-lg shadow-sm flex-shrink-0"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg></div>
                  <input type="text" id="q-opt-1" placeholder="2. Şık (Mavi)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium w-full break-words" required>
               </div>
-              <!-- Şık 2 -->
               <div id="container-opt-2" class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200 transition-all">
                  <input type="radio" name="correctAnswer" value="2" class="w-6 h-6 text-purple-600 cursor-pointer flex-shrink-0">
                  <div class="bg-yellow-500 p-2 rounded-lg shadow-sm flex-shrink-0"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg></div>
                  <input type="text" id="q-opt-2" placeholder="3. Şık (Sarı)" class="flex-1 bg-transparent border-b-2 border-gray-300 outline-none px-2 py-2 font-medium w-full break-words" required>
               </div>
-              <!-- Şık 3 -->
               <div id="container-opt-3" class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200 transition-all">
                  <input type="radio" name="correctAnswer" value="3" class="w-6 h-6 text-purple-600 cursor-pointer flex-shrink-0">
                  <div class="bg-green-600 p-2 rounded-lg shadow-sm flex-shrink-0"><svg class="w-6 h-6 fill-white" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
@@ -154,7 +120,6 @@
         </form>
       </div>
 
-      <!-- Eklenen Sorular ve Kaydetme Bölümü -->
       <div class="flex-1 bg-gray-100 p-5 sm:p-6 rounded-2xl border border-gray-300 flex flex-col max-h-[600px]">
          <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2">Paket Adı</label>
@@ -182,26 +147,22 @@
     </div>
   </div>
 
-  <!-- ============================================== -->
   <!-- 4. LOBİ EKRANI -->
-  <!-- ============================================== -->
   <div id="screen-lobby" class="flex-1 flex flex-col bg-purple-800 text-white hidden relative">
     <div class="absolute top-4 right-4 z-10"><button onclick="closeRoom()" class="bg-white/20 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-bold hover:bg-white/30 transition text-sm sm:text-base">Odayı Kapat / Çık</button></div>
     <div class="p-6 sm:p-8 text-center bg-white text-black mt-16 sm:mt-10 mx-auto rounded-xl shadow-2xl max-w-5xl w-[90%] sm:w-full border-b-8 border-purple-900 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-16">
       
-      <!-- QR KOD -->
       <div class="flex flex-col items-center bg-gray-50 p-4 sm:p-6 rounded-2xl border-2 border-gray-100 shadow-sm w-full md:w-auto">
          <h2 class="text-lg sm:text-xl font-black text-purple-800 mb-3 uppercase tracking-wider">Kameranı Okut</h2>
          <div class="bg-white p-3 rounded-xl shadow-md border border-gray-200">
             <img id="qr-img" src="" alt="Oyuna Katıl QR" class="w-32 h-32 sm:w-40 sm:h-40 md:w-52 md:h-52" />
          </div>
          <p class="mt-4 font-bold text-gray-500 text-xs sm:text-sm">veya tarayıcıdan gir:</p>
-         <p id="qr-url-text" class="font-black text-purple-700 text-sm sm:text-lg break-words w-full px-2">site.com</p>
+         <p id="qr-url-text" class="font-black text-purple-700 text-sm sm:text-lg break-words w-full px-2">site.com/yarisma.html</p>
       </div>
 
       <div class="w-full h-1 md:w-1 md:h-48 bg-gray-200 rounded-full md:block"></div>
 
-      <!-- PIN -->
       <div class="flex flex-col items-center w-full md:w-auto">
         <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-gray-800">Katılım PIN Kodu:</h1>
         <div id="display-pin" class="text-5xl sm:text-7xl md:text-9xl font-black tracking-widest text-purple-900 drop-shadow-md bg-purple-100 px-6 py-3 sm:px-8 sm:py-4 rounded-2xl sm:rounded-3xl border-4 border-purple-200">000000</div>
@@ -217,9 +178,7 @@
         </div>
         <button id="btn-start-game" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-8 py-4 sm:px-12 sm:py-5 rounded-2xl font-bold text-xl sm:text-3xl shadow-xl transition transform hover:scale-105" disabled>Başlat</button>
       </div>
-      <div id="player-list" class="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-4 mt-4 sm:mt-8">
-         <!-- Katılan oyuncular buraya eklenecek -->
-      </div>
+      <div id="player-list" class="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-4 mt-4 sm:mt-8"></div>
     </div>
   </div>
 
@@ -294,13 +253,9 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    // YENİ: Firebase Google Giriş Modülleri Eklendi
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    /* =========================================================================
-       🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
-    ========================================================================= */
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
       authDomain: "interaktif-yarisma.firebaseapp.com",
@@ -319,10 +274,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Yollar
-    const GAMES_PATH = 'kahootGames'; // Öğrencilerin girebilmesi için Public (Genel)
-    const PLAYERS_PATH = 'kahootPlayers'; // Öğrencilerin verisi için Public (Genel)
-    const QUIZZES_PATH = 'kahootQuizzes'; // Sorular her öğretmenin kendi klasörüne gidecek (Private)
+    const GAMES_PATH = 'kahootGames';
+    const PLAYERS_PATH = 'kahootPlayers';
+    const QUIZZES_PATH = 'kahootQuizzes'; 
 
     let questions = []; 
     let pin = '';
@@ -335,64 +289,39 @@
     let localGameState = 'login'; 
 
     let savedQuizzes = []; 
-    let editingQuizId = null; 
-    let editingQuestionIdx = -1; 
+let editingQuizId = null; 
+let editingQuestionIdx = -1; 
 
-    window.showScreen = function(screenId) {
-      const screens = ['login', 'dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
-      screens.forEach(s => {
-         const el = document.getElementById(`screen-${s}`);
+window.showScreen = function(screenId) {
+  const screens = ['dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
+  screens.forEach(s => {
+     const el = document.getElementById(`screen-${s}`);
          if(el) {
            el.classList.add('hidden');
            el.classList.remove('flex');
          }
-      });
-      const targetEl = document.getElementById(`screen-${screenId}`);
-      if(targetEl) {
-         targetEl.classList.remove('hidden');
-         targetEl.classList.add('flex');
-      }
-      localGameState = screenId;
-    };
+  localGameState = screenId;
+};
 
-    // ==========================================
-    // YENİ: GOOGLE İLE GİRİŞ & ÇIKIŞ SİSTEMİ
-    // ==========================================
-    const provider = new GoogleAuthProvider();
+document.getElementById('btn-logout').addEventListener('click', () => {
+   signOut(auth).then(() => {
+       hostId = '';
+       savedQuizzes = [];
+       window.location.href = 'index.html';
+   });
+});
 
-    document.getElementById('btn-google-login').addEventListener('click', () => {
-      signInWithPopup(auth, provider)
-         .then((result) => {
-           hostId = result.user.uid;
-           showScreen('dashboard');
-         })
-         .catch((error) => {
-           alert("Google Girişi başarısız oldu.\nLütfen Firebase Authentication panelinden 'Google' sağlayıcısının aktif olduğundan emin olun!\n\nHata: " + error.message);
-           console.error("Giriş Hatası:", error);
-         });
-    });
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        hostId = user.uid;
+        showScreen('dashboard');
+    } else {
+        hostId = '';
+        window.location.href = 'index.html';
+    }
+});
 
-    document.getElementById('btn-logout').addEventListener('click', () => {
-       signOut(auth).then(() => {
-           hostId = '';
-           savedQuizzes = [];
-           showScreen('login');
-       });
-    });
-
-    // Sayfa yenilendiğinde eğer zaten giriş yapmışsa direkt panele at
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            hostId = user.uid;
-            if (localGameState === 'login') showScreen('dashboard');
-        } else {
-            hostId = '';
-            showScreen('login');
-        }
-    });
-
-    // ... (Diğer tüm Soru Ekleme / Silme UI işlemleri aynı kalır)
-    document.getElementById('q-type').addEventListener('change', (e) => {
+document.getElementById('q-type').addEventListener('change', (e) => {
        const type = e.target.value;
        const opt2Container = document.getElementById('container-opt-2');
        const opt3Container = document.getElementById('container-opt-3');
@@ -536,7 +465,6 @@
     window.closeRoom = async function() {
         if (pin) {
             try {
-                // Oda tamamen silindiğinde, index.html tarafındaki onSnapshot() bunu algılayıp öğrenciyi dışarı atar.
                 await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin));
             } catch(e) {
                 console.error("Oda silinirken hata:", e);
@@ -602,9 +530,6 @@
       });
     }
 
-    // ==========================================
-    // YENİ: VERİTABANI YOLLARI KİŞİSELLEŞTİRİLDİ (users/hostId/...)
-    // ==========================================
     async function saveQuizToDB() {
       const quizName = document.getElementById('input-quiz-name').value.trim();
       const showText = document.getElementById('input-show-text').checked;
@@ -620,7 +545,6 @@
 
       try {
          if (editingQuizId) {
-             // Sadece bu öğretmene ait yola kaydet
              const quizRef = doc(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH, editingQuizId);
              await updateDoc(quizRef, {
                 name: quizName,
@@ -636,7 +560,6 @@
              }
              return editingQuizId;
          } else {
-             // Yeni paketi, oturum açan öğretmenin kendi "users" klasörü altına koy
              const newQuizRef = doc(collection(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH));
              await setDoc(newQuizRef, {
                 id: newQuizRef.id,
@@ -695,7 +618,6 @@
        container.innerHTML = '<div class="text-center text-gray-500 col-span-1 md:col-span-2 py-10 font-bold text-xl">Kayıtlar Yükleniyor...</div>';
        
        try {
-          // Öğretmen sadece KENDİ oluşturduğu soruları veritabanından çekiyor
           const quizzesSnapshot = await getDocs(collection(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH));
           savedQuizzes = quizzesSnapshot.docs.map(doc => doc.data());
           
@@ -745,7 +667,6 @@
     window.deleteQuiz = async function(quizId) {
        if (confirm("Bu yarışma paketini tamamen silmek istediğinize emin misiniz?")) {
           try {
-             // Kendi klasöründen siliyor
              await deleteDoc(doc(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH, quizId));
              loadSavedQuizzes(); 
           } catch (err) {
@@ -769,11 +690,10 @@
         
         localGameState = 'lobby'; 
 
-        const studentUrl = window.location.href.replace('admin.html', '').replace(/\/$/, '');
+        const studentUrl = window.location.href.replace('admin.html', 'yarisma.html').replace(/\/$/, '');
         document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
         document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
 
-        // ODA HER ZAMAN PUBLIC KALMAK ZORUNDA (Öğrencilerin görebilmesi için)
         await setDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
           pin: pin, state: 'lobby', currentQuestionIndex: 0, hostId: hostId, createdAt: Date.now(), questionCount: questions.length, showTextOnStudent: showText
         });

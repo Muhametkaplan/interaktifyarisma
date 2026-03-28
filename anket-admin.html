@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canlı Anket Yönetimi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50 min-h-screen flex flex-col font-sans text-gray-800">
+
+  <!-- YETKİSİZ GİRİŞ EKRANI -->
+  <div id="screen-unauthorized" class="flex-1 flex flex-col items-center justify-center p-6 bg-gray-100 hidden">
+    <div class="bg-white p-10 rounded-3xl shadow-xl max-w-md w-full text-center">
+      <svg class="w-16 h-16 text-amber-500 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      <h1 class="text-2xl font-black text-gray-800 mb-2">Erişim Engellendi</h1>
+      <p class="text-gray-500 mb-8">Anket paneline ulaşmak için önce ana sayfadan giriş yapmalısınız.</p>
+      <button onclick="window.location.assign('index.html')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-lg transition">Ana Sayfaya Dön</button>
+    </div>
+  </div>
+
+  <!-- ANA SAYFA (DASHBOARD) -->
+  <div id="screen-dashboard" class="flex-1 flex flex-col items-center justify-center p-6 hidden relative">
+    <div class="absolute top-6 right-6 z-10">
+      <button onclick="window.location.assign('index.html')" class="bg-white border border-gray-200 hover:bg-gray-100 text-gray-700 font-bold px-4 py-2 rounded-xl transition shadow-sm flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Ana Sayfaya Dön
+      </button>
+    </div>
+
+    <div class="text-center mb-12">
+      <h1 class="text-4xl sm:text-5xl font-black text-amber-900 mb-4">Canlı Anket Paneli</h1>
+      <p class="text-lg text-gray-600">Yeni bir anket oluşturun veya sonuçları izleyin.</p>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-6 max-w-4xl w-full">
+      <button onclick="showScreen('setup')" class="flex-1 bg-white p-10 rounded-3xl shadow-xl hover:shadow-2xl transition transform hover:-translate-y-2 flex flex-col items-center text-center border-t-8 border-amber-500 group">
+        <div class="bg-amber-100 p-6 rounded-full mb-6 group-hover:bg-amber-200 transition">
+          <svg class="w-12 h-12 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Hızlı Anket Oluştur</h2>
+        <p class="text-gray-500">Soru ve seçenekleri belirleyip hemen oylamaya başlayın.</p>
+      </button>
+    </div>
+  </div>
+
+  <!-- KURULUM EKRANI -->
+  <div id="screen-setup" class="flex-1 flex flex-col p-6 sm:p-10 hidden">
+    <div class="flex justify-between items-center mb-8 max-w-3xl mx-auto w-full">
+      <h1 class="text-3xl font-black text-gray-800">Anket Hazırlayıcı</h1>
+      <button onclick="showScreen('dashboard')" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-bold hover:bg-gray-300 transition">İptal</button>
+    </div>
+
+    <div class="bg-white p-8 rounded-3xl shadow-xl max-w-3xl mx-auto w-full border border-gray-100">
+      <form id="form-add-poll" class="space-y-6">
+         <div>
+           <label class="block text-gray-700 font-bold mb-2 text-lg">Oylama Sorusu</label>
+           <textarea id="poll-question" class="w-full p-4 border-2 border-gray-200 rounded-xl outline-none focus:border-amber-500 font-medium text-lg" rows="2" placeholder="Örn: Gelecek haftaki etkinlik nerede olsun?" required></textarea>
+         </div>
+         
+         <div id="options-container" class="space-y-3">
+            <label class="block text-gray-700 font-bold mb-2">Seçenekler</label>
+            <!-- Seçenekler JS ile eklenecek -->
+         </div>
+         
+         <button type="button" onclick="addOption()" class="text-amber-600 font-bold flex items-center hover:text-amber-800 transition">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Yeni Seçenek Ekle
+         </button>
+
+         <div class="pt-8 mt-4 border-t border-gray-100">
+            <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-4 rounded-xl font-black text-xl shadow-lg transition transform hover:-translate-y-1">
+               Anketi Başlat
+            </button>
+         </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LOBİ EKRANI -->
+  <div id="screen-lobby" class="flex-1 flex flex-col bg-amber-800 text-white hidden relative">
+    <div class="absolute top-4 right-4"><button onclick="closePoll()" class="bg-white/20 px-4 py-2 rounded-lg font-bold hover:bg-white/30 transition">Anketi İptal Et</button></div>
+    
+    <div class="p-8 text-center bg-white text-black mt-16 mx-auto rounded-2xl shadow-2xl max-w-4xl w-full border-b-8 border-amber-900 flex flex-col md:flex-row items-center justify-center gap-10">
+      <div class="flex flex-col items-center bg-gray-50 p-6 rounded-2xl border border-gray-200">
+         <h2 class="text-xl font-black text-amber-800 mb-3 uppercase tracking-wider">Kameranı Okut</h2>
+         <img id="qr-img" src="" alt="QR" class="w-40 h-40 bg-white p-2 rounded-xl shadow-sm" />
+         <p class="mt-4 font-bold text-gray-500 text-sm">veya tarayıcıdan gir:</p>
+         <p id="qr-url-text" class="font-black text-amber-700 text-lg">site.com/anket.html</p>
+      </div>
+
+      <div class="flex flex-col items-center">
+        <h1 class="text-3xl font-bold mb-4 text-gray-800">Oylama PIN Kodu:</h1>
+        <div id="display-pin" class="text-7xl font-black tracking-widest text-amber-900 bg-amber-100 px-8 py-4 rounded-3xl border-4 border-amber-200">000000</div>
+      </div>
+    </div>
+
+    <div class="flex-1 p-10 flex flex-col items-center mt-6">
+      <div class="flex items-center space-x-3 text-2xl font-bold bg-amber-900 px-8 py-4 rounded-full mb-8 shadow-inner">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <span><span id="voter-count-lobby">0</span> Kişi Bekliyor</span>
+      </div>
+      <button onclick="startVoting()" class="bg-white text-amber-900 hover:bg-gray-100 px-12 py-5 rounded-2xl font-black text-3xl shadow-2xl transition transform hover:scale-105">
+        Oylamayı Başlat
+      </button>
+    </div>
+  </div>
+
+  <!-- CANLI OYLAMA (LIVE) EKRANI -->
+  <div id="screen-live" class="flex-1 flex flex-col bg-gray-50 p-6 sm:p-10 hidden overflow-y-auto">
+    <div class="flex justify-between items-center max-w-5xl mx-auto w-full mb-8">
+       <div class="bg-amber-100 text-amber-800 font-bold px-6 py-2 rounded-full flex items-center shadow-sm border border-amber-200">
+         <span class="w-3 h-3 bg-red-500 rounded-full animate-pulse mr-3"></span> CANLI OYLAMA
+       </div>
+       <button onclick="stopVoting()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition">Oylamayı Bitir</button>
+    </div>
+
+    <h2 id="live-question" class="text-3xl sm:text-4xl font-black text-center bg-white p-8 rounded-3xl shadow-lg border-t-8 border-amber-500 w-full max-w-5xl mx-auto mb-10 text-gray-800">Soru Metni</h2>
+    
+    <div class="w-full max-w-5xl mx-auto bg-white p-8 rounded-3xl shadow-md border border-gray-100">
+      <div id="live-bars" class="space-y-6">
+         <!-- Barlar JS ile eklenecek -->
+      </div>
+      <div class="mt-8 pt-6 border-t border-gray-100 text-right font-bold text-gray-500 text-lg">
+         Toplam Oy: <span id="total-votes" class="text-amber-600 text-2xl">0</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    let firebaseConfig = {};
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+      firebaseConfig = JSON.parse(__firebase_config);
+    }
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const POLLS_PATH = 'pollSessions';
+    const VOTES_PATH = 'pollVotes';
+
+    let hostId = '';
+    let pin = '';
+    let currentPoll = null;
+    let votes = [];
+    let unsubVotes = null;
+
+    let pollOptions = ['', '']; // Varsayılan 2 seçenek
+
+    window.showScreen = function(screenId) {
+      ['unauthorized', 'dashboard', 'setup', 'lobby', 'live'].forEach(s => {
+         document.getElementById(`screen-${s}`).classList.add('hidden');
+         document.getElementById(`screen-${s}`).classList.remove('flex');
+      });
+      document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+      document.getElementById(`screen-${screenId}`).classList.add('flex');
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            hostId = user.uid;
+            showScreen('dashboard');
+            renderOptions();
+        } else {
+            showScreen('unauthorized');
+        }
+    });
+
+    // SEÇENEK YÖNETİMİ
+    window.renderOptions = function() {
+       const container = document.getElementById('options-container');
+       container.innerHTML = '';
+       pollOptions.forEach((opt, idx) => {
+          container.innerHTML += `
+            <div class="flex items-center space-x-3 bg-gray-50 p-2 rounded-xl border border-gray-200">
+               <span class="bg-gray-200 text-gray-600 font-bold w-8 h-8 flex items-center justify-center rounded-lg">${idx + 1}</span>
+               <input type="text" value="${opt}" oninput="updateOption(${idx}, this.value)" placeholder="Seçenek metni..." class="flex-1 bg-transparent outline-none px-2 py-2 font-medium" required>
+               ${pollOptions.length > 2 ? `<button type="button" onclick="removeOption(${idx})" class="text-red-400 hover:text-red-600 p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>` : ''}
+            </div>
+          `;
+       });
+    };
+
+    window.updateOption = function(idx, val) { pollOptions[idx] = val; };
+    window.addOption = function() { if(pollOptions.length < 6) { pollOptions.push(''); renderOptions(); } };
+    window.removeOption = function(idx) { pollOptions.splice(idx, 1); renderOptions(); };
+
+    // ANKET BAŞLATMA
+    document.getElementById('form-add-poll').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const question = document.getElementById('poll-question').value;
+      if (pollOptions.some(opt => !opt.trim())) return alert("Lütfen tüm seçenekleri doldurun.");
+
+      pin = Math.floor(100000 + Math.random() * 900000).toString();
+      currentPoll = { question, options: pollOptions };
+
+      const studentUrl = window.location.href.replace('anket-admin.html', 'anket.html').replace(/\/$/, '');
+      document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=d97706`;
+      document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
+      document.getElementById('display-pin').innerText = pin;
+
+      await setDoc(doc(db, 'artifacts', appId, 'public', 'data', POLLS_PATH, pin), {
+        pin: pin, state: 'lobby', hostId: hostId, question: question, options: pollOptions, createdAt: Date.now()
+      });
+
+      // Dinleyiciyi başlat
+      if(unsubVotes) unsubVotes();
+      unsubVotes = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', VOTES_PATH), (snap) => {
+         const allVotes = snap.docs.map(d => d.data());
+         votes = allVotes.filter(v => v.pin === pin);
+         document.getElementById('voter-count-lobby').innerText = votes.length;
+         updateLiveChart(); // Canlı ekran güncellemeleri
+      });
+
+      showScreen('lobby');
+    });
+
+    window.startVoting = async function() {
+       await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', POLLS_PATH, pin), { state: 'live' });
+       document.getElementById('live-question').innerText = currentPoll.question;
+       updateLiveChart();
+       showScreen('live');
+    };
+
+    window.stopVoting = async function() {
+       await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', POLLS_PATH, pin), { state: 'closed' });
+       // Ekranda görsel bir değişiklik yaparak bittiğini belirt
+       document.querySelector('.bg-amber-100 .bg-red-500').classList.remove('animate-pulse', 'bg-red-500');
+       document.querySelector('.bg-amber-100 .w-3').classList.add('bg-gray-500');
+       document.querySelector('.bg-amber-100').innerHTML = "OYLAMA BİTTİ";
+       document.querySelector('button[onclick="stopVoting()"]').outerHTML = `<button onclick="closePoll()" class="bg-gray-800 hover:bg-gray-900 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition">Kapat & Ana Ekrana Dön</button>`;
+    };
+
+    window.closePoll = async function() {
+        if (pin) {
+            try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', POLLS_PATH, pin)); } catch(e) {}
+        }
+        pin = ''; currentPoll = null; votes = []; pollOptions = ['', ''];
+        document.getElementById('form-add-poll').reset();
+        renderOptions();
+        showScreen('dashboard'); 
+    };
+
+    // GRAFİK ÇİZİMİ (Orantılı Bar)
+    function updateLiveChart() {
+       if(!currentPoll) return;
+       const barsContainer = document.getElementById('live-bars');
+       const totalVotes = votes.filter(v => v.voteIndex !== null).length;
+       document.getElementById('total-votes').innerText = totalVotes;
+
+       const counts = currentPoll.options.map((_, idx) => votes.filter(v => v.voteIndex === idx).length);
+       const maxCount = Math.max(...counts, 1);
+
+       barsContainer.innerHTML = '';
+       currentPoll.options.forEach((optText, idx) => {
+          const count = counts[idx];
+          const percentage = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100);
+          const barWidth = (count / maxCount) * 100; // En çok oy alana göre %100 genişlik doldurulur
+
+          barsContainer.innerHTML += `
+            <div class="flex flex-col">
+              <div class="flex justify-between items-end mb-2">
+                 <span class="text-lg font-bold text-gray-700">${optText}</span>
+                 <div class="text-right">
+                    <span class="text-2xl font-black text-amber-600">${percentage}%</span>
+                    <span class="text-sm text-gray-400 ml-2">(${count} oy)</span>
+                 </div>
+              </div>
+              <div class="w-full bg-gray-100 rounded-full h-8 overflow-hidden flex">
+                 <div class="bg-gradient-to-r from-amber-400 to-orange-500 h-full rounded-full transition-all duration-700 ease-out" style="width: ${barWidth > 0 ? barWidth : 1}%"></div>
+              </div>
+            </div>
+          `;
+       });
+    }
+  </script>
+</body>
+</html>

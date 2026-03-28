@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Canlı Ankete Katıl</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex justify-center font-sans antialiased text-gray-800">
+
+  <div class="w-full max-w-md bg-white shadow-2xl flex flex-col relative overflow-hidden h-screen border-t-8 border-amber-500">
+
+    <!-- Çıkış Butonu -->
+    <button id="btn-exit" class="hidden absolute top-4 left-4 text-gray-400 hover:text-gray-700 z-50 p-2 bg-white/50 rounded-full backdrop-blur-sm">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+
+    <!-- 0. YÜKLENİYOR -->
+    <div id="screen-loading" class="flex-1 bg-white flex flex-col items-center justify-center p-6">
+      <svg class="w-12 h-12 animate-spin text-amber-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    </div>
+
+    <!-- 1. GİRİŞ EKRANI -->
+    <div id="screen-join" class="hidden flex-1 bg-amber-50 flex-col items-center justify-center p-6 sm:p-8">
+      <div class="bg-amber-100 p-4 rounded-full mb-6">
+         <svg class="w-12 h-12 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-black text-gray-800 mb-8 text-center tracking-tight">Canlı Anket</h2>
+      
+      <div id="error-msg" class="hidden w-full bg-red-100 text-red-700 p-4 rounded-xl mb-6 font-bold text-sm text-center"></div>
+      
+      <form id="join-form" class="w-full space-y-4">
+        <input id="input-pin" type="number" placeholder="Anket PIN Kodu" class="w-full text-center text-xl font-bold p-5 border-2 border-gray-300 rounded-2xl outline-none focus:border-amber-500 bg-white" required />
+        <input id="input-name" type="text" placeholder="Adın (Zorunlu Değil)" class="w-full text-center text-xl font-bold p-5 border-2 border-gray-300 rounded-2xl outline-none focus:border-amber-500 bg-white" maxLength="15" />
+        <button type="submit" class="w-full bg-amber-600 text-white font-black text-xl p-5 rounded-2xl hover:bg-amber-700 active:scale-95 transition-all shadow-lg mt-2">Bağlan</button>
+      </form>
+    </div>
+
+    <!-- 2. BEKLEME (LOBİ) -->
+    <div id="screen-lobby" class="hidden flex-1 bg-amber-600 flex-col items-center justify-center p-8 text-white text-center">
+      <svg class="w-16 h-16 animate-bounce mb-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+      <h2 class="text-3xl font-black mb-2">Bağlandınız!</h2>
+      <p class="text-lg opacity-90">Oylamanın ekranda açılması bekleniyor...</p>
+    </div>
+
+    <!-- 3. OY VERME (LIVE) -->
+    <div id="screen-live" class="hidden flex-1 flex-col bg-gray-50 p-6 overflow-y-auto">
+       <h3 id="poll-question-text" class="text-xl font-bold text-gray-800 mb-6 text-center border-b-2 border-gray-200 pb-4">Soru Gelecek</h3>
+       
+       <div id="poll-options-container" class="flex flex-col gap-4 pb-6">
+          <!-- Butonlar JS ile dolacak -->
+       </div>
+    </div>
+
+    <!-- 4. OY VERİLDİ (SONUÇ BEKLENİYOR) -->
+    <div id="screen-voted" class="hidden flex-1 bg-gray-100 flex-col items-center justify-center p-8 text-center">
+      <div class="bg-green-100 p-6 rounded-full mb-6">
+         <svg class="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+      </div>
+      <h2 class="text-3xl font-black text-gray-800 mb-2">Oyunuz Alındı!</h2>
+      <p class="text-gray-500 font-medium">Lütfen tahtadaki sonuçları takip edin.</p>
+      
+      <div id="closed-message" class="hidden mt-8 bg-amber-100 text-amber-800 px-6 py-3 rounded-xl font-bold border border-amber-200">
+         Oylama yöneticisi tarafından sonlandırıldı.
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, updateDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    let firebaseConfig = {};
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) firebaseConfig = JSON.parse(__firebase_config);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const POLLS_PATH = 'pollSessions';
+    const VOTES_PATH = 'pollVotes';
+
+    let user = null;
+    let joinedPin = '';
+    let pollData = null;
+    let hasVoted = false;
+
+    // Arayüz Yönetimi
+    const screens = ['loading', 'join', 'lobby', 'live', 'voted'];
+    function showScreen(screenId) {
+      screens.forEach(s => {
+        document.getElementById(`screen-${s}`).classList.add('hidden');
+        document.getElementById(`screen-${s}`).classList.remove('flex');
+      });
+      document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+      document.getElementById(`screen-${screenId}`).classList.add('flex');
+      
+      if(screenId !== 'loading' && screenId !== 'join') {
+          document.getElementById('btn-exit').classList.remove('hidden');
+      } else {
+          document.getElementById('btn-exit').classList.add('hidden');
+      }
+    }
+
+    onAuthStateChanged(auth, (currentUser) => {
+      user = currentUser;
+      if(user && !joinedPin) showScreen('join');
+    });
+
+    signInAnonymously(auth).catch(e => console.error(e));
+
+    // Ankete Katıl
+    document.getElementById('join-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if(!user) return;
+      const formPin = document.getElementById('input-pin').value;
+      const formName = document.getElementById('input-name').value || 'Anonim';
+
+      try {
+        const pollDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', POLLS_PATH, formPin));
+        if (!pollDoc.exists()) {
+           const errEl = document.getElementById('error-msg');
+           errEl.innerText = "Hatalı PIN veya anket bulunamadı.";
+           errEl.classList.remove('hidden');
+           return;
+        }
+
+        // Oy kaydını başlat (henüz oy verilmedi)
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', VOTES_PATH, user.uid), {
+          pin: formPin, name: formName, voteIndex: null, timestamp: Date.now()
+        }, { merge: true });
+
+        joinedPin = formPin;
+        document.getElementById('error-msg').classList.add('hidden');
+        listenPoll();
+      } catch (err) {
+        console.error("Bağlantı hatası:", err);
+      }
+    });
+
+    // Anketi Dinle
+    function listenPoll() {
+      onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', POLLS_PATH, joinedPin), (docSnap) => {
+        if (!docSnap.exists()) {
+           handleExit(); // Oda kapandıysa çık
+           return;
+        }
+        
+        pollData = docSnap.data();
+        
+        if (pollData.state === 'lobby') {
+           showScreen('lobby');
+           hasVoted = false;
+        } 
+        else if (pollData.state === 'live') {
+           if(hasVoted) {
+               showScreen('voted');
+           } else {
+               renderVotingButtons();
+               showScreen('live');
+           }
+        }
+        else if (pollData.state === 'closed') {
+           showScreen('voted');
+           document.getElementById('closed-message').classList.remove('hidden');
+        }
+      });
+    }
+
+    // Seçenek Butonlarını Ekrana Bas
+    function renderVotingButtons() {
+       document.getElementById('poll-question-text').innerText = pollData.question;
+       const container = document.getElementById('poll-options-container');
+       container.innerHTML = '';
+       
+       const btnColors = ['bg-amber-500', 'bg-blue-500', 'bg-emerald-500', 'bg-rose-500', 'bg-purple-500', 'bg-cyan-500'];
+
+       pollData.options.forEach((optText, idx) => {
+          if(!optText) return;
+          const colorClass = btnColors[idx % btnColors.length];
+          container.innerHTML += `
+            <button onclick="castVote(${idx})" class="w-full ${colorClass} text-white text-xl font-bold py-6 px-4 rounded-2xl shadow-[0_6px_0_rgba(0,0,0,0.2)] active:shadow-none active:translate-y-[6px] transition-all text-left flex items-center">
+               <span class="bg-white/20 w-10 h-10 flex items-center justify-center rounded-full mr-4 flex-shrink-0">${idx + 1}</span>
+               <span class="break-words">${optText}</span>
+            </button>
+          `;
+       });
+    }
+
+    // Oy Gönder
+    window.castVote = async function(idx) {
+       if(!user || !joinedPin || hasVoted) return;
+       hasVoted = true;
+       showScreen('voted');
+
+       await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', VOTES_PATH, user.uid), {
+          voteIndex: idx
+       });
+    };
+
+    window.handleExit = function() {
+       joinedPin = ''; pollData = null; hasVoted = false;
+       document.getElementById('input-pin').value = '';
+       document.getElementById('closed-message').classList.add('hidden');
+       showScreen('join');
+    };
+
+    document.getElementById('btn-exit').addEventListener('click', handleExit);
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yarışma Yönetimi (Öğretmen)</title>
+  <title>Yarışma Yönetimi</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .animate-bounce-short { animation: bounce 1s infinite; }
@@ -11,6 +11,16 @@
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col font-sans text-gray-800">
+
+  <!-- 0. YETKİSİZ GİRİŞ EKRANI -->
+  <div id="screen-unauthorized" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-gray-100 hidden relative">
+    <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-2xl max-w-md w-full text-center">
+      <svg class="w-16 h-16 text-red-500 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      <h1 class="text-2xl sm:text-3xl font-black text-gray-800 mb-2">Erişim Engellendi</h1>
+      <p class="text-sm sm:text-base text-gray-500 mb-8">Yönetim paneline ulaşmak için önce ana sayfadan giriş yapmalısınız.</p>
+      <button onclick="safeRedirect()" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition">Ana Sayfaya Dön</button>
+    </div>
+  </div>
 
   <!-- 1. ANA SAYFA (DASHBOARD) -->
   <div id="screen-dashboard" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-gray-100 hidden relative">
@@ -253,7 +263,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     let firebaseConfig = {
@@ -286,42 +296,66 @@
     let timeLeft = 0;
     let timerInterval = null;
     let questionStartTime = 0;
-    let localGameState = 'login'; 
+    let localGameState = 'dashboard'; 
 
     let savedQuizzes = []; 
-let editingQuizId = null; 
-let editingQuestionIdx = -1; 
+    let editingQuizId = null; 
+    let editingQuestionIdx = -1; 
 
-window.showScreen = function(screenId) {
-  const screens = ['dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
-  screens.forEach(s => {
-     const el = document.getElementById(`screen-${s}`);
+    window.safeRedirect = function() {
+        try {
+            window.location.assign('index.html');
+        } catch (e) {
+            alert("Önizleme ortamında (Canvas) yönlendirme desteklenmiyor. Lütfen GitHub Pages üzerinden test edin.");
+        }
+    };
+
+    window.showScreen = function(screenId) {
+      const screens = ['unauthorized', 'dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'];
+      screens.forEach(s => {
+         const el = document.getElementById(`screen-${s}`);
          if(el) {
            el.classList.add('hidden');
            el.classList.remove('flex');
          }
-  localGameState = screenId;
-};
+      });
+      const targetEl = document.getElementById(`screen-${screenId}`);
+      if(targetEl) {
+         targetEl.classList.remove('hidden');
+         targetEl.classList.add('flex');
+      }
+      localGameState = screenId;
+    };
 
-document.getElementById('btn-logout').addEventListener('click', () => {
-   signOut(auth).then(() => {
-       hostId = '';
-       savedQuizzes = [];
-       window.location.href = 'index.html';
-   });
-});
+    document.getElementById('btn-logout').addEventListener('click', () => {
+       signOut(auth).then(() => {
+           hostId = '';
+           savedQuizzes = [];
+           showScreen('unauthorized');
+           try {
+               if (window.location.protocol !== 'about:' && window.location.protocol !== 'blob:' && window.location.hostname !== '') {
+                   window.location.replace('index.html');
+               }
+           } catch(e) {}
+       });
+    });
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        hostId = user.uid;
-        showScreen('dashboard');
-    } else {
-        hostId = '';
-        window.location.href = 'index.html';
-    }
-});
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            hostId = user.uid;
+            showScreen('dashboard');
+        } else {
+            hostId = '';
+            showScreen('unauthorized');
+            try {
+                if (window.location.protocol !== 'about:' && window.location.protocol !== 'blob:' && window.location.hostname !== '') {
+                    window.location.replace('index.html');
+                }
+            } catch(e) {}
+        }
+    });
 
-document.getElementById('q-type').addEventListener('change', (e) => {
+    document.getElementById('q-type').addEventListener('change', (e) => {
        const type = e.target.value;
        const opt2Container = document.getElementById('container-opt-2');
        const opt3Container = document.getElementById('container-opt-3');

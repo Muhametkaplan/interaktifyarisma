@@ -2,9 +2,10 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Yarışmaya Katıl</title>
-<style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
     /* Dokunmatik ekranlarda butonlara basmayı kolaylaştıran özel ayarlar */
     button { touch-action: manipulation; }
     .shape-btn:active { transform: translateY(4px); box-shadow: none !important; }
@@ -126,7 +127,8 @@
            + <span id="reveal-points">0</span> Puan
          </div>
          <p id="reveal-message" class="mt-6 sm:mt-8 text-xl sm:text-2xl opacity-90 font-medium bg-black/10 px-4 sm:px-6 py-2 rounded-full break-words whitespace-normal">Mesaj</p>
- <!-- Alt Bar -->
+      </div>
+      <!-- Alt Bar -->
       <div class="w-full mt-6 sm:mt-8 mb-2">
          <div class="bg-black/20 w-full py-4 sm:py-5 rounded-xl sm:rounded-2xl font-bold flex justify-between px-4 sm:px-6 text-lg sm:text-xl border border-white/10 backdrop-blur-sm">
             <span>Sıra: #<span id="reveal-rank">0</span></span>
@@ -161,7 +163,6 @@
   </div>
 
   <script type="module">
-    // DİKKAT: getDocs modülü import listesine eklendi!
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -465,3 +466,5 @@
     ui.btnExit.addEventListener('click', () => handleExit());
     document.getElementById('btn-restart').addEventListener('click', () => handleExit());
   </script>
+</body>
+</html>

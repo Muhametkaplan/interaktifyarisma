@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kullanım Şartları | Equizly</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <div class="max-w-4xl mx-auto px-6 py-16">
+    <a href="index.html" class="text-indigo-600 font-bold mb-8 inline-block">&larr; Ana Sayfaya Dön</a>
+    <h1 class="text-4xl font-black mb-6">Kullanım Şartları</h1>
+    <div class="prose prose-lg text-gray-600 space-y-4">
+      <p>Equizly.com platformuna erişim sağlayarak ve hizmetlerimizi kullanarak aşağıdaki şartları kabul etmiş sayılırsınız:</p>
+      <ul class="list-disc pl-6">
+        <li>Kullanıcılar, platform üzerinden oluşturdukları soru, anket ve içeriklerin telif haklarından ve yasal sorumluluğundan kendileri mesuldür. Yasadışı, hakaret veya nefret söylemi içeren içerikler oluşturulamaz.</li>
+        <li>Equizly, sistemin %100 kesintisiz çalışacağını garanti etmez; sunucu bakımları veya Firebase kaynaklı gecikmeler yaşanabilir.</li>
+        <li>Platformda yer alan reklamların içeriğinden doğrudan Google AdSense sorumludur.</li>
+        <li>Hizmetlerimizi kötüye kullanım, spam bot saldırıları veya sisteme zarar verecek yazılımlar kullanmak kesinlikle yasaktır ve hesap iptali ile sonuçlanır.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
+```
+
+---
+
+### ADIM 5: QR Kodların Sitenin Yeni Domainine Bağlanması
+
+Son sorunun ("GitHub linkine atıyor") çözümü için şu işlemi yapmalısın. Sen artık `equizly.com` domainindesin. 
+
+Lütfen GitHub'ındaki şu 3 dosyayı (`yarisma-admin.html`, `anket-admin.html`, `qa-admin.html`) açıp içindeki URL oluşturma kodlarını tam olarak şu şekilde değiştir (Genelde sayfaların en altında `window.startRoom...` veya `document.getElementById('form-start...` kısımlarında bulunur):
+
+**1. `yarisma-admin.html` İçinde Şunu Bul ve Değiştir:**
+```javascript
+// ESKİSİ: const studentUrl = window.location.href.replace('yarisma-admin.html', 'yarisma.html').replace(/\/$/, '');
+// YENİSİ BÖYLE OLSUN:
+const studentUrl = window.location.origin + '/yarisma.html';
+```
+
+**2. `anket-admin.html` İçinde Şunu Bul ve Değiştir:**
+```javascript
+// ESKİSİ: const studentUrl = window.location.href.replace('anket-admin.html', 'anket.html').replace(/\/$/, '');
+// YENİSİ BÖYLE OLSUN:
+const studentUrl = window.location.origin + '/anket.html';
+```
+
+**3. `qa-admin.html` İçinde Şunu Bul ve Değiştir:**
+```javascript
+// ESKİSİ: const studentUrl = window.location.href.replace('qa-admin.html', 'qa.html').replace(/\/$/, '');
+// YENİSİ BÖYLE OLSUN:
+const studentUrl = window.location.origin + '/qa.html';

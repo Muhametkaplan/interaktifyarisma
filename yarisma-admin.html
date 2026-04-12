@@ -711,7 +711,7 @@
         
         localGameState = 'lobby'; 
 
-        const studentUrl = window.location.href.replace('admin.html', 'yarisma.html').replace(/\/$/, '');
+        const studentUrl = window.location.href.replace('yarisma-admin.html', 'yarisma.html').replace(/\/$/, '');
         document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
         document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
 

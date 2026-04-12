@@ -213,7 +213,7 @@
       pin = Math.floor(100000 + Math.random() * 900000).toString();
       currentPoll = { question, options: pollOptions };
 
-      const studentUrl = window.location.href.replace('anket-admin.html', 'anket.html').replace(/\/$/, '');
+      const studentUrl = window.location.origin + '/anket.html';
       document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=d97706`;
       document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
       document.getElementById('display-pin').innerText = pin;

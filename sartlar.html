@@ -22,32 +22,3 @@
   </div>
 </body>
 </html>
-```
-
----
-
-### ADIM 5: QR Kodların Sitenin Yeni Domainine Bağlanması
-
-Son sorunun ("GitHub linkine atıyor") çözümü için şu işlemi yapmalısın. Sen artık `equizly.com` domainindesin. 
-
-Lütfen GitHub'ındaki şu 3 dosyayı (`yarisma-admin.html`, `anket-admin.html`, `qa-admin.html`) açıp içindeki URL oluşturma kodlarını tam olarak şu şekilde değiştir (Genelde sayfaların en altında `window.startRoom...` veya `document.getElementById('form-start...` kısımlarında bulunur):
-
-**1. `yarisma-admin.html` İçinde Şunu Bul ve Değiştir:**
-```javascript
-// ESKİSİ: const studentUrl = window.location.href.replace('yarisma-admin.html', 'yarisma.html').replace(/\/$/, '');
-// YENİSİ BÖYLE OLSUN:
-const studentUrl = window.location.origin + '/yarisma.html';
-```
-
-**2. `anket-admin.html` İçinde Şunu Bul ve Değiştir:**
-```javascript
-// ESKİSİ: const studentUrl = window.location.href.replace('anket-admin.html', 'anket.html').replace(/\/$/, '');
-// YENİSİ BÖYLE OLSUN:
-const studentUrl = window.location.origin + '/anket.html';
-```
-
-**3. `qa-admin.html` İçinde Şunu Bul ve Değiştir:**
-```javascript
-// ESKİSİ: const studentUrl = window.location.href.replace('qa-admin.html', 'qa.html').replace(/\/$/, '');
-// YENİSİ BÖYLE OLSUN:
-const studentUrl = window.location.origin + '/qa.html';

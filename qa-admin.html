@@ -146,7 +146,7 @@
       const title = document.getElementById('qa-title').value || "Soru-Cevap Oturumu";
       pin = Math.floor(100000 + Math.random() * 900000).toString();
 
-      const studentUrl = window.location.href.replace('qa-admin.html', 'qa.html').replace(/\/$/, '');
+      const studentUrl = window.location.origin + '/qa.html';
       document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=155e75`;
       document.getElementById('display-pin').innerText = pin;
       document.getElementById('live-qa-title').innerText = title;

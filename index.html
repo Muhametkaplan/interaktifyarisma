@@ -3,155 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kampüs Etkinlik Platformu</title>
+  <title>Equizly | Kampüs Etkinlik Platformu</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6618405313423540" crossorigin="anonymous"></script>
+
   <style>
     .animate-pop { animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
     @keyframes pop-in { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    .tab-active { border-bottom: 4px solid #4f46e5; color: #4f46e5; font-weight: 900; }
+    .tab-inactive { border-bottom: 4px solid transparent; color: #6b7280; font-weight: 600; }
   </style>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6618405313423540"
-     crossorigin="anonymous"></script>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans text-gray-800 selection:bg-purple-300">
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800 selection:bg-indigo-300 flex flex-col">
   
-  <!-- 0. YÜKLENİYOR EKRANI -->
   <div id="loading-screen" class="fixed inset-0 bg-gray-900 z-50 flex flex-col items-center justify-center text-white">
-    <svg class="w-16 h-16 animate-spin text-purple-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-    <h2 class="text-xl font-bold tracking-widest animate-pulse">Sistem Yükleniyor...</h2>
+    <svg class="w-16 h-16 animate-spin text-indigo-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+    <h2 class="text-xl font-bold tracking-widest animate-pulse">Equizly Yükleniyor...</h2>
   </div>
 
-  <!-- 1. GİRİŞ EKRANI -->
-  <div id="login-screen" class="hidden min-h-screen bg-gradient-to-br from-purple-900 to-indigo-900 flex-col items-center justify-center p-6">
-    <div class="bg-white p-8 sm:p-12 rounded-[2.5rem] shadow-2xl max-w-md w-full text-center animate-pop">
-      <div class="flex justify-center mb-8 space-x-3">
-        <svg class="w-12 h-12 fill-red-500" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>
-        <svg class="w-12 h-12 fill-blue-500" viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
-        <svg class="w-12 h-12 fill-yellow-400" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
-      </div>
-      <h1 class="text-3xl sm:text-4xl font-black text-gray-800 mb-4 tracking-tight">Platform Girişi</h1>
-      <p class="text-base sm:text-lg text-gray-500 mb-10">Tüm etkinlik araçlarına erişmek ve verilerinizi kaydetmek için giriş yapın.</p>
+  <div id="login-screen" class="hidden flex-1 bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 flex-col items-center justify-center p-6">
+    <div class="bg-white p-8 sm:p-10 rounded-[2rem] shadow-2xl max-w-md w-full animate-pop">
       
-      <button id="btn-google-login" class="w-full flex items-center justify-center bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-lg sm:text-xl py-4 sm:py-5 rounded-2xl shadow-sm transition transform hover:-translate-y-1 gap-4">
-        <svg class="w-7 h-7" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-        Google ile Giriş Yap
+      <div class="text-center mb-6">
+        <h1 class="text-4xl font-black text-gray-800 tracking-tight">Equizly</h1>
+        <p class="text-sm text-gray-500 mt-1">Platforma erişmek için giriş yapın.</p>
+      </div>
+
+      <div class="flex w-full mb-6 border-b border-gray-200">
+        <button id="tab-login" class="flex-1 pb-3 text-lg tab-active transition-colors">Giriş Yap</button>
+        <button id="tab-register" class="flex-1 pb-3 text-lg tab-inactive transition-colors hover:text-indigo-500">Kayıt Ol</button>
+      </div>
+
+      <div id="auth-error" class="hidden bg-red-100 text-red-600 text-sm font-bold p-3 rounded-lg mb-4 text-center"></div>
+
+      <form id="form-login" class="space-y-4">
+        <input type="email" id="login-email" placeholder="E-Posta Adresi" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-indigo-500 font-medium" required>
+        <input type="password" id="login-pass" placeholder="Şifre" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-indigo-500 font-medium" required>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg py-4 rounded-xl shadow-lg transition transform hover:-translate-y-0.5">GİRİŞ YAP</button>
+      </form>
+
+      <form id="form-register" class="space-y-4 hidden">
+        <div class="flex gap-3">
+          <input type="text" id="reg-name" placeholder="Ad" class="w-1/2 p-4 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-indigo-500 font-medium" required>
+          <input type="text" id="reg-surname" placeholder="Soyad" class="w-1/2 p-4 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-indigo-500 font-medium" required>
+        </div>
+        <input type="email" id="reg-email" placeholder="E-Posta Adresi" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-indigo-500 font-medium" required>
+        <input type="password" id="reg-pass" placeholder="Şifre (En az 6 hane)" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-indigo-500 font-medium" minlength="6" required>
+        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-lg py-4 rounded-xl shadow-lg transition transform hover:-translate-y-0.5">HESAP OLUŞTUR</button>
+      </form>
+
+      <div class="my-6 flex items-center">
+        <div class="flex-grow border-t border-gray-200"></div>
+        <span class="flex-shrink-0 mx-4 text-gray-400 text-sm font-bold">VEYA</span>
+        <div class="flex-grow border-t border-gray-200"></div>
+      </div>
+
+      <button id="btn-google-login" class="w-full flex items-center justify-center bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-lg py-3 rounded-xl shadow-sm transition">
+        <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Google ile Devam Et
       </button>
     </div>
   </div>
 
-  <!-- 2. ANA SAYFA (HUB) EKRANI -->
-  <div id="hub-screen" class="hidden min-h-screen flex-col bg-gray-50">
-    <header class="bg-gradient-to-r from-purple-800 to-indigo-700 text-white py-12 px-6 text-center shadow-lg rounded-b-[3rem] relative">
+  <div id="hub-screen" class="hidden flex-1 flex-col bg-gray-50">
+    <header class="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-700 text-white py-12 px-6 text-center shadow-lg relative">
       <div class="absolute top-6 right-6 sm:top-8 sm:right-8">
-        <button id="btn-logout" class="bg-white/20 hover:bg-white/30 text-white font-bold px-4 py-2 sm:px-6 sm:py-3 rounded-xl transition text-sm sm:text-base shadow-sm flex items-center backdrop-blur-sm">
+        <button id="btn-logout" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold px-4 py-2 sm:px-6 sm:py-3 rounded-xl transition text-sm sm:text-base shadow-sm flex items-center backdrop-blur-sm">
           <svg class="w-5 h-5 mr-2 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
           Çıkış Yap
         </button>
       </div>
       
       <div class="mt-8 sm:mt-4">
-        <h1 class="text-4xl md:text-6xl font-black mb-4 tracking-tight drop-shadow-md">Kampüs Etkinlik Platformu</h1>
+        <h1 class="text-4xl md:text-6xl font-black mb-4 tracking-tight drop-shadow-md">Equizly Platformu</h1>
         <p class="text-lg md:text-xl font-medium opacity-90 max-w-2xl mx-auto">Hoş geldiniz, <span id="user-display-name" class="font-bold text-yellow-300">Kullanıcı</span>! Etkinliğini yönetmek için bir araç seç.</p>
       </div>
     </header>
 
-    <main class="flex-1 max-w-7xl mx-auto px-6 py-16 w-full">
+    <main class="flex-1 max-w-7xl mx-auto px-6 py-12 w-full">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-        <!-- 1. Interaktif Yarışma -->
-        <div class="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
-          <div class="h-36 bg-blue-100 flex items-center justify-center relative overflow-hidden">
-            <svg class="w-20 h-20 text-blue-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-200 rounded-full opacity-50"></div>
+         <div class="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
+          <div class="h-32 bg-blue-100 flex items-center justify-center relative overflow-hidden">
+            <svg class="w-16 h-16 text-blue-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
           </div>
-          <div class="p-8 flex-1 flex flex-col">
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">Bilgi Yarışması</h2>
-            <p class="text-gray-600 mb-8 flex-1 text-sm leading-relaxed">Gerçek zamanlı ve interaktif bilgi yarışmaları düzenle. Öğrenciler pin kodu ile katılsın.</p>
-            <div class="flex gap-3">
-               <a href="yarisma.html" class="flex-1 bg-blue-50 text-blue-700 hover:bg-blue-100 text-center font-bold py-3 rounded-xl transition shadow-sm border border-blue-200">Öğrenci</a>
+          <div class="p-6 flex-1 flex flex-col">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Bilgi Yarışması</h2>
+            <p class="text-gray-500 mb-6 flex-1 text-sm">Gerçek zamanlı ve interaktif bilgi yarışmaları düzenle. Katılımcılar PIN ile girsin.</p>
+            <div class="flex gap-2">
+               <a href="yarisma.html" class="flex-1 bg-blue-50 text-blue-700 hover:bg-blue-100 text-center font-bold py-3 rounded-xl transition">Öğrenci</a>
                <a href="yarisma-admin.html" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center font-bold py-3 rounded-xl transition shadow-md">Yönetici</a>
             </div>
           </div>
         </div>
-        
-        <!-- 2. Canlı Anket -->
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
-          <div class="h-36 bg-amber-100 flex items-center justify-center relative overflow-hidden">
-            <svg class="w-20 h-20 text-amber-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-amber-200 rounded-full opacity-50"></div>
+          <div class="h-32 bg-amber-100 flex items-center justify-center relative overflow-hidden">
+            <svg class="w-16 h-16 text-amber-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           </div>
-          <div class="p-8 flex-1 flex flex-col">
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">Canlı Anket & Oylama</h2>
-            <p class="text-gray-600 mb-8 flex-1 text-sm leading-relaxed">Öğrencilerin bir konu hakkında anlık fikirlerini alın ve oyları canlı grafikle izleyin.</p>
-            <div class="flex gap-3">
-               <a href="anket.html" class="flex-1 bg-amber-50 text-amber-700 hover:bg-amber-100 text-center font-bold py-3 rounded-xl transition shadow-sm border border-amber-200">Oy Ver</a>
+          <div class="p-6 flex-1 flex flex-col">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Canlı Anket & Oylama</h2>
+            <p class="text-gray-500 mb-6 flex-1 text-sm">Toplulukların anlık fikirlerini alın ve oyları canlı grafikle dev ekranda izleyin.</p>
+            <div class="flex gap-2">
+               <a href="anket.html" class="flex-1 bg-amber-50 text-amber-700 hover:bg-amber-100 text-center font-bold py-3 rounded-xl transition">Oy Ver</a>
                <a href="anket-admin.html" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-center font-bold py-3 rounded-xl transition shadow-md">Yönetici</a>
             </div>
           </div>
         </div>
-
-        <!-- 3. Takım Kurucu -->
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
-          <div class="h-36 bg-indigo-100 flex items-center justify-center relative overflow-hidden">
-            <svg class="w-20 h-20 text-indigo-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-200 rounded-full opacity-50"></div>
+          <div class="h-32 bg-cyan-100 flex items-center justify-center relative overflow-hidden">
+            <svg class="w-16 h-16 text-cyan-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
           </div>
-          <div class="p-8 flex-1 flex flex-col">
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">Takım Kurucu</h2>
-            <p class="text-gray-600 mb-8 flex-1 text-sm leading-relaxed">Kalabalık grupları adil ve hızlı bir şekilde rastgele takımlara ayırın.</p>
+          <div class="p-6 flex-1 flex flex-col">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Anonim Soru-Cevap</h2>
+            <p class="text-gray-500 mb-6 flex-1 text-sm">Öğrencilerin anonim sorular sorabildiği ve en çok beğenilenlerin üste çıktığı tahta.</p>
+            <div class="flex gap-2">
+               <a href="qa.html" class="flex-1 bg-cyan-50 text-cyan-700 hover:bg-cyan-100 text-center font-bold py-3 rounded-xl transition">Soru Sor</a>
+               <a href="qa-admin.html" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white text-center font-bold py-3 rounded-xl transition shadow-md">Yönetici</a>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
+          <div class="h-32 bg-indigo-100 flex items-center justify-center relative overflow-hidden">
+            <svg class="w-16 h-16 text-indigo-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          </div>
+          <div class="p-6 flex-1 flex flex-col">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Takım Kurucu</h2>
+            <p class="text-gray-500 mb-6 flex-1 text-sm">Kalabalık listeleri adil ve hızlı bir şekilde rastgele takımlara ayırın.</p>
             <a href="takim-kurucu.html" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center font-bold py-3 rounded-xl transition mt-auto shadow-md">Aracı Başlat</a>
           </div>
         </div>
-
-        <!-- 4. Çarkıfelek -->
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
-          <div class="h-36 bg-pink-100 flex items-center justify-center relative overflow-hidden">
-            <svg class="w-20 h-20 text-pink-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-pink-200 rounded-full opacity-50"></div>
+          <div class="h-32 bg-pink-100 flex items-center justify-center relative overflow-hidden">
+            <svg class="w-16 h-16 text-pink-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           </div>
-          <div class="p-8 flex-1 flex flex-col">
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">Çarkıfelek</h2>
-            <p class="text-gray-600 mb-8 flex-1 text-sm leading-relaxed">Rastgele isim seçmek veya etkinliklerde hediye dağıtmak için özelleştirilebilir interaktif çark.</p>
+          <div class="p-6 flex-1 flex flex-col">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Çarkıfelek</h2>
+            <p class="text-gray-500 mb-6 flex-1 text-sm">Rastgele isim seçmek veya etkinliklerde hediye dağıtmak için interaktif çark.</p>
             <a href="carkifelek.html" class="w-full bg-pink-600 hover:bg-pink-700 text-white text-center font-bold py-3 rounded-xl transition mt-auto shadow-md">Aracı Başlat</a>
           </div>
         </div>
-
-        <!-- 5. Çekiliş -->
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
-          <div class="h-36 bg-emerald-100 flex items-center justify-center relative overflow-hidden">
-            <svg class="w-20 h-20 text-emerald-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-200 rounded-full opacity-50"></div>
+          <div class="h-32 bg-emerald-100 flex items-center justify-center relative overflow-hidden">
+            <svg class="w-16 h-16 text-emerald-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
           </div>
-          <div class="p-8 flex-1 flex flex-col">
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">Çekiliş Aracı</h2>
-            <p class="text-gray-600 mb-8 flex-1 text-sm leading-relaxed">Katılımcı listesinden asil ve yedek talihlileri animasyonlu ve şeffaf bir şekilde belirle.</p>
+          <div class="p-6 flex-1 flex flex-col">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Çekiliş Aracı</h2>
+            <p class="text-gray-500 mb-6 flex-1 text-sm">Katılımcı listesinden asil ve yedek talihlileri animasyonlu şekilde belirle.</p>
             <a href="cekilis.html" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-center font-bold py-3 rounded-xl transition mt-auto shadow-md">Aracı Başlat</a>
-          </div>
-        </div>
-
-        <!-- 6. Soru-Cevap (YENİ) -->
-        <div class="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col">
-          <div class="h-36 bg-cyan-100 flex items-center justify-center relative overflow-hidden">
-            <svg class="w-20 h-20 text-cyan-600 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-cyan-200 rounded-full opacity-50"></div>
-          </div>
-          <div class="p-8 flex-1 flex flex-col">
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">Anonim Soru-Cevap</h2>
-            <p class="text-gray-600 mb-8 flex-1 text-sm leading-relaxed">Öğrencilerin anonim sorular sorabildiği ve en çok beğenilenlerin üste çıktığı interaktif tahta.</p>
-            <div class="flex gap-3">
-               <a href="qa.html" class="flex-1 bg-cyan-50 text-cyan-700 hover:bg-cyan-100 text-center font-bold py-3 rounded-xl transition shadow-sm border border-cyan-200">Soru Sor</a>
-               <a href="qa-admin.html" class="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white text-center font-bold py-3 rounded-xl transition shadow-md">Yönetici</a>
-            </div>
           </div>
         </div>
 
       </div>
     </main>
+
+    <footer class="bg-gray-900 text-gray-400 py-10 text-sm mt-auto">
+      <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="text-center md:text-left">
+          <h3 class="text-white text-2xl font-black mb-2 tracking-tight">Equizly</h3>
+          <p class="opacity-75 max-w-sm">Eğitim ve etkinlikler için yeni nesil interaktif etkileşim platformu. Öğrenmeyi ve katılımı eğlenceli hale getiriyoruz.</p>
+        </div>
+        
+        <div class="flex gap-6 font-medium">
+          <a href="hakkimizda.html" class="hover:text-white transition">Hakkımızda</a>
+          <a href="gizlilik.html" class="hover:text-white transition">Gizlilik Politikası</a>
+          <a href="sartlar.html" class="hover:text-white transition">Kullanım Şartları</a>
+        </div>
+      </div>
+      <div class="max-w-7xl mx-auto px-6 mt-8 pt-8 border-t border-gray-800 text-center opacity-60">
+        &copy; 2026 Equizly.com Tüm Hakları Saklıdır.
+      </div>
+    </footer>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    // Firebase Auth modülleri güncellendi (Email/Password eklendi)
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+    /* =======================================================
+       BURAYA KENDİ FİREBASE BİLGİLERİNİ YAPIŞTIR
+       ======================================================= */
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
       authDomain: "interaktif-yarisma.firebaseapp.com",
@@ -160,24 +191,89 @@
       messagingSenderId: "652081118487",
       appId: "1:652081118487:web:409c5737ced7cb8377cb52"
     };
-    if (typeof __firebase_config !== 'undefined' && __firebase_config) firebaseConfig = JSON.parse(__firebase_config);
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
+    // DOM Elementleri
     const loadingScreen = document.getElementById('loading-screen');
     const loginScreen = document.getElementById('login-screen');
     const hubScreen = document.getElementById('hub-screen');
+    
+    const tabLogin = document.getElementById('tab-login');
+    const tabRegister = document.getElementById('tab-register');
+    const formLogin = document.getElementById('form-login');
+    const formRegister = document.getElementById('form-register');
+    const authError = document.getElementById('auth-error');
 
-    document.getElementById('btn-google-login').addEventListener('click', () => {
-      signInWithPopup(auth, provider).catch(error => alert("Giriş başarısız: " + error.message));
+    // Tab (Sekme) Geçiş Mantığı
+    tabLogin.addEventListener('click', () => {
+       tabLogin.className = "flex-1 pb-3 text-lg tab-active transition-colors";
+       tabRegister.className = "flex-1 pb-3 text-lg tab-inactive transition-colors hover:text-indigo-500";
+       formLogin.classList.remove('hidden');
+       formRegister.classList.add('hidden');
+       authError.classList.add('hidden');
     });
 
+    tabRegister.addEventListener('click', () => {
+       tabRegister.className = "flex-1 pb-3 text-lg tab-active transition-colors";
+       tabLogin.className = "flex-1 pb-3 text-lg tab-inactive transition-colors hover:text-indigo-500";
+       formRegister.classList.remove('hidden');
+       formLogin.classList.add('hidden');
+       authError.classList.add('hidden');
+    });
+
+    // 1. E-Posta ile Kayıt Olma
+    formRegister.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('reg-name').value.trim();
+        const surname = document.getElementById('reg-surname').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const pass = document.getElementById('reg-pass').value;
+
+        createUserWithEmailAndPassword(auth, email, pass)
+          .then((userCredential) => {
+             // Kayıt başarılıysa kullanıcının Ad Soyad bilgisini Firebase'e kaydet
+             updateProfile(userCredential.user, { displayName: `${name} ${surname}` })
+               .then(() => { window.location.reload(); }); // Yenile ki ismini görsün
+          })
+          .catch((error) => {
+             authError.classList.remove('hidden');
+             if(error.code === 'auth/email-already-in-use') authError.innerText = "Bu e-posta adresi zaten kullanılıyor.";
+             else if(error.code === 'auth/weak-password') authError.innerText = "Şifreniz çok zayıf. En az 6 karakter girin.";
+             else authError.innerText = "Kayıt başarısız: " + error.message;
+          });
+    });
+
+    // 2. E-Posta ile Giriş Yapma
+    formLogin.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim();
+        const pass = document.getElementById('login-pass').value;
+
+        signInWithEmailAndPassword(auth, email, pass)
+          .catch((error) => {
+             authError.classList.remove('hidden');
+             if(error.code === 'auth/invalid-credential') authError.innerText = "E-posta veya şifre hatalı.";
+             else authError.innerText = "Giriş başarısız: " + error.message;
+          });
+    });
+
+    // 3. Google ile Devam Et
+    document.getElementById('btn-google-login').addEventListener('click', () => {
+      signInWithPopup(auth, provider).catch(error => {
+          authError.classList.remove('hidden');
+          authError.innerText = "Google Girişi başarısız oldu.";
+      });
+    });
+
+    // Çıkış Yap
     document.getElementById('btn-logout').addEventListener('click', () => {
        signOut(auth).catch(error => console.error("Çıkış hatası:", error));
     });
 
+    // Oturum Kontrolü (Sayfa Yönlendirme)
     onAuthStateChanged(auth, (user) => {
         loadingScreen.classList.add('hidden');
         if (user) {

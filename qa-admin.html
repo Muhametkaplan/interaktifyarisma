@@ -211,7 +211,7 @@ window.sanitizeHTML = function(str) {
                   <span class="text-2xl font-black text-gray-800">${q.upvotes || 0}</span>
                </div>
                <div class="flex-1 pt-1">
-                  <p class="text-xl font-semibold text-gray-800 mb-2 break-words whitespace-normal leading-relaxed">${q.text}</p>
+                  <p class="text-xl font-semibold text-gray-800">${sanitizeHTML(q.text)}</p>
                   <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">Gönderen: Anonim</span>
                </div>
                <button onclick="markAsAnswered('${q.id}')" class="ml-4 flex items-center text-sm font-bold text-green-600 bg-green-50 hover:bg-green-100 px-4 py-2 rounded-lg transition" title="Cevaplandı olarak işaretle (Siler)">

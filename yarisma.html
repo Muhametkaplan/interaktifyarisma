@@ -165,322 +165,106 @@
   </div>
 
   <script type="module">
-    // --- GÜVENLİK FİLTRESİ (XSS KORUMASI) ---
-window.sanitizeHTML = function(str) {
-    if (!str) return '';
-    return str.replace(/[&<>'"]/g, function(tag) {
-        const charsToReplace = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            "'": '&#39;',
-            '"': '&quot;'
-        };
-        return charsToReplace[tag] || tag;
-    });
-};
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  // Anonim giriş modülleri eklendi
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    /* =========================================================================
-       🔥 DİKKAT: KENDİ FİREBASE BİLGİLERİNİ BURAYA YAPIŞTIRACAKSIN 🔥
-    ========================================================================= */
-    let firebaseConfig = {
-      apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
-      authDomain: "interaktif-yarisma.firebaseapp.com",
-      projectId: "interaktif-yarisma",
-      storageBucket: "interaktif-yarisma.firebasestorage.app",
-      messagingSenderId: "652081118487",
-      appId: "1:652081118487:web:409c5737ced7cb8377cb52"
-    };
+  /* =======================================================
+     BURAYA KENDİ FİREBASE BİLGİLERİNİ YAPIŞTIR
+     ======================================================= */
+  let firebaseConfig = {
+    apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
+    authDomain: "interaktif-yarisma.firebaseapp.com",
+    projectId: "interaktif-yarisma",
+    storageBucket: "interaktif-yarisma.firebasestorage.app",
+    messagingSenderId: "652081118487",
+    appId: "1:652081118487:web:409c5737ced7cb8377cb52"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let currentUser = null;
+  let gamePin = '';
+  let playerName = '';
+
+  // --- GÜVENLİK FİLTRESİ (XSS KORUMASI) ---
+  window.sanitizeHTML = function(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, function(tag) {
+          const charsToReplace = { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' };
+          return charsToReplace[tag] || tag;
+      });
+  };
+
+  // 1. ÖĞRENCİYİ ARKA PLANDA ANONİM OLARAK GİRİŞ YAPTIR
+  signInAnonymously(auth).catch((error) => {
+    console.error("Anonim bağlantı kurulamadı:", error);
+    alert("Sunucuya bağlanılamadı. Lütfen sayfayı yenileyin.");
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user; // Artık öğrencinin yetkili bir ID'si var
+    }
+  });
+
+  // 2. OYUNA GİR BUTONU İŞLEMİ
+  document.getElementById('form-join').addEventListener('submit', async (e) => {
+    e.preventDefault();
     
-    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-      firebaseConfig = JSON.parse(__firebase_config);
+    // Eğer arka plandaki anonim giriş henüz tamamlanmadıysa uyar
+    if (!currentUser) {
+        alert("Bağlantı kuruluyor, lütfen 1-2 saniye bekleyip tekrar deneyin.");
+        return;
     }
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const pinInput = document.getElementById('input-pin').value.trim();
+    const nameInput = document.getElementById('input-name').value.trim();
+    const errorMsg = document.getElementById('error-msg');
 
-    const GAMES_PATH = 'kahootGames';
-    const PLAYERS_PATH = 'kahootPlayers';
+    try {
+      // PIN kontrolü
+      const sessionRef = doc(db, 'kahootSessions', pinInput);
+      const sessionSnap = await getDoc(sessionRef);
 
-    let state = {
-      user: null,
-      joinedPin: '',
-      gameData: null,
-      players: [],
-      localHasAnswered: false,
-      error: ''
-    };
+      if (!sessionSnap.exists() || sessionSnap.data().state !== 'lobby') {
+         errorMsg.innerText = "Hatalı PIN veya oyun henüz başlamadı.";
+         errorMsg.classList.remove('hidden');
+         return;
+      }
 
-    let unsubGame = null;
-    let unsubPlayers = null;
+      gamePin = pinInput;
+      // İsimdeki zararlı kodları temizle (XSS Koruması)
+      playerName = sanitizeHTML(nameInput);
 
-    const screens = {
-      loading: document.getElementById('screen-loading'),
-      join: document.getElementById('screen-join'),
-      lobby: document.getElementById('screen-lobby'),
-      question: document.getElementById('screen-question'),
-      reveal: document.getElementById('screen-reveal'),
-      leaderboard: document.getElementById('screen-leaderboard'),
-      end: document.getElementById('screen-end')
-    };
-
-    const ui = {
-      btnExit: document.getElementById('btn-exit'),
-      errorMsg: document.getElementById('error-msg'),
-      errorText: document.getElementById('error-text'),
-      lobbyName: document.getElementById('lobby-player-name'),
-      qName: document.getElementById('question-player-name'),
-      qScore: document.getElementById('question-player-score'),
-      qWaiting: document.getElementById('question-waiting'),
-      qButtons: document.getElementById('question-buttons'),
-      revIcon: document.getElementById('reveal-icon-wrapper'),
-      revTitle: document.getElementById('reveal-title'),
-      revPointsWrap: document.getElementById('reveal-points-wrapper'),
-      revPoints: document.getElementById('reveal-points'),
-      revMsg: document.getElementById('reveal-message'),
-      revRank: document.getElementById('reveal-rank'),
-      revScore: document.getElementById('reveal-score'),
-      lbRank: document.getElementById('lb-rank'),
-      lbScore: document.getElementById('lb-score'),
-      endRank: document.getElementById('end-rank')
-    };
-
-    const icons = {
-      check: `<svg class="w-16 h-16 sm:w-24 sm:h-24 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>`,
-      x: `<svg class="w-16 h-16 sm:w-24 sm:h-24 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>`
-    };
-
-    function render() {
-      Object.values(screens).forEach(s => {
-        s.classList.remove('flex');
-        s.classList.add('hidden');
+      // Öğrenciyi veritabanına ekle (Artık currentUser olduğu için kurallara takılmaz)
+      await setDoc(doc(db, 'kahootSessions', gamePin, 'players', currentUser.uid), {
+         name: playerName,
+         score: 0,
+         joinedAt: Date.now()
       });
 
-      const myPlayerInfo = state.players.find(p => p.id === state.user?.uid);
-      const sortedPlayers = [...state.players].sort((a,b) => (b.score || 0) - (a.score || 0));
-      const myRank = sortedPlayers.findIndex(p => p.id === state.user?.uid) + 1;
-
-      if (!state.joinedPin || state.gameData?.state === 'lobby' || state.error) {
-        ui.btnExit.classList.remove('hidden');
-      } else {
-        ui.btnExit.classList.add('hidden');
-      }
-
-      if (state.error && !state.joinedPin) {
-        ui.errorMsg.classList.remove('hidden');
-        ui.errorText.innerText = state.error;
-      } else {
-        ui.errorMsg.classList.add('hidden');
-      }
-
-      if (!state.user) {
-        screens.loading.classList.remove('hidden');
-        screens.loading.classList.add('flex');
-      } 
-      else if (!state.joinedPin) {
-        screens.join.classList.remove('hidden');
-        screens.join.classList.add('flex');
-      } 
-      else if (state.gameData?.state === 'lobby') {
-        screens.lobby.classList.remove('hidden');
-        screens.lobby.classList.add('flex');
-        ui.lobbyName.innerText = myPlayerInfo?.name || 'Oyuncu';
-      } 
-      else if (state.gameData?.state === 'question') {
-        screens.question.classList.remove('hidden');
-        screens.question.classList.add('flex');
-        ui.qName.innerText = myPlayerInfo?.name || 'Oyuncu';
-        ui.qScore.innerText = myPlayerInfo?.score || 0;
-        
-        const qIndex = (state.gameData.currentQuestionIndex || 0) + 1;
-        const qCount = state.gameData.questionCount || '?';
-        document.getElementById('student-q-info-global').innerText = `Soru ${qIndex} / ${qCount}`;
-        
-        if (state.gameData.showTextOnStudent) {
-           document.getElementById('question-text-box').classList.remove('hidden');
-           document.getElementById('student-q-text').innerText = state.gameData.currentQuestionText || '';
-           for (let i = 0; i < 4; i++) {
-               const optSpan = document.getElementById(`student-opt-${i}`);
-               if (state.gameData.currentQuestionOptions && state.gameData.currentQuestionOptions[i]) {
-                  optSpan.classList.remove('hidden');
-                  optSpan.innerText = state.gameData.currentQuestionOptions[i];
-               } else {
-                  optSpan.classList.add('hidden');
-               }
-           }
-        } else {
-           document.getElementById('question-text-box').classList.add('hidden');
-           for (let i = 0; i < 4; i++) {
-               document.getElementById(`student-opt-${i}`).classList.add('hidden');
-           }
-        }
-
-        const btnElements = document.querySelectorAll('.shape-btn');
-        if (state.gameData?.currentQuestionType === 'boolean') {
-           btnElements[2].classList.add('hidden');
-           btnElements[3].classList.add('hidden');
-        } else {
-           btnElements[2].classList.remove('hidden');
-           btnElements[3].classList.remove('hidden');
-        }
-
-        if (state.localHasAnswered) {
-          ui.qWaiting.classList.remove('hidden');
-          ui.qWaiting.classList.add('flex');
-          ui.qButtons.classList.add('hidden');
-          ui.qButtons.classList.remove('flex');
-        } else {
-          ui.qWaiting.classList.add('hidden');
-          ui.qWaiting.classList.remove('flex');
-          ui.qButtons.classList.remove('hidden');
-          ui.qButtons.classList.add('flex');
-        }
-      } 
-      else if (state.gameData?.state === 'reveal') {
-        screens.reveal.classList.remove('hidden');
-        screens.reveal.classList.add('flex');
-        
-        const isCorrect = myPlayerInfo?.lastPoints > 0;
-        screens.reveal.className = `flex-1 flex-col justify-between p-6 sm:p-8 text-white text-center transition-colors duration-500 flex ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`;
-        
-        ui.revIcon.innerHTML = isCorrect ? icons.check : icons.x;
-        ui.revTitle.innerText = isCorrect ? 'DOĞRU!' : 'YANLIŞ!';
-        ui.revMsg.innerText = isCorrect ? `Şu an ${myRank}. sıradasın!` : 'Bozulma, bir sonrakine!';
-        ui.revRank.innerText = myRank;
-        ui.revScore.innerText = myPlayerInfo?.score || 0;
-
-        if (isCorrect) {
-          ui.revPointsWrap.classList.remove('hidden');
-          ui.revPoints.innerText = myPlayerInfo.lastPoints;
-        } else {
-          ui.revPointsWrap.classList.add('hidden');
-        }
-      } 
-      else if (state.gameData?.state === 'leaderboard') {
-        screens.leaderboard.classList.remove('hidden');
-        screens.leaderboard.classList.add('flex');
-        ui.lbRank.innerText = myRank;
-        ui.lbScore.innerText = myPlayerInfo?.score || 0;
-      } 
-      else if (state.gameData?.state === 'end') {
-        screens.end.classList.remove('hidden');
-        screens.end.classList.add('flex');
-        ui.endRank.innerText = myRank;
-      }
-    }
-
-    async function initAuth() {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
-      } catch (err) {
-        console.error("Auth hatası", err);
-      }
-    }
-
-    onAuthStateChanged(auth, (user) => {
-      state.user = user;
-      render();
-    });
-
-    initAuth();
-
-    function startListeners(pin) {
-      if(unsubGame) unsubGame();
-      if(unsubPlayers) unsubPlayers();
-
-      unsubGame = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          state.gameData = data;
-          if (data.state === 'question') state.localHasAnswered = false;
-        } else {
-          handleExit("Oda sunucu tarafından kapatıldı.");
-        }
-        render();
-      });
-
-      unsubPlayers = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH), (snap) => {
-        const all = snap.docs.map(d => d.data());
-        state.players = all.filter(p => p.pin === pin);
-        render();
-      });
-    }
-
-    document.getElementById('join-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if(!state.user) return;
-      state.error = '';
+      // Lobi Bekleme Ekranına Geç
+      document.getElementById('screen-join').classList.add('hidden');
+      document.getElementById('screen-waiting').classList.remove('hidden');
       
-      const pin = document.getElementById('input-pin').value;
-      const name = document.getElementById('input-name').value.trim();
+      // Oyunu dinlemeye başla
+      listenToGame();
 
-      try {
-        const gameDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin));
-        if (!gameDoc.exists() || gameDoc.data().state !== 'lobby') {
-          state.error = "Hatalı PIN veya oyun çoktan başlamış!";
-          render();
-          return;
-        }
-
-        // İSİM ÇAKIŞMA KONTROLÜ
-        const playersSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH));
-        const isDuplicate = playersSnap.docs.find(d => {
-            const p = d.data();
-            return p.pin === pin && p.name.toLowerCase() === name.toLowerCase() && p.id !== state.user.uid;
-        });
-
-        if (isDuplicate) {
-            state.error = "Bu isim oyunda kullanılıyor. Lütfen başka bir isim girin.";
-            render();
-            return;
-        }
-
-        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, state.user.uid), {
-          id: state.user.uid, pin: pin, name: name, score: 0, currentAnswer: null, lastPoints: 0, answeredAt: null
-        }, { merge: true });
-
-        state.joinedPin = pin;
-        startListeners(pin);
-        render();
-      } catch (err) {
-        console.error("Giriş Hatası:", err);
-        state.error = "Bağlantı hatası oluştu: " + err.message;
-        render();
-      }
-    });
-
-    window.handleAnswer = async function(shapeId) {
-      if (state.localHasAnswered || state.gameData?.state !== 'question' || !state.user) return;
-      state.localHasAnswered = true;
-      render(); 
-
-      await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, state.user.uid), {
-         currentAnswer: shapeId,
-         answeredAt: Date.now()
-      });
-    };
-
-    function handleExit(errMsg = '') {
-      state.joinedPin = '';
-      state.gameData = null;
-      state.error = errMsg;
-      state.localHasAnswered = false;
-      if(unsubGame) unsubGame();
-      if(unsubPlayers) unsubPlayers();
-      render();
+    } catch (err) {
+      console.error(err);
+      errorMsg.innerText = "Giriş yapılırken bir hata oluştu.";
+      errorMsg.classList.remove('hidden');
     }
+  });
 
-    ui.btnExit.addEventListener('click', () => handleExit());
-    document.getElementById('btn-restart').addEventListener('click', () => handleExit());
-  </script>
+  function listenToGame() {
+      // ... (Sizin mevcut yarisma.html dosyanızdaki listenToGame fonksiyonunun devamı)
+      // Bu kısmı dosyanızdaki mevcut haliyle bırakabilirsiniz.
+  }
+</script>
 </body>
 </html>

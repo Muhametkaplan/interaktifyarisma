@@ -9,6 +9,8 @@
     .animate-bounce-short { animation: bounce 1s infinite; }
     @keyframes bounce { 0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); } 50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); } }
   </style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6618405313423540"
+     crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col font-sans text-gray-800">
 
@@ -267,6 +269,20 @@
   </div>
 
   <script type="module">
+    // --- GÜVENLİK FİLTRESİ (XSS KORUMASI) ---
+window.sanitizeHTML = function(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, function(tag) {
+        const charsToReplace = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        };
+        return charsToReplace[tag] || tag;
+    });
+};
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, updateDoc, onSnapshot, writeBatch, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -716,7 +732,7 @@
         
         localGameState = 'lobby'; 
 
-        const studentUrl = window.location.href.replace('admin.html', 'yarisma.html').replace(/\/$/, '');
+        const studentUrl = window.location.origin + '/yarisma.html';
         document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(studentUrl)}&color=4c1d95`;
         document.getElementById('qr-url-text').innerText = studentUrl.replace(/^https?:\/\//, '');
 
@@ -752,7 +768,7 @@
       btnStart.disabled = players.length === 0;
       
       const list = document.getElementById('player-list');
-      list.innerHTML = players.map(p => `<div class="bg-white text-purple-900 px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-lg sm:text-2xl font-bold shadow-lg animate-bounce-short break-words text-center whitespace-normal max-w-full">${p.name}</div>`).join('');
+      list.innerHTML = players.map(p => `<div class="bg-white text-purple-900 px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-lg sm:text-2xl font-bold shadow-lg animate-bounce-short break-words text-center whitespace-normal max-w-full">${sanitizeHTML(p.name)}</div>`).join('');
     }
 
     document.getElementById('btn-start-game').addEventListener('click', () => triggerQuestion(0));
@@ -880,7 +896,7 @@
         <div class="flex items-center justify-between bg-white text-black p-4 sm:p-6 rounded-xl shadow-lg break-words w-full">
           <div class="flex items-center text-xl sm:text-3xl font-bold flex-1 min-w-0 pr-4">
             <span class="w-8 sm:w-12 text-gray-400 flex-shrink-0">${idx + 1}.</span>
-            <span class="truncate">${p.name}</span>
+            <span class="truncate">${sanitizeHTML(p.name)}</span>
           </div>
           <div class="text-xl sm:text-3xl font-black bg-gray-100 px-4 py-2 sm:px-6 sm:py-2 rounded-lg flex-shrink-0">${p.score || 0}</div>
         </div>

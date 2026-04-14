@@ -100,6 +100,10 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    const GAMES_PATH = 'kahootGames';
+    const PLAYERS_PATH = 'kahootPlayers';
 
     let currentUser = null;
     let gamePin = '';
@@ -163,7 +167,7 @@
 
       try {
         // PIN doğru mu kontrol et
-        const sessionRef = doc(db, 'kahootSessions', pinInput);
+        const sessionRef = doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pinInput);
         const sessionSnap = await getDoc(sessionRef);
 
         if (!sessionSnap.exists() || sessionSnap.data().state !== 'lobby') {
@@ -177,11 +181,15 @@
         playerName = sanitizeHTML(nameInput);
 
         // Firebase veritabanına oyuncuyu kaydet
-        await setDoc(doc(db, 'kahootSessions', gamePin, 'players', currentUser.uid), {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid), {
+           id: currentUser.uid,
+           pin: gamePin,
            name: playerName,
            score: 0,
+           currentAnswer: null,
+           lastPoints: 0,
            joinedAt: Date.now()
-        });
+        }, { merge: true });
 
         document.getElementById('display-player-name').innerText = playerName;
         showScreen('waiting');
@@ -200,7 +208,7 @@
     function listenToGame() {
       if (unsubSession) unsubSession();
       
-      unsubSession = onSnapshot(doc(db, 'kahootSessions', gamePin), (docSnap) => {
+      unsubSession = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, gamePin), (docSnap) => {
           if (!docSnap.exists()) {
              alert("Oyun yönetici tarafından sonlandırıldı.");
              window.location.reload();
@@ -216,11 +224,11 @@
           } 
           else if (state === 'question') {
              // Yeni soru geldiyse
-             if (currentQuestionId !== data.currentQuestion.id) {
-                 currentQuestionId = data.currentQuestion.id;
+             if (currentQuestionId !== data.currentQuestionIndex) {
+                 currentQuestionId = data.currentQuestionIndex;
                  hasAnswered = false;
                  // XSS korumalı soru yazdırma
-                 document.getElementById('live-question-text').innerHTML = sanitizeHTML(data.currentQuestion.text);
+                 document.getElementById('live-question-text').innerHTML = sanitizeHTML(data.currentQuestionText || "Soru ekranda!");
              }
              
              if (hasAnswered) {
@@ -229,12 +237,16 @@
                  showScreen('live');
              }
           } 
-          else if (state === 'results' || state === 'podium') {
+          else if (state === 'reveal') {
              // Soru bittiğinde veya podyumda bekleme ekranı
              showScreen('waiting');
              document.querySelector('#screen-waiting p').innerText = "Ekrana bak! Puan durumun orada.";
           }
-          else if (state === 'finished') {
+          else if (state === 'leaderboard') {
+             showScreen('waiting');
+             document.querySelector('#screen-waiting p').innerText = "Puan tablosu ekranda!";
+          }
+          else if (state === 'end') {
              showScreen('finished');
           }
       });
@@ -249,9 +261,9 @@
 
         try {
             // Sadece yöneticinin puan hesaplayabilmesi için oyuncunun verdiği cevabı veritabanına yazarız.
-            await updateDoc(doc(db, 'kahootSessions', gamePin, 'players', currentUser.uid), {
-                [`answers.${currentQuestionId}`]: optionIndex,
-                lastAnswerTime: Date.now()
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid), {
+                currentAnswer: optionIndex,
+                answeredAt: Date.now()
             });
         } catch(e) {
             console.error("Cevap gönderilirken hata:", e);

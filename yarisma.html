@@ -66,10 +66,22 @@
        </div>
 
        <div class="flex-1 grid grid-cols-2 gap-4 pb-4">
-          <button onclick="submitAnswer(0)" id="student-btn-0" class="btn-red rounded-2xl text-white font-black text-3xl flex items-center justify-center transition-transform"><svg class="w-12 h-12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 22h20L12 2z"/></svg></button>
-          <button onclick="submitAnswer(1)" id="student-btn-1" class="btn-blue rounded-2xl text-white font-black text-3xl flex items-center justify-center transition-transform"><svg class="w-12 h-12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg></button>
-          <button onclick="submitAnswer(2)" id="student-btn-2" class="btn-yellow rounded-2xl text-white font-black text-3xl flex items-center justify-center transition-transform"><circle cx="12" cy="12" r="10" fill="currentColor"/></button>
-          <button onclick="submitAnswer(3)" id="student-btn-3" class="btn-green rounded-2xl text-white font-black text-3xl flex items-center justify-center transition-transform"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor"/></button>
+          <button onclick="submitAnswer(0)" id="student-btn-0" class="btn-red rounded-2xl text-white font-black text-3xl flex flex-col items-center justify-center transition-transform p-4 gap-2">
+             <svg class="w-12 h-12 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 22h20L12 2z"/></svg>
+             <span id="student-opt-0" class="hidden text-sm sm:text-lg w-full break-words whitespace-normal line-clamp-3"></span>
+          </button>
+          <button onclick="submitAnswer(1)" id="student-btn-1" class="btn-blue rounded-2xl text-white font-black text-3xl flex flex-col items-center justify-center transition-transform p-4 gap-2">
+             <svg class="w-12 h-12 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
+             <span id="student-opt-1" class="hidden text-sm sm:text-lg w-full break-words whitespace-normal line-clamp-3"></span>
+          </button>
+          <button onclick="submitAnswer(2)" id="student-btn-2" class="btn-yellow rounded-2xl text-white font-black text-3xl flex flex-col items-center justify-center transition-transform p-4 gap-2">
+             <svg class="w-12 h-12 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+             <span id="student-opt-2" class="hidden text-sm sm:text-lg w-full break-words whitespace-normal line-clamp-3"></span>
+          </button>
+          <button onclick="submitAnswer(3)" id="student-btn-3" class="btn-green rounded-2xl text-white font-black text-3xl flex flex-col items-center justify-center transition-transform p-4 gap-2">
+             <svg class="w-12 h-12 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+             <span id="student-opt-3" class="hidden text-sm sm:text-lg w-full break-words whitespace-normal line-clamp-3"></span>
+          </button>
        </div>
     </div>
 
@@ -244,12 +256,22 @@
                      document.getElementById('student-question-container').classList.add('hidden');
                  }
 
-                 // Doğru/Yanlış soruları için butonları ayarla (3 ve 4 gizlenir)
+                 // Şıkları göster/gizle
                  for(let i=0; i<4; i++) {
                      const btnEl = document.getElementById(`student-btn-${i}`);
+                     const optSpan = document.getElementById(`student-opt-${i}`);
+
                      if (data.currentQuestionOptions && data.currentQuestionOptions[i] && data.currentQuestionOptions[i].trim() !== '') {
                          btnEl.classList.remove('hidden');
-                         btnEl.classList.add('flex');
+                         btnEl.classList.add('flex'); // Flex-col classını korumak için sadece flex display ayarı
+                         
+                         // Eğer hoca "şık metnini göster" dediyse <span> içine yazdır
+                         if (data.showTextOnStudent && optSpan) {
+                             optSpan.innerHTML = sanitizeHTML(data.currentQuestionOptions[i]);
+                             optSpan.classList.remove('hidden');
+                         } else if (optSpan) {
+                             optSpan.classList.add('hidden');
+                         }
                      } else {
                          btnEl.classList.add('hidden');
                          btnEl.classList.remove('flex');

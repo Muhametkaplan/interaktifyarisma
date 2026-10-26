@@ -690,13 +690,17 @@
 
       const q = query(
         collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH),
-        where('pin', '==', gamePin),
-        where('teamId', '==', myTeamId)
+        where('pin', '==', gamePin)
       );
 
       unsubTeammates = onSnapshot(q, (snapshot) => {
         const teammates = [];
-        snapshot.forEach(doc => teammates.push(doc.data()));
+        snapshot.forEach(doc => {
+          const p = doc.data();
+          if (p.teamId === myTeamId) {
+            teammates.push(p);
+          }
+        });
 
         // Lobi listesi güncelle
         document.getElementById('member-count-badge').innerText = teammates.length;

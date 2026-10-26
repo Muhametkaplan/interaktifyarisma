@@ -355,7 +355,7 @@
     let currentQuizTimeLimit = 20;
 
     // --- EKRAN GEÇİŞ YÖNETİCİSİ ---
-    function showScreen(screenId) {
+    window.showScreen = function(screenId) {
       const screens = ['loading', 'join', 'team', 'waiting', 'live', 'answered', 'result', 'finished'];
       screens.forEach(s => {
         const el = document.getElementById(`screen-${s}`);

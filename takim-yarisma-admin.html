@@ -443,7 +443,7 @@
       try { window.location.replace('index.html'); } catch(e) { window.location.href = 'index.html'; }
     };
 
-    function showScreen(screenId) {
+    window.showScreen = function(screenId) {
       ['unauthorized', 'dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'].forEach(s => {
         const el = document.getElementById(`screen-${s}`);
         if (el) {
@@ -456,7 +456,7 @@
         target.classList.remove('hidden');
         target.classList.add('flex');
       }
-    }
+    };
 
     // AUTH KONTROLÜ
     onAuthStateChanged(auth, (user) => {

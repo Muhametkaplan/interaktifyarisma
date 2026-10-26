@@ -48,6 +48,14 @@ Asil ve yedek talihlilerinizi şeffaf ve animasyonlu bir şekilde belirleyin.
 
 Araç: cekilis.html
 
+7. 👥🏆 Takımlı Bilgi Yarışması (Team Trivia)
+
+Öğrenciler takımlar kurar veya mevcut takımlara katılır (örn. 5'erli grup). Sorular her üyenin telefonuna gelir, her üyenin kazandığı puan otomatik toplanarak takım puanına eklenir. Dev ekranda canlı takım liderlik tablosu ve takım şampiyonluk podyumu görüntülenir.
+
+Yönetici: takim-yarisma-admin.html
+
+Öğrenci: takim-yarisma.html
+
 🛠️ Kullanılan Teknolojiler
 
 Frontend: HTML5, Vanilla JavaScript, CSS3
@@ -65,6 +73,10 @@ Backend: Firebase (Firestore & Auth)
 ├── yarisma-admin.html    # Bilgi Yarışması Yönetici
 
 ├── yarisma.html          # Bilgi Yarışması Öğrenci
+
+├── takim-yarisma-admin.html # Takımlı Bilgi Yarışması Yönetici (Dev Ekran)
+
+├── takim-yarisma.html       # Takımlı Bilgi Yarışması Öğrenci (Mobil)
 
 ├── anket-admin.html      # Canlı Anket Yönetici
 

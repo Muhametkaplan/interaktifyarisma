@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Takımlı Bilgi Yarışması | Equizly</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    body { 
+      touch-action: manipulation; 
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .btn-opt-0 { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 4px 0 #991b1b; }
+    .btn-opt-1 { background: linear-gradient(135deg, #f97316, #ea580c); box-shadow: 0 4px 0 #9a3412; }
+    .btn-opt-2 { background: linear-gradient(135deg, #0284c7, #0369a1); box-shadow: 0 4px 0 #075985; }
+    .btn-opt-3 { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 0 #065f46; }
+    
+    .btn-opt-0:active, .btn-opt-1:active, .btn-opt-2:active, .btn-opt-3:active { 
+      transform: translateY(4px); 
+      box-shadow: 0 0 0 transparent; 
+    }
+    
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 0.4; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .animate-pulse-ring {
+      animation: pulse-ring 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex justify-center selection:bg-orange-500 selection:text-white">
+
+  <!-- Mobil Konteyner -->
+  <div class="w-full max-w-md bg-gray-900 border-x border-gray-800 shadow-2xl flex flex-col relative overflow-hidden min-h-screen">
+
+    <!-- Üst Bar: Çıkış & Takım Rozeti -->
+    <header class="p-4 flex items-center justify-between border-b border-gray-800/80 bg-gray-900/90 backdrop-blur z-30">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center font-black text-white text-sm shadow-md shadow-orange-500/20">
+          🐧
+        </div>
+        <span class="font-extrabold text-white text-sm tracking-tight">Takımlı Bilgi Yarışması</span>
+      </div>
+      
+      <button id="btn-exit" class="hidden text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold px-3 py-1.5 rounded-lg border border-red-500/20 transition">
+        Çıkış
+      </button>
+    </header>
+
+    <!-- 0. YÜKLENİYOR EKRANI -->
+    <div id="screen-loading" class="flex-1 flex flex-col items-center justify-center p-6 text-center z-40">
+      <div class="relative mb-6">
+        <div class="w-16 h-16 rounded-full border-4 border-orange-500/20 border-t-orange-500 animate-spin"></div>
+        <div class="absolute inset-0 flex items-center justify-center text-xl">🐧</div>
+      </div>
+      <p class="text-orange-400 font-black tracking-wider text-sm animate-pulse">SUNUCUYA BAĞLANILIYOR...</p>
+    </div>
+
+    <!-- 1. GİRİŞ EKRANI (PIN & İSİM) -->
+    <div id="screen-join" class="hidden flex-1 flex-col justify-center p-6 sm:p-8">
+      <div class="text-center mb-8">
+        <div class="inline-flex p-4 rounded-3xl bg-orange-500/10 border border-orange-500/20 text-4xl mb-4 shadow-inner">
+          🤝
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">Bilginiz Takımınızın Gücü Olsun!</h1>
+        <p class="text-gray-400 text-sm mt-2">Öğretmeninin dev ekranda gösterdiği PIN kodu ile katıl.</p>
+      </div>
+
+      <div id="error-msg" class="hidden bg-red-950/80 border border-red-500/50 text-red-300 p-4 rounded-2xl mb-5 text-sm font-bold text-center"></div>
+
+      <form id="form-join" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1 ml-1">Oyun PIN Kodu</label>
+          <input id="input-pin" type="number" placeholder="6 Haneli PIN" class="w-full text-center text-3xl font-black tracking-widest p-4 bg-gray-800/80 border border-gray-700 rounded-2xl text-orange-400 placeholder-gray-600 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30 transition" required />
+        </div>
+        
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1 ml-1">Takma Adın</label>
+          <input id="input-name" type="text" placeholder="Örn: Ahmet" maxlength="15" class="w-full text-center text-xl font-bold p-4 bg-gray-800/80 border border-gray-700 rounded-2xl text-white placeholder-gray-600 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/30 transition" required />
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-lg p-4 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-[0.98] transition mt-2">
+          Devam Et (Takım Seç) →
+        </button>
+      </form>
+    </div>
+
+    <!-- 2. TAKIM SEÇME / OLUŞTURMA EKRANI -->
+    <div id="screen-team" class="hidden flex-1 flex-col p-6 overflow-y-auto">
+      <div class="text-center mb-6">
+        <span class="bg-orange-500/10 text-orange-400 border border-orange-500/20 text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full">1. Adım</span>
+        <h2 class="text-2xl font-black text-white mt-2">Takımını Belirle</h2>
+        <p class="text-xs text-gray-400 mt-1">Mevcut bir takıma katıl ya da kendi takımını kur.</p>
+      </div>
+
+      <!-- Tab Seçicisi -->
+      <div class="flex bg-gray-800 p-1 rounded-xl mb-4 border border-gray-700">
+        <button id="tab-join-team" class="flex-1 py-2 text-xs font-black rounded-lg bg-orange-500 text-white transition">Takıma Katıl</button>
+        <button id="tab-create-team" class="flex-1 py-2 text-xs font-black rounded-lg text-gray-400 hover:text-white transition">Yeni Takım Kur</button>
+      </div>
+
+      <!-- Tab 1: Mevcut Takımlar Listesi -->
+      <div id="tab-content-join" class="space-y-3 flex-1 flex flex-col">
+        <div id="teams-list" class="space-y-2 flex-1 overflow-y-auto pr-1">
+          <div class="text-center text-gray-500 text-sm py-10">Odadaki takımlar aranıyor...</div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Yeni Takım Kur Formu -->
+      <form id="tab-content-create" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-bold text-gray-400 mb-1 ml-1">Takım Adı</label>
+          <input id="input-team-name" type="text" placeholder="Örn: Kampüs Fırtınası" maxlength="20" class="w-full text-center text-lg font-bold p-4 bg-gray-800 border border-gray-700 rounded-2xl text-white placeholder-gray-600 outline-none focus:border-orange-500 transition" required />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-400 mb-2 ml-1">Takım Rengi / Teması</label>
+          <div class="grid grid-cols-4 gap-2">
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="orange" checked class="peer sr-only">
+              <div class="p-3 rounded-xl bg-orange-500/20 border-2 border-transparent peer-checked:border-orange-500 text-center text-orange-400 font-bold text-xs flex flex-col items-center gap-1">
+                <span class="w-4 h-4 rounded-full bg-orange-500"></span> Turuncu
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="blue" class="peer sr-only">
+              <div class="p-3 rounded-xl bg-blue-500/20 border-2 border-transparent peer-checked:border-blue-500 text-center text-blue-400 font-bold text-xs flex flex-col items-center gap-1">
+                <span class="w-4 h-4 rounded-full bg-blue-500"></span> Mavi
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="green" class="peer sr-only">
+              <div class="p-3 rounded-xl bg-emerald-500/20 border-2 border-transparent peer-checked:border-emerald-500 text-center text-emerald-400 font-bold text-xs flex flex-col items-center gap-1">
+                <span class="w-4 h-4 rounded-full bg-emerald-500"></span> Yeşil
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="purple" class="peer sr-only">
+              <div class="p-3 rounded-xl bg-purple-500/20 border-2 border-transparent peer-checked:border-purple-500 text-center text-purple-400 font-bold text-xs flex flex-col items-center gap-1">
+                <span class="w-4 h-4 rounded-full bg-purple-500"></span> Mor
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-base p-4 rounded-2xl shadow-lg transition">
+          Takımı Oluştur ve Katıl
+        </button>
+      </form>
+    </div>
+
+    <!-- 3. LOBİ / BEKLEME EKRANI -->
+    <div id="screen-waiting" class="hidden flex-1 flex-col p-6 text-center justify-between overflow-y-auto">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-xs mb-3">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          Takıma Bağlandın!
+        </div>
+        
+        <div class="bg-gray-800/80 border border-gray-700/80 p-5 rounded-2xl mb-4 shadow-xl">
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Takımın</p>
+          <h2 id="display-team-name" class="text-2xl font-black text-orange-400 break-words">Kampüs Fırtınası</h2>
+          <p id="display-player-name" class="text-sm font-semibold text-gray-300 mt-1">Ahmet</p>
+        </div>
+
+        <!-- Takım Üyeleri Listesi -->
+        <div class="bg-gray-800/50 border border-gray-800 p-4 rounded-2xl text-left">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+              <span>👥</span> Takım Arkadaşların (<span id="member-count-badge">0</span>/<span id="max-member-badge">5</span>)
+            </span>
+          </div>
+          <div id="lobby-teammates" class="space-y-2">
+            <!-- JS ile doldurulacak -->
+          </div>
+        </div>
+      </div>
+
+      <div class="my-6">
+        <p class="text-sm font-bold text-gray-400 animate-pulse">Dev ekrana bak! Oyun birazdan başlayacak...</p>
+      </div>
+    </div>
+
+    <!-- 4. CANLI SORU EKRANI (ŞIKLAR VE SÜRE) -->
+    <div id="screen-live" class="hidden flex-1 flex-col p-4 justify-between h-full relative">
+      
+      <!-- Üst Bilgi Çubuğu -->
+      <div class="flex items-center justify-between mb-3 bg-gray-800/70 p-3 rounded-2xl border border-gray-700/60">
+        <div class="flex flex-col">
+          <span id="live-question-badge" class="text-xs font-black text-orange-400 uppercase tracking-wider">Soru 1 / 10</span>
+          <span id="live-team-badge" class="text-xs font-bold text-gray-400 truncate max-w-[150px]">Takım Adı</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div id="live-timer-badge" class="w-10 h-10 rounded-full bg-orange-500/20 border-2 border-orange-500 text-orange-400 font-black text-base flex items-center justify-center shadow-lg shadow-orange-500/20">
+            20
+          </div>
+        </div>
+      </div>
+
+      <!-- Soru Metni (Eğer yönetici öğrenci ekranında göster dediyse) -->
+      <div id="live-question-card" class="bg-gray-800/90 border border-gray-700 p-5 rounded-2xl text-center shadow-lg mb-3">
+        <p id="live-question-text" class="text-base sm:text-lg font-bold text-white break-words leading-snug">Soru metni yükleniyor...</p>
+      </div>
+
+      <!-- Şık Butonları (Grid) -->
+      <div class="flex-1 grid grid-cols-2 gap-3 pb-2 min-h-[220px]">
+        <button onclick="submitAnswer(0)" id="student-btn-0" class="btn-opt-0 rounded-2xl text-white font-black text-2xl flex flex-col items-center justify-center p-4 gap-2 transition-transform">
+          <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 22h20L12 2z"/></svg>
+          <span id="student-opt-0" class="text-xs sm:text-sm font-bold w-full break-words text-center line-clamp-3"></span>
+        </button>
+        <button onclick="submitAnswer(1)" id="student-btn-1" class="btn-opt-1 rounded-2xl text-white font-black text-2xl flex flex-col items-center justify-center p-4 gap-2 transition-transform">
+          <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l10 10-10 10L2 12 12 2z"/></svg>
+          <span id="student-opt-1" class="text-xs sm:text-sm font-bold w-full break-words text-center line-clamp-3"></span>
+        </button>
+        <button onclick="submitAnswer(2)" id="student-btn-2" class="btn-opt-2 rounded-2xl text-white font-black text-2xl flex flex-col items-center justify-center p-4 gap-2 transition-transform">
+          <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          <span id="student-opt-2" class="text-xs sm:text-sm font-bold w-full break-words text-center line-clamp-3"></span>
+        </button>
+        <button onclick="submitAnswer(3)" id="student-btn-3" class="btn-opt-3 rounded-2xl text-white font-black text-2xl flex flex-col items-center justify-center p-4 gap-2 transition-transform">
+          <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          <span id="student-opt-3" class="text-xs sm:text-sm font-bold w-full break-words text-center line-clamp-3"></span>
+        </button>
+      </div>
+
+      <!-- Alt Takım Hatırlatıcısı -->
+      <div class="text-center py-1">
+        <p class="text-[11px] font-semibold text-gray-500">Cevabın takımının toplam puanına eklenecek.</p>
+      </div>
+    </div>
+
+    <!-- 5. CEVAP GÖNDERİLDİ (BEKLEME EKRANI) -->
+    <div id="screen-answered" class="hidden flex-1 flex-col items-center justify-center p-8 text-center bg-gray-900">
+      <div class="w-20 h-20 rounded-full bg-orange-500/10 border-2 border-orange-500/30 flex items-center justify-center text-orange-400 mb-6 shadow-inner animate-pulse-ring">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+      </div>
+      <h2 class="text-2xl font-black text-white mb-2">Cevabın Kaydedildi!</h2>
+      <p class="text-sm font-medium text-gray-400">Takım arkadaşlarının ve diğer oyuncuların cevaplaması bekleniyor...</p>
+    </div>
+
+    <!-- 6. CEVAP SONUCU & PUANLAR (GÖRSELDEKİ BİREBİR EKRAN) -->
+    <div id="screen-result" class="hidden flex-1 flex-col p-6 justify-between overflow-y-auto">
+      <div>
+        <!-- Doğru / Yanlış Banner -->
+        <div id="result-banner" class="text-center p-6 rounded-3xl mb-6 shadow-xl border">
+          <!-- JS ile doldurulacak (Doğru / Yanlış) -->
+        </div>
+
+        <!-- Bireysel Puan & Takım Puanı Kartı (Görseldeki 3. Adım) -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="bg-gray-800/90 border border-gray-700/80 p-4 rounded-2xl text-center">
+            <div class="text-xs font-bold text-gray-400 flex items-center justify-center gap-1 mb-1">
+              <span>👤</span> Senin Puanın
+            </div>
+            <div id="result-my-score" class="text-2xl font-black text-emerald-400">0</div>
+          </div>
+          <div class="bg-gray-800/90 border border-gray-700/80 p-4 rounded-2xl text-center">
+            <div class="text-xs font-bold text-gray-400 flex items-center justify-center gap-1 mb-1">
+              <span>👥</span> Takım Puanı
+            </div>
+            <div id="result-team-score" class="text-2xl font-black text-orange-400">0</div>
+          </div>
+        </div>
+
+        <!-- Takım Üyeleri ve Bireysel Katkılar (Görselin sol altındaki widget) -->
+        <div class="bg-gray-800/70 border border-gray-800 p-4 rounded-2xl">
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-700/50">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+              <span>👥</span> Takım Üyeleri Katkısı
+            </span>
+            <span class="text-[11px] font-bold text-emerald-400">Canlı</span>
+          </div>
+          <div id="result-teammates-list" class="space-y-2">
+            <!-- JS ile doldurulacak -->
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center py-4">
+        <p class="text-xs font-bold text-gray-500 animate-pulse">Dev ekrana bak! Sıralama tablosu orada...</p>
+      </div>
+    </div>
+
+    <!-- 7. OYUN BİTTİ (PODYUM & KAZANAN TAKIMLAR) -->
+    <div id="screen-finished" class="hidden flex-1 flex-col items-center justify-center p-6 text-center overflow-y-auto">
+      <div class="text-6xl mb-4">🏆</div>
+      <h2 class="text-3xl font-black text-white mb-1">Yarışma Tamamlandı!</h2>
+      <p class="text-sm text-gray-400 mb-6">Takımınızın başarısını dev ekrandaki podyumda görebilirsiniz.</p>
+
+      <div class="w-full bg-gray-800 border border-gray-700 p-5 rounded-2xl mb-6 shadow-xl">
+        <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Takımınızın Nihai Skoru</p>
+        <p id="finish-team-name" class="text-xl font-black text-orange-400">Takım</p>
+        <div id="finish-team-score" class="text-4xl font-black text-white mt-2">0</div>
+        <p id="finish-my-contribution" class="text-xs text-emerald-400 font-bold mt-2">Senin Katkın: 0 puan</p>
+      </div>
+
+      <button onclick="window.location.reload()" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-black py-4 rounded-2xl shadow-lg transition active:scale-95">
+        Yeni Oyuna Katıl
+      </button>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- GÜVENLİK FİLTRESİ (XSS KORUMASI) ---
+    function sanitizeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>'"]/g, function(tag) {
+        const charsToReplace = { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' };
+        return charsToReplace[tag] || tag;
+      });
+    }
+
+    let firebaseConfig = {
+      apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
+      authDomain: "interaktif-yarisma.firebaseapp.com",
+      projectId: "interaktif-yarisma",
+      storageBucket: "interaktif-yarisma.firebasestorage.app",
+      messagingSenderId: "652081118487",
+      appId: "1:652081118487:web:409c5737ced7cb8377cb52"
+    };
+
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+      firebaseConfig = JSON.parse(__firebase_config);
+    }
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const GAMES_PATH = 'teamKahootGames';
+    const PLAYERS_PATH = 'teamKahootPlayers';
+
+    let currentUser = null;
+    let gamePin = '';
+    let playerName = '';
+    let myTeamId = '';
+    let myTeamName = '';
+    let currentQuestionId = null;
+    let hasAnswered = false;
+    let unsubSession = null;
+    let unsubTeammates = null;
+    let maxTeamSize = 5;
+    let questionStartTime = 0;
+    let currentQuizTimeLimit = 20;
+
+    // --- EKRAN GEÇİŞ YÖNETİCİSİ ---
+    function showScreen(screenId) {
+      const screens = ['loading', 'join', 'team', 'waiting', 'live', 'answered', 'result', 'finished'];
+      screens.forEach(s => {
+        const el = document.getElementById(`screen-${s}`);
+        if (el) {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        }
+      });
+      const activeEl = document.getElementById(`screen-${screenId}`);
+      if (activeEl) {
+        activeEl.classList.remove('hidden');
+        activeEl.classList.add('flex');
+      }
+
+      const btnExit = document.getElementById('btn-exit');
+      if (['waiting', 'live', 'answered', 'result'].includes(screenId)) {
+        btnExit.classList.remove('hidden');
+      } else {
+        btnExit.classList.add('hidden');
+      }
+    }
+
+    // 1. ANONİM GİRİŞ
+    signInAnonymously(auth).catch((error) => {
+      console.error("Anonim bağlantı hatası:", error);
+      alert("Sunucuya bağlanılamadı. Lütfen sayfayı yenileyin.");
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        showScreen('join');
+      }
+    });
+
+    // 2. PIN VE İSİM GİRİŞ FORMU
+    document.getElementById('form-join').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const pinInput = document.getElementById('input-pin').value.trim();
+      const nameInput = document.getElementById('input-name').value.trim();
+      const errorMsg = document.getElementById('error-msg');
+      errorMsg.classList.add('hidden');
+
+      try {
+        const sessionRef = doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pinInput);
+        const sessionSnap = await getDoc(sessionRef);
+
+        if (!sessionSnap.exists() || sessionSnap.data().state !== 'lobby') {
+          errorMsg.innerText = "Hatalı PIN kodu veya oyun henüz lobi aşamasında değil!";
+          errorMsg.classList.remove('hidden');
+          return;
+        }
+
+        gamePin = pinInput;
+        playerName = sanitizeHTML(nameInput);
+        maxTeamSize = sessionSnap.data().maxTeamSize || 5;
+
+        // Takım ekranına geç
+        showScreen('team');
+        loadAvailableTeams();
+      } catch (err) {
+        console.error(err);
+        errorMsg.innerText = "Bağlantı hatası: " + err.message;
+        errorMsg.classList.remove('hidden');
+      }
+    });
+
+    // --- TAB YÖNETİMİ (TAKIMA KATIL / YENİ KUR) ---
+    const tabJoin = document.getElementById('tab-join-team');
+    const tabCreate = document.getElementById('tab-create-team');
+    const contentJoin = document.getElementById('tab-content-join');
+    const contentCreate = document.getElementById('tab-content-create');
+
+    tabJoin.addEventListener('click', () => {
+      tabJoin.className = "flex-1 py-2 text-xs font-black rounded-lg bg-orange-500 text-white transition";
+      tabCreate.className = "flex-1 py-2 text-xs font-black rounded-lg text-gray-400 hover:text-white transition";
+      contentJoin.classList.remove('hidden');
+      contentCreate.classList.add('hidden');
+      loadAvailableTeams();
+    });
+
+    tabCreate.addEventListener('click', () => {
+      tabCreate.className = "flex-1 py-2 text-xs font-black rounded-lg bg-orange-500 text-white transition";
+      tabJoin.className = "flex-1 py-2 text-xs font-black rounded-lg text-gray-400 hover:text-white transition";
+      contentCreate.classList.remove('hidden');
+      contentJoin.classList.add('hidden');
+    });
+
+    // 3. MEVCUT TAKIMLARI YÜKLE
+    async function loadAvailableTeams() {
+      const listEl = document.getElementById('teams-list');
+      listEl.innerHTML = '<div class="text-center text-gray-400 text-xs py-8">Takımlar güncelleniyor...</div>';
+
+      try {
+        const sessionRef = doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, gamePin);
+        const sessionSnap = await getDoc(sessionRef);
+        if (!sessionSnap.exists()) return;
+
+        const data = sessionSnap.data();
+        const teams = data.teams || {};
+        const teamIds = Object.keys(teams);
+
+        if (teamIds.length === 0) {
+          listEl.innerHTML = `
+            <div class="text-center bg-gray-800/60 border border-gray-800 p-6 rounded-2xl">
+              <span class="text-3xl mb-2 block">🚩</span>
+              <p class="text-sm font-bold text-gray-300">Henüz oluşturulmuş bir takım yok.</p>
+              <p class="text-xs text-gray-500 mt-1">Hemen yukarıdaki sekmeden ilk takımı sen kur!</p>
+            </div>
+          `;
+          return;
+        }
+
+        listEl.innerHTML = '';
+        teamIds.forEach(id => {
+          const t = teams[id];
+          const isFull = (t.memberCount || 0) >= maxTeamSize;
+          
+          const teamCard = document.createElement('div');
+          teamCard.className = "bg-gray-800/90 border border-gray-700/80 p-3.5 rounded-2xl flex items-center justify-between shadow-md";
+          teamCard.innerHTML = `
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-lg font-bold text-orange-400">
+                🛡️
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-white">${sanitizeHTML(t.name)}</h4>
+                <p class="text-[11px] text-gray-400">Kapasite: <span class="font-bold text-orange-400">${t.memberCount || 0}</span> / ${maxTeamSize} üye</p>
+              </div>
+            </div>
+            <button ${isFull ? 'disabled' : ''} onclick="joinSpecificTeam('${id}', '${sanitizeHTML(t.name)}')" class="${isFull ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 text-white'} px-4 py-2 rounded-xl text-xs font-black shadow-md transition">
+              ${isFull ? 'Dolu' : 'Katıl'}
+            </button>
+          `;
+          listEl.appendChild(teamCard);
+        });
+
+      } catch (err) {
+        console.error(err);
+        listEl.innerHTML = '<div class="text-red-400 text-xs text-center py-4">Takımlar yüklenemedi.</div>';
+      }
+    }
+
+    // 4. BELİRLİ BİR TAKIMA KATILMA
+    window.joinSpecificTeam = async function(teamId, teamName) {
+      if (!currentUser || !gamePin) return;
+
+      try {
+        const sessionRef = doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, gamePin);
+        const sessionSnap = await getDoc(sessionRef);
+        const teams = sessionSnap.data().teams || {};
+        
+        if (!teams[teamId]) {
+          alert("Bu takım bulunamadı!");
+          return;
+        }
+
+        if ((teams[teamId].memberCount || 0) >= maxTeamSize) {
+          alert("Bu takımın kontenjanı dolu!");
+          loadAvailableTeams();
+          return;
+        }
+
+        // Oyuncu kaydı
+        myTeamId = teamId;
+        myTeamName = teamName;
+
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid), {
+          id: currentUser.uid,
+          pin: gamePin,
+          name: playerName,
+          teamId: myTeamId,
+          teamName: myTeamName,
+          score: 0,
+          currentAnswer: null,
+          lastPoints: 0,
+          joinedAt: Date.now()
+        }, { merge: true });
+
+        // Takım üye sayısını güncelle
+        teams[teamId].memberCount = (teams[teamId].memberCount || 0) + 1;
+        await updateDoc(sessionRef, { teams: teams });
+
+        enterLobby();
+      } catch (e) {
+        console.error(e);
+        alert("Takıma katılırken hata oluştu: " + e.message);
+      }
+    };
+
+    // 5. YENİ TAKIM OLUŞTURMA
+    document.getElementById('tab-content-create').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const teamNameInput = document.getElementById('input-team-name').value.trim();
+      const colorVal = document.querySelector('input[name="teamColor"]:checked')?.value || 'orange';
+
+      if (!teamNameInput) return;
+
+      try {
+        const teamId = 'team_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+        const sessionRef = doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, gamePin);
+        const sessionSnap = await getDoc(sessionRef);
+        const teams = sessionSnap.data().teams || {};
+
+        teams[teamId] = {
+          id: teamId,
+          name: sanitizeHTML(teamNameInput),
+          color: colorVal,
+          score: 0,
+          memberCount: 1
+        };
+
+        await updateDoc(sessionRef, { teams: teams });
+
+        myTeamId = teamId;
+        myTeamName = sanitizeHTML(teamNameInput);
+
+        // Oyuncu kaydı
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid), {
+          id: currentUser.uid,
+          pin: gamePin,
+          name: playerName,
+          teamId: myTeamId,
+          teamName: myTeamName,
+          score: 0,
+          currentAnswer: null,
+          lastPoints: 0,
+          joinedAt: Date.now()
+        }, { merge: true });
+
+        enterLobby();
+      } catch (err) {
+        console.error(err);
+        alert("Takım oluşturulurken hata: " + err.message);
+      }
+    });
+
+    // 6. TAKIM LOBİSİNE GİRİŞ & DİNLEYİCİLER
+    function enterLobby() {
+      document.getElementById('display-team-name').innerText = myTeamName;
+      document.getElementById('display-player-name').innerText = playerName;
+      document.getElementById('max-member-badge').innerText = maxTeamSize;
+      
+      showScreen('waiting');
+      listenToGame();
+      listenToTeammates();
+    }
+
+    // 7. OYUN DURUMUNU CANLI DİNLEME
+    function listenToGame() {
+      if (unsubSession) unsubSession();
+
+      unsubSession = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, gamePin), (docSnap) => {
+        if (!docSnap.exists()) {
+          alert("Oyun yönetici tarafından sonlandırıldı.");
+          window.location.reload();
+          return;
+        }
+
+        const data = docSnap.data();
+        const state = data.state;
+        currentQuizTimeLimit = data.timeLimit || 20;
+
+        if (state === 'lobby') {
+          showScreen('waiting');
+          hasAnswered = false;
+        }
+        else if (state === 'question') {
+          if (currentQuestionId !== data.currentQuestionIndex) {
+            currentQuestionId = data.currentQuestionIndex;
+            hasAnswered = false;
+            questionStartTime = Date.now();
+
+            // Soru & Süre Rozetleri
+            document.getElementById('live-question-badge').innerText = `Soru ${(data.currentQuestionIndex || 0) + 1}`;
+            document.getElementById('live-team-badge').innerText = myTeamName;
+
+            // Soru Gösterimi
+            const qCard = document.getElementById('live-question-card');
+            if (data.showTextOnStudent) {
+              qCard.classList.remove('hidden');
+              document.getElementById('live-question-text').innerHTML = sanitizeHTML(data.currentQuestionText || "Soru dev ekranda!");
+            } else {
+              qCard.classList.add('hidden');
+            }
+
+            // Şıkları ayarla
+            for (let i = 0; i < 4; i++) {
+              const btnEl = document.getElementById(`student-btn-${i}`);
+              const optSpan = document.getElementById(`student-opt-${i}`);
+              const optText = data.currentQuestionOptions && data.currentQuestionOptions[i];
+
+              if (optText && optText.trim() !== '') {
+                btnEl.classList.remove('hidden');
+                btnEl.classList.add('flex');
+                if (data.showTextOnStudent && optSpan) {
+                  optSpan.innerHTML = sanitizeHTML(optText);
+                  optSpan.classList.remove('hidden');
+                } else if (optSpan) {
+                  optSpan.classList.add('hidden');
+                }
+              } else {
+                btnEl.classList.add('hidden');
+                btnEl.classList.remove('flex');
+              }
+            }
+          }
+
+          if (hasAnswered) {
+            showScreen('answered');
+          } else {
+            showScreen('live');
+          }
+        }
+        else if (state === 'reveal') {
+          showQuestionResults(data);
+        }
+        else if (state === 'leaderboard') {
+          showScreen('result'); // Lider tablosu sırasında sonuç ve puan özeti ekranında kal
+        }
+        else if (state === 'end') {
+          showEndGame(data);
+        }
+      });
+    }
+
+    // 8. TAKIM ARKADAŞLARINI DİNLEME (Lobi & Sonuç Ekranı İçin)
+    function listenToTeammates() {
+      if (unsubTeammates) unsubTeammates();
+
+      const q = query(
+        collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH),
+        where('pin', '==', gamePin),
+        where('teamId', '==', myTeamId)
+      );
+
+      unsubTeammates = onSnapshot(q, (snapshot) => {
+        const teammates = [];
+        snapshot.forEach(doc => teammates.push(doc.data()));
+
+        // Lobi listesi güncelle
+        document.getElementById('member-count-badge').innerText = teammates.length;
+        const lobbyList = document.getElementById('lobby-teammates');
+        lobbyList.innerHTML = teammates.map(t => `
+          <div class="flex items-center justify-between p-2.5 bg-gray-900/60 rounded-xl border border-gray-700/50">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 font-bold text-xs flex items-center justify-center">
+                ${t.name ? t.name.charAt(0).toUpperCase() : '?'}
+              </div>
+              <span class="text-xs font-bold text-gray-200">${sanitizeHTML(t.name)} ${t.id === currentUser.uid ? '<span class="text-[10px] text-orange-400 font-semibold">(Sen)</span>' : ''}</span>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          </div>
+        `).join('');
+
+        // Sonuç Ekranı Katkı Listesi Güncelle
+        let totalTeamScore = 0;
+        const resList = document.getElementById('result-teammates-list');
+        resList.innerHTML = teammates.map(t => {
+          const score = t.score || 0;
+          totalTeamScore += score;
+          return `
+            <div class="flex items-center justify-between py-1.5 px-2.5 bg-gray-900/50 rounded-xl border border-gray-800 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-md bg-gray-800 text-gray-300 font-bold flex items-center justify-center text-[10px]">
+                  ${t.name ? t.name.charAt(0).toUpperCase() : '?'}
+                </span>
+                <span class="font-bold text-gray-200">${sanitizeHTML(t.name)} ${t.id === currentUser.uid ? '<span class="text-orange-400 text-[10px]">(Sen)</span>' : ''}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-black text-white">${score} p</span>
+                ${(t.lastPoints || 0) > 0 ? `<span class="text-[10px] text-emerald-400 font-bold">+${t.lastPoints}</span>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        document.getElementById('result-team-score').innerText = totalTeamScore;
+      });
+    }
+
+    // 9. CEVAP GÖNDERME
+    window.submitAnswer = async function(optionIndex) {
+      if (!currentUser || !gamePin || hasAnswered) return;
+
+      hasAnswered = true;
+      showScreen('answered');
+
+      try {
+        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid), {
+          currentAnswer: optionIndex,
+          answeredAt: Date.now()
+        });
+      } catch (e) {
+        console.error("Cevap gönderilirken hata:", e);
+      }
+    };
+
+    // 10. SORU SONUCU GÖSTERİMİ (BİREBİR GÖRSEL DİZAYNI)
+    async function showQuestionResults(gameData) {
+      showScreen('result');
+
+      try {
+        const playerSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid));
+        const pData = playerSnap.data() || {};
+        const myScore = pData.score || 0;
+        const lastPts = pData.lastPoints || 0;
+        const banner = document.getElementById('result-banner');
+
+        document.getElementById('result-my-score').innerText = myScore;
+
+        if (lastPts > 0) {
+          banner.className = "text-center p-6 rounded-3xl mb-4 shadow-xl border bg-emerald-950/40 border-emerald-500/30";
+          banner.innerHTML = `
+            <div class="w-14 h-14 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400 flex items-center justify-center text-2xl font-black mb-3">
+              ✓
+            </div>
+            <h3 class="text-2xl font-black text-emerald-400 mb-1">Doğru Cevap!</h3>
+            <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 font-black text-sm">
+              +${lastPts} Puan Kazandın
+            </span>
+          `;
+        } else {
+          banner.className = "text-center p-6 rounded-3xl mb-4 shadow-xl border bg-red-950/40 border-red-500/30";
+          banner.innerHTML = `
+            <div class="w-14 h-14 mx-auto rounded-full bg-red-500/20 border-2 border-red-500 text-red-400 flex items-center justify-center text-2xl font-black mb-3">
+              ✗
+            </div>
+            <h3 class="text-2xl font-black text-red-400 mb-1">Yanlış veya Süre Doldu!</h3>
+            <span class="inline-block px-4 py-1.5 rounded-full bg-red-500/20 text-red-300 font-black text-sm">
+              +0 Puan
+            </span>
+          `;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // 11. OYUN BİTİŞ EKRANI
+    async function showEndGame(gameData) {
+      showScreen('finished');
+
+      try {
+        const playerSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid));
+        const pData = playerSnap.data() || {};
+
+        document.getElementById('finish-team-name').innerText = myTeamName;
+        document.getElementById('finish-my-contribution').innerText = `Senin Bireysel Katkın: ${pData.score || 0} puan`;
+
+        const teamScore = gameData.teams && gameData.teams[myTeamId] ? gameData.teams[myTeamId].score : (pData.score || 0);
+        document.getElementById('finish-team-score').innerText = teamScore + " Puan";
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // 12. ÇIKIŞ BUTONU
+    document.getElementById('btn-exit').addEventListener('click', () => {
+      if (confirm("Takımdan ve oyundan çıkmak istediğine emin misin?")) {
+        window.location.reload();
+      }
+    });
+
+  </script>
+</body>
+</html>

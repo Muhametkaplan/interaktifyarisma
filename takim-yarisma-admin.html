@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Takımlı Yarışma Yönetimi | Dev Ekran</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .animate-bounce-short { animation: bounce 1s infinite; }
+    @keyframes bounce { 
+      0%, 100% { transform: translateY(-4%); animation-timing-function: cubic-bezier(0.8,0,1,1); } 
+      50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); } 
+    }
+    .glow-orange { box-shadow: 0 0 40px -10px rgba(249, 115, 22, 0.4); }
+  </style>
+</head>
+<body class="bg-gray-950 min-h-screen flex flex-col font-sans text-gray-100 selection:bg-orange-500 selection:text-white">
+
+  <!-- 0. YETKİSİZ GİRİŞ EKRANI -->
+  <div id="screen-unauthorized" class="flex-1 flex flex-col items-center justify-center p-6 bg-gray-950 hidden relative">
+    <div class="bg-gray-900 border border-gray-800 p-8 sm:p-10 rounded-3xl shadow-2xl max-w-md w-full text-center">
+      <div class="w-16 h-16 rounded-full bg-red-500/10 text-red-400 mx-auto mb-6 flex items-center justify-center text-3xl font-black">
+        ⚠️
+      </div>
+      <h1 class="text-2xl font-black text-white mb-2">Erişim Engellendi</h1>
+      <p class="text-sm text-gray-400 mb-8">Yönetim paneline ulaşmak için önce ana sayfadan giriş yapmalısınız.</p>
+      <button onclick="safeRedirect()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold text-base py-4 rounded-xl shadow-lg transition">Ana Sayfaya Dön</button>
+    </div>
+  </div>
+
+  <!-- 1. DASHBOARD (ANA MENÜ) -->
+  <div id="screen-dashboard" class="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-gray-950 hidden relative">
+    <div class="absolute top-4 right-4 sm:top-8 sm:right-8 z-10">
+      <button onclick="safeRedirect()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold px-4 py-2 sm:px-6 sm:py-3 rounded-xl transition text-sm shadow-sm flex items-center border border-gray-700">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Ana Sayfa
+      </button>
+    </div>
+
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 font-bold text-xs uppercase tracking-wider mb-4">
+        <span>👥</span> Takım Modu Yönetimi
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-black text-white mb-3">Takımlı Bilgi Yarışması</h1>
+      <p class="text-base sm:text-lg text-gray-400 max-w-xl">Öğrencilerin gruplara ayrıldığı, bireysel puanların takım puanına dönüştüğü yarışmayı yönetin.</p>
+    </div>
+
+    <!-- Ayarlar Barı -->
+    <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl mb-8 max-w-4xl w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Takım Kişi Sınırı:</label>
+        <select id="setting-max-members" class="bg-gray-800 border border-gray-700 text-orange-400 font-bold text-sm rounded-xl px-3 py-2 outline-none">
+          <option value="2">2 Kişi</option>
+          <option value="3">3 Kişi</option>
+          <option value="4">4 Kişi</option>
+          <option value="5" selected>5 Kişi (Standart)</option>
+          <option value="6">6 Kişi</option>
+          <option value="8">8 Kişi</option>
+          <option value="99">Sınırsız</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Puanlama Türü:</label>
+        <select id="setting-score-mode" class="bg-gray-800 border border-gray-700 text-orange-400 font-bold text-sm rounded-xl px-3 py-2 outline-none">
+          <option value="sum" selected>Toplam Puanlama (Σ Herkesin Puanı Eklenir)</option>
+          <option value="average">Adil Ortalama Puanlama (Kişi Sayısı Eşit Değilse)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-6 max-w-4xl w-full">
+      <button onclick="loadSavedQuizzes()" class="flex-1 bg-gray-900 border border-gray-800 hover:border-orange-500/50 p-8 rounded-3xl shadow-xl transition transform hover:-translate-y-1.5 flex flex-col items-center text-center group">
+        <div class="w-16 h-16 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition">
+          📂
+        </div>
+        <h2 class="text-2xl font-black text-white mb-2">Kayıtlı Paketlerimle Başlat</h2>
+        <p class="text-sm text-gray-400">Daha önce hazırladığınız soru paketlerinden birini seçerek hemen odayı açın.</p>
+      </button>
+
+      <button onclick="startNewQuizSetup()" class="flex-1 bg-gray-900 border border-gray-800 hover:border-amber-500/50 p-8 rounded-3xl shadow-xl transition transform hover:-translate-y-1.5 flex flex-col items-center text-center group">
+        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition">
+          ✏️
+        </div>
+        <h2 class="text-2xl font-black text-white mb-2">Yeni Soru Paketi Hazırla</h2>
+        <p class="text-sm text-gray-400">Yepyeni sorular yazın, süreleri belirleyin ve takım yarışması için kaydedin.</p>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. KAYITLI PAKETLER LİSTESİ EKRANI -->
+  <div id="screen-quiz-list" class="flex-1 flex flex-col p-6 sm:p-10 bg-gray-950 overflow-y-auto hidden">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 max-w-5xl mx-auto w-full">
+      <div>
+        <h1 class="text-3xl font-black text-white">Kayıtlı Soru Paketleriniz</h1>
+        <p class="text-sm text-gray-400 mt-1">Odayı başlatmak istediğiniz soru paketine tıklayın.</p>
+      </div>
+      <button onclick="showScreen('dashboard')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-5 py-2.5 rounded-xl font-bold text-sm border border-gray-700 transition">
+        ← Menüye Dön
+      </button>
+    </div>
+
+    <div id="saved-quizzes-container" class="max-w-5xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div class="text-center text-gray-500 col-span-2 py-10 font-bold">Paketler aranıyor...</div>
+    </div>
+  </div>
+
+  <!-- 3. SORU PAKETİ HAZIRLAMA / DÜZENLEME EKRANI -->
+  <div id="screen-setup" class="flex-1 flex flex-col p-4 sm:p-8 bg-gray-950 overflow-y-auto hidden">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 max-w-7xl mx-auto w-full">
+      <h1 class="text-3xl font-black text-white">Takım Yarışması Soru Paketi</h1>
+      <button onclick="showScreen('dashboard')" class="bg-gray-800 hover:bg-gray-700 text-gray-400 px-6 py-2.5 rounded-xl font-bold text-sm border border-gray-700 transition">
+        İptal ve Geri Dön
+      </button>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto w-full">
+      <!-- Soru Formu -->
+      <div class="flex-[2] bg-gray-900 p-6 sm:p-8 rounded-3xl border border-gray-800 shadow-xl">
+        <h2 class="text-xl font-black mb-6 text-orange-400" id="form-title">Yeni Soru Ekle</h2>
+        <form id="form-add-q" class="space-y-5">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Soru Tipi</label>
+            <select id="q-type" class="w-full p-3.5 bg-gray-800 border border-gray-700 rounded-xl font-bold text-white outline-none focus:border-orange-500">
+              <option value="multiple">Çoktan Seçmeli (4 Şık)</option>
+              <option value="boolean">Doğru / Yanlış (2 Şık)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Soru Metni</label>
+            <textarea id="q-text" rows="3" placeholder="Soruyu buraya yazın..." class="w-full p-4 bg-gray-800 border border-gray-700 rounded-xl text-white outline-none focus:border-orange-500 font-medium" required></textarea>
+          </div>
+
+          <!-- Şıklar -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="flex items-center space-x-3 bg-gray-800/80 p-3 rounded-2xl border border-gray-700">
+              <input type="radio" name="correctAnswer" value="0" checked class="w-5 h-5 text-orange-500 accent-orange-500 cursor-pointer">
+              <span class="w-7 h-7 rounded-lg bg-red-600 text-white font-bold flex items-center justify-center text-xs">A</span>
+              <input type="text" id="q-opt-0" placeholder="1. Şık (Kırmızı)" class="flex-1 bg-transparent border-b border-gray-600 outline-none px-2 py-1 text-sm font-semibold text-white" required>
+            </div>
+
+            <div class="flex items-center space-x-3 bg-gray-800/80 p-3 rounded-2xl border border-gray-700">
+              <input type="radio" name="correctAnswer" value="1" class="w-5 h-5 text-orange-500 accent-orange-500 cursor-pointer">
+              <span class="w-7 h-7 rounded-lg bg-orange-600 text-white font-bold flex items-center justify-center text-xs">B</span>
+              <input type="text" id="q-opt-1" placeholder="2. Şık (Turuncu)" class="flex-1 bg-transparent border-b border-gray-600 outline-none px-2 py-1 text-sm font-semibold text-white" required>
+            </div>
+
+            <div id="container-opt-2" class="flex items-center space-x-3 bg-gray-800/80 p-3 rounded-2xl border border-gray-700">
+              <input type="radio" name="correctAnswer" value="2" class="w-5 h-5 text-orange-500 accent-orange-500 cursor-pointer">
+              <span class="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs">C</span>
+              <input type="text" id="q-opt-2" placeholder="3. Şık (Mavi)" class="flex-1 bg-transparent border-b border-gray-600 outline-none px-2 py-1 text-sm font-semibold text-white" required>
+            </div>
+
+            <div id="container-opt-3" class="flex items-center space-x-3 bg-gray-800/80 p-3 rounded-2xl border border-gray-700">
+              <input type="radio" name="correctAnswer" value="3" class="w-5 h-5 text-orange-500 accent-orange-500 cursor-pointer">
+              <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-xs">D</span>
+              <input type="text" id="q-opt-3" placeholder="4. Şık (Yeşil)" class="flex-1 bg-transparent border-b border-gray-600 outline-none px-2 py-1 text-sm font-semibold text-white" required>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-gray-800">
+            <div class="flex items-center space-x-3">
+              <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Süre:</label>
+              <select id="q-time" class="bg-gray-800 border border-gray-700 text-orange-400 font-bold p-2 rounded-xl outline-none">
+                <option value="10">10 Saniye</option>
+                <option value="15">15 Saniye</option>
+                <option value="20" selected>20 Saniye</option>
+                <option value="30">30 Saniye</option>
+                <option value="45">45 Saniye</option>
+                <option value="60">60 Saniye</option>
+              </select>
+            </div>
+
+            <div class="flex gap-2">
+              <button type="button" id="btn-cancel-edit" onclick="cancelEdit()" class="bg-gray-800 text-gray-400 px-5 py-2.5 rounded-xl font-bold text-sm hidden">İptal</button>
+              <button type="submit" id="btn-submit-q" class="bg-orange-600 hover:bg-orange-500 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition">Listeye Ekle +</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Soru Listesi & Kaydetme -->
+      <div class="flex-1 bg-gray-900 p-6 rounded-3xl border border-gray-800 flex flex-col max-h-[620px]">
+        <div class="mb-4">
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">Paket Başlığı</label>
+          <input type="text" id="input-quiz-name" placeholder="Örn: Genel Kültür Takım Yarışması" class="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white font-bold outline-none focus:border-orange-500">
+        </div>
+
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-bold text-gray-300">Eklenen Sorular (<span id="q-count" class="text-orange-400">0</span>)</h3>
+        </div>
+
+        <div id="q-list" class="flex-1 overflow-y-auto space-y-2 pr-1 mb-4 bg-gray-950 p-3 rounded-2xl border border-gray-800/80">
+          <div class="text-gray-600 text-center text-xs mt-12 italic">Henüz soru eklenmedi.</div>
+        </div>
+
+        <div class="mb-4 flex items-center space-x-3 bg-gray-800/50 p-3 rounded-xl border border-gray-800">
+          <input type="checkbox" id="input-show-text" class="w-5 h-5 accent-orange-500 rounded cursor-pointer">
+          <label for="input-show-text" class="text-xs font-bold text-gray-300 cursor-pointer select-none">Öğrenci telefonlarında soru ve şık metinlerini göster</label>
+        </div>
+
+        <div class="flex gap-3">
+          <button id="btn-save-quiz" class="flex-1 bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-white p-3 rounded-xl font-bold text-sm transition" disabled>
+            Sadece Kaydet
+          </button>
+          <button id="btn-save-and-start" class="flex-1 bg-orange-600 hover:bg-orange-500 disabled:opacity-40 text-white p-3 rounded-xl font-bold text-sm shadow-lg shadow-orange-600/30 transition" disabled>
+            Kaydet & Takımları Başlat
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. LOBİ EKRANI (DEV EKRAN - TAKIMLAR LİSTESİ) -->
+  <div id="screen-lobby" class="flex-1 flex flex-col bg-gray-950 text-white hidden relative p-6 sm:p-10">
+    <div class="absolute top-6 right-6 z-10 flex gap-3">
+      <button onclick="closeRoom()" class="bg-gray-800/80 hover:bg-red-950/80 hover:text-red-300 hover:border-red-500/30 text-gray-300 px-4 py-2 rounded-xl font-bold text-xs border border-gray-700 transition">
+        Odayı Kapat
+      </button>
+    </div>
+
+    <!-- Başlık & PIN & QR -->
+    <div class="bg-gray-900 border border-gray-800 p-8 rounded-3xl shadow-2xl max-w-5xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-8 mb-8">
+      
+      <!-- QR ve URL -->
+      <div class="flex flex-col items-center text-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-orange-400 mb-2">Telefonunuzdan Katılın</span>
+        <div class="bg-white p-3 rounded-2xl shadow-xl">
+          <img id="qr-img" src="" alt="QR Kodu" class="w-36 h-36 md:w-44 md:h-44">
+        </div>
+        <p id="qr-url-text" class="text-xs font-bold text-gray-400 mt-2">takim-yarisma.html</p>
+      </div>
+
+      <!-- Ayırıcı Çizgi -->
+      <div class="w-full h-px md:w-px md:h-44 bg-gray-800"></div>
+
+      <!-- PIN Kodu -->
+      <div class="flex-1 flex flex-col items-center text-center">
+        <span class="text-xs font-black uppercase tracking-widest text-gray-400 mb-2">OYUN PIN KODU:</span>
+        <div id="display-pin" class="text-6xl sm:text-7xl md:text-8xl font-black text-orange-500 tracking-widest bg-gray-950 px-8 py-3 rounded-3xl border-2 border-orange-500/40 glow-orange">
+          000000
+        </div>
+        <p class="text-xs text-gray-500 mt-3">Paket: <span id="lobby-quiz-name" class="font-bold text-gray-300">Genel Kültür</span></p>
+      </div>
+    </div>
+
+    <!-- Canlı Takımlar Listesi -->
+    <div class="max-w-6xl mx-auto w-full flex-1 flex flex-col">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center space-x-3">
+          <span class="text-2xl font-black text-white">Canlı Takımlar</span>
+          <span class="bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-black px-3 py-1 rounded-full">
+            <span id="lobby-team-count">0</span> Takım • <span id="lobby-player-count">0</span> Oyuncu
+          </span>
+        </div>
+
+        <button id="btn-start-game" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-white px-8 py-3.5 rounded-2xl font-black text-lg shadow-xl shadow-orange-500/30 transition transform hover:scale-105" disabled>
+          Yarışmayı Başlat 🚀
+        </button>
+      </div>
+
+      <!-- Takım Kartları Izgarası -->
+      <div id="teams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex-1 overflow-y-auto">
+        <div class="col-span-full text-center text-gray-500 py-16 font-semibold">
+          Oyuncuların PIN girip takım kurması / takımlara katılması bekleniyor...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. DEV EKRAN SORU EKRANI -->
+  <div id="screen-question" class="flex-1 flex flex-col items-center justify-between p-6 sm:p-10 bg-gray-950 hidden relative">
+    <div class="w-full flex items-center justify-between max-w-6xl mx-auto">
+      <span id="live-q-count" class="bg-orange-500/10 text-orange-400 border border-orange-500/20 text-sm font-black px-4 py-1.5 rounded-full uppercase tracking-wider">Soru 1 / 10</span>
+      <button id="btn-skip-timer" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold px-4 py-2 rounded-xl text-xs border border-gray-700 transition">
+        Süreyi Bitir ⏩
+      </button>
+    </div>
+
+    <!-- Soru Metni -->
+    <div class="max-w-5xl w-full my-auto text-center">
+      <h2 id="live-q-text" class="text-3xl sm:text-5xl font-black text-white leading-tight bg-gray-900/90 border border-gray-800 p-8 sm:p-12 rounded-3xl shadow-2xl">
+        Soru Yükleniyor...
+      </h2>
+    </div>
+
+    <!-- Dev Yuvarlak Sayaç -->
+    <div class="my-6">
+      <div id="live-q-timer" class="w-32 h-32 rounded-full bg-orange-500/10 border-4 border-orange-500 text-orange-400 flex items-center justify-center text-5xl font-black glow-orange">
+        20
+      </div>
+    </div>
+
+    <!-- 4 Şık Kutusu (Dev Ekran) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-5xl w-full mb-6">
+      <div id="live-container-opt-0" class="bg-red-600/90 border border-red-500 text-white p-5 rounded-2xl flex items-center shadow-lg">
+        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-black mr-4 text-lg">▲</div>
+        <span id="live-opt-0" class="text-xl sm:text-2xl font-bold">Şık 1</span>
+      </div>
+
+      <div id="live-container-opt-1" class="bg-orange-600/90 border border-orange-500 text-white p-5 rounded-2xl flex items-center shadow-lg">
+        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-black mr-4 text-lg">◆</div>
+        <span id="live-opt-1" class="text-xl sm:text-2xl font-bold">Şık 2</span>
+      </div>
+
+      <div id="live-container-opt-2" class="bg-blue-600/90 border border-blue-500 text-white p-5 rounded-2xl flex items-center shadow-lg">
+        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-black mr-4 text-lg">●</div>
+        <span id="live-opt-2" class="text-xl sm:text-2xl font-bold">Şık 3</span>
+      </div>
+
+      <div id="live-container-opt-3" class="bg-emerald-600/90 border border-emerald-500 text-white p-5 rounded-2xl flex items-center shadow-lg">
+        <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-black mr-4 text-lg">■</div>
+        <span id="live-opt-3" class="text-xl sm:text-2xl font-bold">Şık 4</span>
+      </div>
+    </div>
+
+    <!-- Alt İlerleme Çubuğu -->
+    <div class="w-full max-w-5xl flex items-center justify-between text-xs text-gray-500 font-bold border-t border-gray-800 pt-3">
+      <span>Cevap Veren: <span id="answered-count" class="text-orange-400 font-black">0</span> / <span id="total-players-q">0</span></span>
+      <span>Herkes cevapladığında sonuçlar açılır.</span>
+    </div>
+  </div>
+
+  <!-- 6. CEVAP DAĞILIMI (REVEAL) EKRANI -->
+  <div id="screen-reveal" class="flex-1 flex flex-col items-center justify-between p-6 sm:p-10 bg-gray-950 hidden">
+    <div class="w-full max-w-5xl">
+      <span class="text-xs font-bold text-gray-500 uppercase tracking-widest block text-center mb-2">DOĞRU CEVAP DAĞILIMI</span>
+      <h2 id="rev-q-text" class="text-2xl sm:text-3xl font-black text-center text-gray-300">Soru Metni</h2>
+    </div>
+
+    <!-- Dağılım Çubukları -->
+    <div id="rev-bars" class="flex-1 flex items-end justify-center space-x-6 sm:space-x-12 w-full max-w-4xl min-h-[220px] mb-8">
+      <!-- JS ile doldurulacak -->
+    </div>
+
+    <!-- Buton -->
+    <button id="btn-next-leaderboard" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-10 py-4 rounded-2xl font-black text-xl shadow-xl shadow-orange-500/25 transition transform hover:scale-105">
+      Canlı Takım Sıralaması →
+    </button>
+  </div>
+
+  <!-- 7. CANLI TAKIM SIRALAMASI (GÖRSELDEKİ ADIM 4) -->
+  <div id="screen-leaderboard" class="flex-1 flex flex-col items-center justify-between p-6 sm:p-10 bg-gray-950 hidden">
+    <div class="text-center mb-6">
+      <div class="inline-flex p-3 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-400 text-2xl mb-2">
+        🏆
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black text-white">Canlı Takım Sıralaması</h1>
+      <p class="text-xs text-gray-400 mt-1">Her sorudan sonra takımların toplam puanı güncellenir.</p>
+    </div>
+
+    <!-- Takım Sıralaması Tablosu (Görseldeki 4. Adım Kartı) -->
+    <div class="max-w-3xl w-full flex-1 flex flex-col justify-center space-y-3 mb-6">
+      <div id="lb-teams-list" class="space-y-3">
+        <!-- JS ile doldurulacak -->
+      </div>
+    </div>
+
+    <!-- İlerle Butonu -->
+    <button id="btn-next-question" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-10 py-4 rounded-2xl font-black text-xl shadow-xl shadow-orange-500/25 transition transform hover:scale-105">
+      Sıradaki Soru →
+    </button>
+  </div>
+
+  <!-- 8. ŞAMPİYONLUK PODYUMU (END) -->
+  <div id="screen-end" class="flex-1 flex flex-col items-center justify-between p-6 sm:p-10 bg-gray-950 hidden">
+    <div class="text-center mb-4">
+      <span class="text-5xl block mb-2">👑</span>
+      <h1 class="text-4xl sm:text-6xl font-black text-white">Şampiyon Takımlar</h1>
+      <p class="text-sm text-gray-400 mt-1">Takım ruhuyla bilgiye ulaşanları kutluyoruz!</p>
+    </div>
+
+    <!-- Podyum (1., 2., 3. Takımlar) -->
+    <div id="podium-container" class="flex items-end justify-center max-w-4xl w-full h-[360px] gap-4 mb-8">
+      <!-- JS ile doldurulacak -->
+    </div>
+
+    <button onclick="window.location.reload()" class="bg-gray-800 hover:bg-gray-700 text-white font-bold px-8 py-3.5 rounded-2xl text-sm border border-gray-700 transition">
+      Yeni Yarışma Başlat
+    </button>
+  </div>
+
+  <!-- FIREBASE VE YÖNETİM MANTIĞI -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, query, where, onSnapshot, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    function sanitizeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>'"]/g, function(tag) {
+        const charsToReplace = { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' };
+        return charsToReplace[tag] || tag;
+      });
+    }
+
+    let firebaseConfig = {
+      apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
+      authDomain: "interaktif-yarisma.firebaseapp.com",
+      projectId: "interaktif-yarisma",
+      storageBucket: "interaktif-yarisma.firebasestorage.app",
+      messagingSenderId: "652081118487",
+      appId: "1:652081118487:web:409c5737ced7cb8377cb52"
+    };
+
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+      firebaseConfig = JSON.parse(__firebase_config);
+    }
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const GAMES_PATH = 'teamKahootGames';
+    const PLAYERS_PATH = 'teamKahootPlayers';
+    const QUIZZES_PATH = 'kahootQuizzes'; // Mevcut soru paketleriyle tam uyumlu
+
+    let hostId = '';
+    let pin = '';
+    let questions = [];
+    let savedQuizzes = [];
+    let currentQuiz = null;
+    let editingQuizId = null;
+    let editingQuestionIdx = -1;
+
+    let localGameState = 'lobby';
+    let currentQIndex = 0;
+    let timerInterval = null;
+    let timeLeft = 0;
+    let questionStartTime = 0;
+    let players = [];
+    let teamsMap = {};
+    let unsubGamePlayers = null;
+    let unsubGameDoc = null;
+
+    window.safeRedirect = function() {
+      try { window.location.replace('index.html'); } catch(e) { window.location.href = 'index.html'; }
+    };
+
+    function showScreen(screenId) {
+      ['unauthorized', 'dashboard', 'quiz-list', 'setup', 'lobby', 'question', 'reveal', 'leaderboard', 'end'].forEach(s => {
+        const el = document.getElementById(`screen-${s}`);
+        if (el) {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        }
+      });
+      const target = document.getElementById(`screen-${screenId}`);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('flex');
+      }
+    }
+
+    // AUTH KONTROLÜ
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        hostId = user.uid;
+        showScreen('dashboard');
+      } else {
+        hostId = '';
+        showScreen('unauthorized');
+      }
+    });
+
+    // 1. KAYITLI SORU PAKETLERİNİ GETİR
+    window.loadSavedQuizzes = async function() {
+      showScreen('quiz-list');
+      const container = document.getElementById('saved-quizzes-container');
+      container.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-10 font-bold">Paketler yükleniyor...</div>';
+
+      try {
+        const qRef = collection(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH);
+        const snapshot = await getDocs(qRef);
+
+        savedQuizzes = [];
+        snapshot.forEach(docSnap => {
+          savedQuizzes.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        if (savedQuizzes.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-2 bg-gray-900 border border-gray-800 p-8 rounded-3xl text-center">
+              <span class="text-4xl block mb-2">📦</span>
+              <p class="font-bold text-white text-base">Henüz kayıtlı soru paketiniz yok.</p>
+              <p class="text-xs text-gray-400 mt-1 mb-4">Yeni bir soru paketi hazırlayarak başlayabilirsiniz.</p>
+              <button onclick="startNewQuizSetup()" class="bg-orange-600 hover:bg-orange-500 text-white px-6 py-2.5 rounded-xl font-bold text-xs transition">
+                + Yeni Paket Oluştur
+              </button>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = '';
+        savedQuizzes.forEach(quiz => {
+          const card = document.createElement('div');
+          card.className = "bg-gray-900 border border-gray-800 hover:border-orange-500/50 p-6 rounded-3xl shadow-lg flex flex-col justify-between transition";
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2.5 py-1 rounded-lg">
+                  ${(quiz.questions || []).length} Soru
+                </span>
+                <span class="text-[11px] text-gray-500">${quiz.createdAt ? new Date(quiz.createdAt).toLocaleDateString('tr-TR') : ''}</span>
+              </div>
+              <h3 class="text-xl font-black text-white mb-2 break-words">${sanitizeHTML(quiz.name || 'İsimsiz Paket')}</h3>
+            </div>
+            
+            <div class="flex gap-2 mt-6">
+              <button onclick="editQuiz('${quiz.id}')" class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold py-2.5 rounded-xl text-xs transition">
+                Düzenle
+              </button>
+              <button onclick="startTeamGame('${quiz.id}')" class="flex-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-black py-2.5 rounded-xl text-xs shadow-md transition transform hover:scale-[1.02]">
+                Takımlarla Başlat 🚀
+              </button>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = '<div class="text-center text-red-400 col-span-2 py-8 text-xs font-bold">Paketler yüklenirken hata oluştu.</div>';
+      }
+    };
+
+    // 2. YENİ PAKET KURULUMU EKRANI
+    window.startNewQuizSetup = function() {
+      editingQuizId = null;
+      editingQuestionIdx = -1;
+      questions = [];
+      document.getElementById('input-quiz-name').value = '';
+      document.getElementById('input-show-text').checked = true;
+      updateQuestionList();
+      showScreen('setup');
+    };
+
+    window.editQuiz = function(quizId) {
+      const q = savedQuizzes.find(item => item.id === quizId);
+      if (!q) return;
+      editingQuizId = quizId;
+      questions = [...(q.questions || [])];
+      document.getElementById('input-quiz-name').value = q.name || '';
+      document.getElementById('input-show-text').checked = !!q.showTextOnStudent;
+      updateQuestionList();
+      showScreen('setup');
+    };
+
+    // Soru Tipi Değişimi
+    document.getElementById('q-type').addEventListener('change', (e) => {
+      const type = e.target.value;
+      const opt2 = document.getElementById('container-opt-2');
+      const opt3 = document.getElementById('container-opt-3');
+      const opt0 = document.getElementById('q-opt-0');
+      const opt1 = document.getElementById('q-opt-1');
+
+      if (type === 'boolean') {
+        opt2.classList.add('hidden');
+        opt3.classList.add('hidden');
+        opt0.value = "Doğru";
+        opt0.readOnly = true;
+        opt1.value = "Yanlış";
+        opt1.readOnly = true;
+        document.getElementById('q-opt-2').required = false;
+        document.getElementById('q-opt-3').required = false;
+      } else {
+        opt2.classList.remove('hidden');
+        opt3.classList.remove('hidden');
+        opt0.value = "";
+        opt0.readOnly = false;
+        opt1.value = "";
+        opt1.readOnly = false;
+        document.getElementById('q-opt-2').required = true;
+        document.getElementById('q-opt-3').required = true;
+      }
+    });
+
+    // Soru Ekleme Formu
+    document.getElementById('form-add-q').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const qText = document.getElementById('q-text').value.trim();
+      const qType = document.getElementById('q-type').value;
+
+      let opts = [];
+      if (qType === 'boolean') {
+        opts = ["Doğru", "Yanlış", "", ""];
+      } else {
+        opts = [
+          document.getElementById('q-opt-0').value.trim(),
+          document.getElementById('q-opt-1').value.trim(),
+          document.getElementById('q-opt-2').value.trim(),
+          document.getElementById('q-opt-3').value.trim()
+        ];
+      }
+
+      const correctIdx = parseInt(document.querySelector('input[name="correctAnswer"]:checked').value);
+      const tLimit = parseInt(document.getElementById('q-time').value);
+
+      const newQ = { question: qText, options: opts, correctAnswerIndex: correctIdx, timeLimit: tLimit, type: qType };
+
+      if (editingQuestionIdx > -1) {
+        questions[editingQuestionIdx] = newQ;
+        editingQuestionIdx = -1;
+        document.getElementById('btn-submit-q').innerText = 'Listeye Ekle +';
+        document.getElementById('btn-cancel-edit').classList.add('hidden');
+      } else {
+        questions.push(newQ);
+      }
+
+      updateQuestionList();
+      e.target.reset();
+      document.querySelector('input[name="correctAnswer"][value="0"]').checked = true;
+    });
+
+    function updateQuestionList() {
+      const listEl = document.getElementById('q-list');
+      document.getElementById('q-count').innerText = questions.length;
+      document.getElementById('btn-save-quiz').disabled = questions.length === 0;
+      document.getElementById('btn-save-and-start').disabled = questions.length === 0;
+
+      if (questions.length === 0) {
+        listEl.innerHTML = '<div class="text-gray-600 text-center text-xs mt-12 italic">Henüz soru eklenmedi.</div>';
+        return;
+      }
+
+      listEl.innerHTML = '';
+      questions.forEach((q, idx) => {
+        listEl.innerHTML += `
+          <div class="bg-gray-900 p-3 rounded-xl border border-gray-800 flex items-center justify-between text-xs">
+            <div class="flex-1 min-w-0 pr-3">
+              <span class="font-black text-orange-400">${idx + 1}. Soru</span>
+              <p class="font-medium text-gray-300 truncate">${sanitizeHTML(q.question)}</p>
+            </div>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <span class="text-[10px] text-gray-400 bg-gray-800 px-2 py-1 rounded">${q.timeLimit}s</span>
+              <button onclick="deleteQuestion(${idx})" class="text-red-400 hover:text-red-300 p-1">🗑️</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    window.deleteQuestion = function(idx) {
+      questions.splice(idx, 1);
+      updateQuestionList();
+    };
+
+    window.cancelEdit = function() {
+      editingQuestionIdx = -1;
+      document.getElementById('form-add-q').reset();
+      document.getElementById('btn-submit-q').innerText = 'Listeye Ekle +';
+      document.getElementById('btn-cancel-edit').classList.add('hidden');
+    };
+
+    async function saveQuizToDB() {
+      const name = document.getElementById('input-quiz-name').value.trim();
+      const showText = document.getElementById('input-show-text').checked;
+
+      if (!name) {
+        alert("Lütfen paket adını girin!");
+        return null;
+      }
+      if (questions.length === 0) {
+        alert("En az 1 soru ekleyin!");
+        return null;
+      }
+
+      try {
+        if (editingQuizId) {
+          const ref = doc(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH, editingQuizId);
+          await updateDoc(ref, { name, questions, showTextOnStudent: showText });
+          return editingQuizId;
+        } else {
+          const ref = doc(collection(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH));
+          await setDoc(ref, {
+            id: ref.id,
+            name,
+            questions,
+            showTextOnStudent: showText,
+            hostId,
+            createdAt: Date.now()
+          });
+          return ref.id;
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Paket kaydedilemedi: " + err.message);
+        return null;
+      }
+    }
+
+    document.getElementById('btn-save-quiz').addEventListener('click', async () => {
+      const res = await saveQuizToDB();
+      if (res) {
+        alert("Paket başarıyla kaydedildi!");
+        showScreen('dashboard');
+      }
+    });
+
+    document.getElementById('btn-save-and-start').addEventListener('click', async () => {
+      const res = await saveQuizToDB();
+      if (res) {
+        startTeamGame(res);
+      }
+    });
+
+    // 3. TAKIMLI OYUNU BAŞLATMA (LOBİ AÇMA)
+    window.startTeamGame = async function(quizId) {
+      try {
+        let qDoc = savedQuizzes.find(item => item.id === quizId);
+        if (!qDoc) {
+          const snap = await getDoc(doc(db, 'artifacts', appId, 'users', hostId, QUIZZES_PATH, quizId));
+          qDoc = snap.data();
+        }
+
+        currentQuiz = qDoc;
+        questions = qDoc.questions || [];
+        if (questions.length === 0) {
+          alert("Bu pakette soru bulunmuyor!");
+          return;
+        }
+
+        // 6 haneli rastgele PIN üret
+        pin = Math.floor(100000 + Math.random() * 900000).toString();
+        const maxMembers = parseInt(document.getElementById('setting-max-members').value) || 5;
+        const scoreMode = document.getElementById('setting-score-mode').value || 'sum';
+
+        // Firestore'da odayı aç
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
+          pin: pin,
+          hostId: hostId,
+          quizId: quizId,
+          quizName: currentQuiz.name,
+          state: 'lobby',
+          maxTeamSize: maxMembers,
+          scoreMode: scoreMode,
+          currentQuestionIndex: -1,
+          showTextOnStudent: !!currentQuiz.showTextOnStudent,
+          teams: {},
+          createdAt: Date.now()
+        });
+
+        // UI ayarla
+        document.getElementById('display-pin').innerText = pin;
+        document.getElementById('lobby-quiz-name').innerText = currentQuiz.name;
+
+        // QR Kodu
+        const currentOrigin = window.location.origin + window.location.pathname.replace('takim-yarisma-admin.html', 'takim-yarisma.html');
+        const joinUrl = `${currentOrigin}?pin=${pin}`;
+        document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(joinUrl)}`;
+        document.getElementById('qr-url-text').innerText = joinUrl.replace('https://', '').replace('http://', '');
+
+        // Canlı Oyuncuları & Takımları Dinle
+        listenToLobby();
+        showScreen('lobby');
+
+      } catch (err) {
+        console.error(err);
+        alert("Oyun başlatılırken hata oluştu: " + err.message);
+      }
+    };
+
+    // 4. LOBİYİ CANLI DİNLEME (TAKIMLAR & OYUNCULAR)
+    function listenToLobby() {
+      if (unsubGamePlayers) unsubGamePlayers();
+      if (unsubGameDoc) unsubGameDoc();
+
+      // Takımları oda belgesinden dinle
+      unsubGameDoc = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), (snap) => {
+        if (!snap.exists()) return;
+        const data = snap.data();
+        teamsMap = data.teams || {};
+        updateLobbyUI();
+      });
+
+      // Oyuncuları dinle
+      const q = query(
+        collection(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH),
+        where('pin', '==', pin)
+      );
+
+      unsubGamePlayers = onSnapshot(q, (snapshot) => {
+        players = [];
+        snapshot.forEach(docSnap => players.push(docSnap.data()));
+
+        document.getElementById('answered-count').innerText = players.filter(p => p.currentAnswer !== null).length;
+        document.getElementById('total-players-q').innerText = players.length;
+
+        // Soru esnasında herkes cevap verdiyse süreyi hemen bitir
+        if (localGameState === 'question' && players.length > 0) {
+          const answeredAll = players.every(p => p.currentAnswer !== null);
+          if (answeredAll) {
+            handleTimeUp();
+          }
+        }
+
+        updateLobbyUI();
+      });
+    }
+
+    function updateLobbyUI() {
+      const teamIds = Object.keys(teamsMap);
+      document.getElementById('lobby-team-count').innerText = teamIds.length;
+      document.getElementById('lobby-player-count').innerText = players.length;
+
+      const btnStart = document.getElementById('btn-start-game');
+      btnStart.disabled = teamIds.length < 1 || players.length === 0;
+
+      const grid = document.getElementById('teams-grid');
+      if (teamIds.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center text-gray-500 py-16 font-semibold">
+            Oyuncuların PIN girip takım kurması / takımlara katılması bekleniyor...
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = '';
+      teamIds.forEach(id => {
+        const team = teamsMap[id];
+        const teamPlayers = players.filter(p => p.teamId === id);
+
+        const card = document.createElement('div');
+        card.className = "bg-gray-900 border border-gray-800 p-5 rounded-3xl shadow-xl flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold text-sm">
+                  🛡️
+                </div>
+                <h4 class="text-base font-black text-white">${sanitizeHTML(team.name)}</h4>
+              </div>
+              <span class="text-xs font-bold text-gray-400 bg-gray-800 px-2.5 py-1 rounded-lg">
+                ${teamPlayers.length} Üye
+              </span>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5 mt-2">
+              ${teamPlayers.map(p => `
+                <span class="text-xs bg-gray-800 text-gray-300 font-semibold px-2.5 py-1 rounded-lg">
+                  ${sanitizeHTML(p.name)}
+                </span>
+              `).join('')}
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // 5. YARIŞMAYI BAŞLATMA & SORUYA GEÇİŞ
+    document.getElementById('btn-start-game').addEventListener('click', () => triggerQuestion(0));
+    document.getElementById('btn-next-question').addEventListener('click', () => triggerQuestion(currentQIndex + 1));
+    document.getElementById('btn-skip-timer').addEventListener('click', () => {
+      if (localGameState === 'question') handleTimeUp();
+    });
+
+    async function triggerQuestion(index) {
+      if (index >= questions.length) {
+        return triggerEndGame();
+      }
+
+      currentQIndex = index;
+      const q = questions[index];
+      timeLeft = q.timeLimit || 20;
+      questionStartTime = Date.now();
+      localGameState = 'question';
+
+      document.getElementById('live-q-count').innerText = `Soru ${index + 1} / ${questions.length}`;
+      document.getElementById('live-q-text').innerText = q.question;
+
+      for (let i = 0; i < 4; i++) {
+        const optEl = document.getElementById(`live-opt-${i}`);
+        const container = document.getElementById(`live-container-opt-${i}`);
+        if (q.options && q.options[i]) {
+          optEl.innerText = q.options[i];
+          container.classList.remove('hidden');
+          container.classList.add('flex');
+        } else {
+          container.classList.add('hidden');
+          container.classList.remove('flex');
+        }
+      }
+
+      document.getElementById('live-q-timer').innerText = timeLeft;
+      document.getElementById('answered-count').innerText = '0';
+      document.getElementById('total-players-q').innerText = players.length;
+      showScreen('question');
+
+      // Firestore batch: Oyuncu cevaplarını sıfırla, odayı 'question' yap
+      const batch = writeBatch(db);
+      players.forEach(p => {
+        batch.update(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, p.id), {
+          currentAnswer: null,
+          lastPoints: 0
+        });
+      });
+
+      batch.update(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
+        state: 'question',
+        currentQuestionIndex: index,
+        currentQuestionText: q.question,
+        currentQuestionOptions: q.options,
+        timeLimit: q.timeLimit || 20
+      });
+      await batch.commit();
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('live-q-timer').innerText = timeLeft;
+        if (timeLeft <= 0) {
+          handleTimeUp();
+        }
+      }, 1000);
+    }
+
+    // 6. SÜRE BİTİMİ & PUANLARI HESAPLAYIP TAKIMLARA EKLEME
+    async function handleTimeUp() {
+      clearInterval(timerInterval);
+      if (localGameState !== 'question') return;
+      localGameState = 'reveal';
+
+      const q = questions[currentQIndex];
+      const batch = writeBatch(db);
+
+      // Her oyuncunun puanını hesapla
+      players.forEach(p => {
+        const playerRef = doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, p.id);
+        if (p.currentAnswer === q.correctAnswerIndex) {
+          const timeTaken = ((p.answeredAt || Date.now()) - questionStartTime) / 1000;
+          const remaining = Math.max(0, (q.timeLimit || 20) - timeTaken);
+          const points = Math.round((remaining / (q.timeLimit || 20)) * 500) + 500;
+          p.score = (p.score || 0) + points;
+          p.lastPoints = points;
+          batch.update(playerRef, { score: p.score, lastPoints: points });
+        } else {
+          p.lastPoints = 0;
+          batch.update(playerRef, { lastPoints: 0 });
+        }
+      });
+
+      // Takım Toplam Skorlarını Güncelle (Görseldeki 3. Adım: Puanlar Otomatik Toplanır)
+      const scoreMode = document.getElementById('setting-score-mode').value || 'sum';
+      const updatedTeams = { ...teamsMap };
+
+      Object.keys(updatedTeams).forEach(teamId => {
+        const teamPlayers = players.filter(p => p.teamId === teamId);
+        const sumScore = teamPlayers.reduce((acc, curr) => acc + (curr.score || 0), 0);
+
+        if (scoreMode === 'average' && teamPlayers.length > 0) {
+          updatedTeams[teamId].score = Math.round(sumScore / teamPlayers.length);
+        } else {
+          updatedTeams[teamId].score = sumScore;
+        }
+      });
+
+      batch.update(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
+        state: 'reveal',
+        teams: updatedTeams
+      });
+      await batch.commit();
+
+      // Cevap Dağılım Çubuklarını Göster
+      document.getElementById('rev-q-text').innerText = q.question;
+      const barsDiv = document.getElementById('rev-bars');
+      barsDiv.innerHTML = '';
+
+      const counts = [0, 1, 2, 3].map(idx => players.filter(p => p.currentAnswer === idx).length);
+      const maxCount = Math.max(...counts, 1);
+      const MAX_HEIGHT = 180;
+      const bgColors = ['bg-red-600', 'bg-orange-600', 'bg-blue-600', 'bg-emerald-600'];
+
+      q.options.forEach((optText, idx) => {
+        if (!optText) return;
+        const count = counts[idx];
+        const isCorrect = idx === q.correctAnswerIndex;
+        const height = count > 0 ? Math.max(40, (count / maxCount) * MAX_HEIGHT) : 30;
+
+        barsDiv.innerHTML += `
+          <div class="flex flex-col items-center ${isCorrect ? 'opacity-100 scale-105' : 'opacity-40'} transition">
+            <div class="text-2xl font-black mb-2 text-white">${count}</div>
+            <div class="w-16 sm:w-24 ${bgColors[idx]} rounded-t-2xl flex items-center justify-center relative shadow-xl" style="height: ${height}px">
+              ${isCorrect ? '<span class="absolute -top-4 w-8 h-8 rounded-full bg-emerald-400 text-gray-950 font-black flex items-center justify-center shadow-lg">✓</span>' : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      showScreen('reveal');
+    }
+
+    // 7. CANLI TAKIM SIRALAMASI EKRANI (ADIM 4)
+    document.getElementById('btn-next-leaderboard').addEventListener('click', async () => {
+      localGameState = 'leaderboard';
+      await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), { state: 'leaderboard' });
+
+      // Takımları puana göre sırala
+      const sortedTeams = Object.values(teamsMap).sort((a, b) => (b.score || 0) - (a.score || 0));
+
+      const lbList = document.getElementById('lb-teams-list');
+      lbList.innerHTML = sortedTeams.map((team, idx) => {
+        const isTop1 = idx === 0;
+        const isTop2 = idx === 1;
+        const isTop3 = idx === 2;
+
+        let badge = `#${idx + 1}`;
+        if (isTop1) badge = '👑';
+        else if (isTop2) badge = '🥈';
+        else if (isTop3) badge = '🥉';
+
+        return `
+          <div class="bg-gray-900 border ${isTop1 ? 'border-orange-500 glow-orange' : 'border-gray-800'} p-4 sm:p-5 rounded-2xl flex items-center justify-between shadow-xl transition transform hover:scale-[1.01]">
+            <div class="flex items-center space-x-4">
+              <span class="w-10 text-xl font-black text-center ${isTop1 ? 'text-amber-400' : 'text-gray-400'}">${badge}</span>
+              <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center text-sm font-bold">
+                  🛡️
+                </div>
+                <div>
+                  <h4 class="text-base sm:text-lg font-black text-white">${sanitizeHTML(team.name)}</h4>
+                  <p class="text-xs text-gray-400">${(players.filter(p => p.teamId === team.id)).length} Oyuncu</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="text-xl sm:text-2xl font-black text-orange-400 bg-gray-950 px-5 py-2 rounded-xl border border-gray-800">
+              ${team.score || 0} <span class="text-xs text-gray-500">Puan</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const isLast = currentQIndex >= questions.length - 1;
+      document.getElementById('btn-next-question').innerText = isLast ? 'Şampiyonları Gör 🏆' : 'Sıradaki Soru →';
+      showScreen('leaderboard');
+    });
+
+    // 8. OYUN BİTİŞİ & ŞAMPİYON PODYUMU
+    async function triggerEndGame() {
+      localGameState = 'end';
+      await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), { state: 'end' });
+
+      const sortedTeams = Object.values(teamsMap).sort((a, b) => (b.score || 0) - (a.score || 0));
+      const t1 = sortedTeams[0];
+      const t2 = sortedTeams[1];
+      const t3 = sortedTeams[2];
+
+      const podium = document.getElementById('podium-container');
+      podium.innerHTML = `
+        ${t2 ? `
+          <div class="flex-1 flex flex-col items-center">
+            <span class="text-sm font-black text-gray-300 truncate max-w-[140px] mb-1">${sanitizeHTML(t2.name)}</span>
+            <span class="text-xs text-gray-400 font-bold mb-3">${t2.score || 0} Puan</span>
+            <div class="w-full bg-gray-800 border border-gray-700 h-44 rounded-t-3xl flex items-center justify-center text-5xl font-black text-gray-400 shadow-xl">
+              2
+            </div>
+          </div>
+        ` : ''}
+
+        ${t1 ? `
+          <div class="flex-1 flex flex-col items-center z-10 -mx-2">
+            <span class="text-lg font-black text-amber-400 truncate max-w-[160px] mb-1 drop-shadow-md">${sanitizeHTML(t1.name)}</span>
+            <span class="text-sm text-amber-200 font-black mb-3">${t1.score || 0} Puan</span>
+            <div class="w-full bg-gradient-to-t from-orange-600 to-amber-500 h-60 rounded-t-3xl flex flex-col items-center justify-center text-6xl font-black text-white shadow-2xl border-t-4 border-amber-300 glow-orange">
+              <span>1</span>
+              <span class="text-xs uppercase tracking-widest font-bold mt-1">Şampiyon</span>
+            </div>
+          </div>
+        ` : ''}
+
+        ${t3 ? `
+          <div class="flex-1 flex flex-col items-center">
+            <span class="text-sm font-black text-gray-300 truncate max-w-[140px] mb-1">${sanitizeHTML(t3.name)}</span>
+            <span class="text-xs text-gray-400 font-bold mb-3">${t3.score || 0} Puan</span>
+            <div class="w-full bg-amber-950/80 border border-amber-800 h-36 rounded-t-3xl flex items-center justify-center text-4xl font-black text-amber-600 shadow-xl">
+              3
+            </div>
+          </div>
+        ` : ''}
+      `;
+
+      showScreen('end');
+    }
+
+    // Odayı Kapat
+    window.closeRoom = async function() {
+      if (confirm("Odayı kapatmak ve yarışmayı sonlandırmak istediğinize emin misiniz?")) {
+        clearInterval(timerInterval);
+        try {
+          await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin));
+        } catch(e) {}
+        window.location.reload();
+      }
+    };
+  </script>
+</body>
+</html>

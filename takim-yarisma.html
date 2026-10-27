@@ -204,8 +204,11 @@
       </div>
 
       <!-- Soru Metni (Eğer yönetici öğrenci ekranında göster dediyse) -->
-      <div id="live-question-card" class="bg-gray-800/90 border border-gray-700 p-5 rounded-2xl text-center shadow-lg mb-3">
+      <div id="live-question-card" class="bg-gray-800/90 border border-gray-700 p-4 rounded-2xl text-center shadow-lg mb-3">
         <p id="live-question-text" class="text-base sm:text-lg font-bold text-white break-words leading-snug">Soru metni yükleniyor...</p>
+        <div id="student-q-img-container" class="mt-2.5 hidden flex justify-center">
+          <img id="student-q-img" src="" alt="Görsel" class="max-h-32 sm:max-h-40 object-contain rounded-xl border border-gray-700 bg-black/40 p-1">
+        </div>
       </div>
 
       <!-- Şık Butonları (Grid) -->
@@ -647,6 +650,17 @@
             if (data.showTextOnStudent) {
               qCard.classList.remove('hidden');
               document.getElementById('live-question-text').innerHTML = sanitizeHTML(data.currentQuestionText || "Soru dev ekranda!");
+              const sImgContainer = document.getElementById('student-q-img-container');
+              const sImgEl = document.getElementById('student-q-img');
+              if (sImgContainer && sImgEl) {
+                if (data.currentQuestionImageUrl && data.currentQuestionImageUrl.trim() !== '') {
+                  sImgEl.src = data.currentQuestionImageUrl;
+                  sImgContainer.classList.remove('hidden');
+                } else {
+                  sImgEl.src = '';
+                  sImgContainer.classList.add('hidden');
+                }
+              }
             } else {
               qCard.classList.add('hidden');
             }

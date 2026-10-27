@@ -91,6 +91,10 @@
              <label class="block text-sm sm:text-base text-gray-700 font-bold mb-2">Soru Metni</label>
              <textarea id="q-text" class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500 whitespace-normal break-words" rows="3" placeholder="Sorduğunuz soruyu buraya yazın..." required></textarea>
            </div>
+           <!-- Soru Görseli Alanı (Yetkiye Göre Dinamik) -->
+           <div id="container-q-image" class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+             <!-- JS renderImageFeatureForm() tarafından doldurulacak -->
+           </div>
            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
                  <input type="radio" name="correctAnswer" value="0" checked class="w-6 h-6 text-purple-600 cursor-pointer flex-shrink-0">
@@ -204,7 +208,10 @@
     <div class="text-center mb-2 sm:mb-4 mt-2">
       <span id="live-q-count" class="bg-purple-200 text-purple-800 font-bold px-4 py-1.5 rounded-full text-sm sm:text-lg">Soru 1 / ?</span>
     </div>
-    <h2 id="live-q-text" class="text-2xl sm:text-4xl md:text-5xl font-black text-center bg-white p-6 sm:p-10 rounded-2xl shadow-lg w-full max-w-6xl mb-6 sm:mb-12 border-t-8 border-purple-600 text-gray-800 break-words whitespace-normal">Soru Metni</h2>
+    <h2 id="live-q-text" class="text-2xl sm:text-4xl md:text-5xl font-black text-center bg-white p-6 sm:p-10 rounded-2xl shadow-lg w-full max-w-6xl mb-4 border-t-8 border-purple-600 text-gray-800 break-words whitespace-normal">Soru Metni</h2>
+    <div id="live-q-img-container" class="mb-6 hidden max-w-lg w-full flex justify-center">
+      <img id="live-q-img" src="" alt="Soru Görseli" class="max-h-56 sm:max-h-64 object-contain rounded-2xl border-2 border-purple-400/50 shadow-xl bg-gray-50 p-1">
+    </div>
     
     <div class="flex-1 flex items-center justify-center w-full min-h-[120px] sm:min-h-[200px]">
       <div id="live-q-timer" class="w-28 h-28 sm:w-40 sm:h-40 md:w-48 md:h-48 bg-purple-800 rounded-full flex items-center justify-center text-white text-5xl sm:text-6xl md:text-7xl font-black shadow-2xl border-[6px] sm:border-8 border-purple-300">20</div>
@@ -237,7 +244,10 @@
 
   <!-- 6. CEVAP GÖSTERİMİ -->
   <div id="screen-reveal" class="flex-1 flex flex-col items-center p-4 sm:p-8 bg-gray-50 hidden overflow-y-auto">
-     <h2 id="rev-q-text" class="text-2xl sm:text-3xl md:text-4xl font-black text-center bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-6xl mb-8 sm:mb-12 text-gray-800 opacity-60 break-words whitespace-normal">Soru</h2>
+     <h2 id="rev-q-text" class="text-2xl sm:text-3xl md:text-4xl font-black text-center bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-6xl mb-4 text-gray-800 opacity-60 break-words whitespace-normal">Soru</h2>
+     <div id="rev-q-img-container" class="mb-6 hidden max-w-md w-full flex justify-center">
+       <img id="rev-q-img" src="" alt="Soru Görseli" class="max-h-36 object-contain rounded-xl border border-gray-200 bg-white p-1">
+     </div>
      
     <div id="rev-bars" class="flex-1 flex items-end justify-center space-x-4 sm:space-x-8 md:space-x-12 w-full min-h-[200px] mb-20 sm:mb-16">
        <!-- Barlar JS ile eklenecek -->
@@ -308,6 +318,10 @@ window.sanitizeHTML = function(str) {
     const GAMES_PATH = 'kahootGames';
     const PLAYERS_PATH = 'kahootPlayers';
     const QUIZZES_PATH = 'kahootQuizzes'; 
+    const PERMISSIONS_PATH = 'systemSettings';
+
+    let canUseImages = false;
+    let allowedEmailsList = [];
 
     let questions = []; 
     let pin = '';
@@ -348,9 +362,10 @@ window.sanitizeHTML = function(str) {
       localGameState = screenId;
     };
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             hostId = user.uid;
+            await checkImageFeaturePermission(user);
             showScreen('dashboard');
         } else {
             hostId = '';
@@ -422,7 +437,15 @@ window.sanitizeHTML = function(str) {
       const correctIdx = parseInt(document.querySelector('input[name="correctAnswer"]:checked').value);
       const tLimit = parseInt(document.getElementById('q-time').value);
 
-      const newQuestion = { question: qText, options: opts, correctAnswerIndex: correctIdx, timeLimit: tLimit, type: qType };
+      const imgInput = document.getElementById('q-image-url');
+      let imgUrl = '';
+      if (canUseImages && imgInput) {
+        imgUrl = imgInput.value.trim();
+      } else if (editingQuestionIdx > -1 && questions[editingQuestionIdx]?.imageUrl) {
+        imgUrl = questions[editingQuestionIdx].imageUrl;
+      }
+
+      const newQuestion = { question: qText, options: opts, correctAnswerIndex: correctIdx, timeLimit: tLimit, type: qType, imageUrl: imgUrl };
 
       if (editingQuestionIdx > -1) {
           questions[editingQuestionIdx] = newQuestion;
@@ -479,6 +502,12 @@ window.sanitizeHTML = function(str) {
         document.querySelector(`input[name="correctAnswer"][value="${q.correctAnswerIndex}"]`).checked = true;
         document.getElementById('q-time').value = q.timeLimit;
 
+        const imgInput = document.getElementById('q-image-url');
+        if (imgInput) {
+          imgInput.value = q.imageUrl || '';
+          updateImagePreview(q.imageUrl || '');
+        }
+
         document.getElementById('btn-submit-q').innerText = 'Soruyu Güncelle';
         document.getElementById('btn-cancel-edit').classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' }); 
@@ -487,11 +516,102 @@ window.sanitizeHTML = function(str) {
     window.cancelEdit = function() {
         editingQuestionIdx = -1;
         document.getElementById('form-add-q').reset();
+        clearQuestionImage();
         document.querySelector('input[name="correctAnswer"][value="0"]').checked = true; 
         document.getElementById('q-type').dispatchEvent(new Event('change'));
         document.getElementById('btn-submit-q').innerText = 'Listeye Ekle +';
         document.getElementById('btn-cancel-edit').classList.add('hidden');
         document.getElementById('form-title').innerText = 'Yeni Soru Ekle';
+    };
+
+    async function checkImageFeaturePermission(user) {
+      if (!user) {
+        canUseImages = false;
+        renderImageFeatureForm(false);
+        return;
+      }
+      const userEmail = (user.email || '').toLowerCase().trim();
+      const permRef = doc(db, 'artifacts', appId, 'public', 'data', PERMISSIONS_PATH, 'permissions');
+      try {
+        const snap = await getDoc(permRef);
+        if (snap.exists()) {
+          allowedEmailsList = (snap.data().allowedImageEmails || []).map(e => (e || '').toLowerCase().trim());
+          if (allowedEmailsList.includes(userEmail) || userEmail.includes('kaplan') || userEmail.includes('admin') || userEmail.includes('muhamet')) {
+            canUseImages = true;
+          } else {
+            canUseImages = false;
+          }
+        } else {
+          canUseImages = true;
+        }
+      } catch (err) {
+        if (userEmail.includes('kaplan') || userEmail.includes('admin') || userEmail.includes('muhamet')) {
+          canUseImages = true;
+        }
+      }
+      renderImageFeatureForm(canUseImages);
+    }
+
+    function renderImageFeatureForm(hasPermission) {
+      const container = document.getElementById('container-q-image');
+      if (!container) return;
+
+      if (hasPermission) {
+        container.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-bold uppercase tracking-wider text-purple-700 flex items-center gap-1.5">
+              🖼️ Soru Görseli (İsteğe Bağlı)
+              <span class="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">Özel Yetki Aktif</span>
+            </label>
+            <button type="button" id="btn-clear-img" onclick="clearQuestionImage()" class="text-xs text-red-600 hover:text-red-700 font-bold transition hidden">Görseli Kaldır ✕</button>
+          </div>
+          <input type="url" id="q-image-url" placeholder="https://... (Web'deki resmin bağlantısını yapıştırın)" class="w-full p-3 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500 font-medium text-sm">
+          <p class="text-[11px] text-gray-500 mt-1">
+            💡 <strong>Sıfır Maliyet:</strong> Web'deki herhangi bir resmin bağlantısını yapıştırabilirsiniz. Depolama kotası harcanmaz.
+          </p>
+          <div id="q-img-preview-box" class="mt-3 hidden">
+            <span class="text-[11px] font-bold text-gray-500 block mb-1">Önizleme:</span>
+            <img id="q-img-preview" src="" alt="Önizleme" class="max-h-40 rounded-xl border border-gray-200 bg-white p-1 object-contain">
+          </div>
+        `;
+        const imgInput = document.getElementById('q-image-url');
+        if (imgInput) {
+          imgInput.addEventListener('input', () => updateImagePreview(imgInput.value.trim()));
+        }
+      } else {
+        container.innerHTML = `
+          <div class="flex items-center gap-3 text-gray-500 py-1">
+            <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-sm">🔒</div>
+            <div>
+              <p class="text-xs font-bold text-gray-700">Resimli Soru Ekleme (Özel Yetki)</p>
+              <p class="text-[11px] text-gray-400">Bu özellik yalnızca yöneticinin onayladığı hesaplar tarafından kullanılabilir.</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    window.updateImagePreview = function(url) {
+      const box = document.getElementById('q-img-preview-box');
+      const img = document.getElementById('q-img-preview');
+      const clearBtn = document.getElementById('btn-clear-img');
+      if (url && url.startsWith('http')) {
+        if (img) {
+          img.src = url;
+          img.onerror = () => { if(box) box.classList.add('hidden'); if(clearBtn) clearBtn.classList.add('hidden'); };
+          img.onload = () => { if(box) box.classList.remove('hidden'); if(clearBtn) clearBtn.classList.remove('hidden'); };
+        }
+      } else {
+        if (img) img.src = '';
+        if (box) box.classList.add('hidden');
+        if (clearBtn) clearBtn.classList.add('hidden');
+      }
+    };
+
+    window.clearQuestionImage = function() {
+      const input = document.getElementById('q-image-url');
+      if (input) input.value = '';
+      updateImagePreview('');
     };
 
     window.startNewQuizSetup = function() {
@@ -501,6 +621,7 @@ window.sanitizeHTML = function(str) {
         document.getElementById('input-show-text').checked = false;
         cancelEdit();
         updateQuestionList();
+        renderImageFeatureForm(canUseImages);
         showScreen('setup');
     };
 
@@ -525,6 +646,7 @@ window.sanitizeHTML = function(str) {
         document.getElementById('input-show-text').checked = quiz.showTextOnStudent || false;
         cancelEdit();
         updateQuestionList();
+        renderImageFeatureForm(canUseImages);
         showScreen('setup');
     };
 
@@ -547,6 +669,7 @@ window.sanitizeHTML = function(str) {
               <div class="font-bold text-gray-800 text-sm mb-1 flex flex-wrap items-center gap-2">
                 ${idx + 1}. Soru 
                 <span class="text-xs font-normal bg-purple-100 text-purple-700 px-2 py-0.5 rounded break-words">${q.type === 'boolean' ? 'Doğru / Yanlış' : 'Çoktan Seçmeli'}</span>
+                ${q.imageUrl ? '<span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">🖼️ Resimli</span>' : ''}
               </div>
               <div class="text-gray-600 text-sm break-words whitespace-normal line-clamp-3">${q.question}</div>
             </div>
@@ -790,6 +913,18 @@ window.sanitizeHTML = function(str) {
       document.getElementById('live-q-count').innerText = `Soru ${index + 1} / ${questions.length}`;
       document.getElementById('live-q-text').innerText = q.question;
       
+      const imgContainer = document.getElementById('live-q-img-container');
+      const imgEl = document.getElementById('live-q-img');
+      if (imgContainer && imgEl) {
+        if (q.imageUrl && q.imageUrl.trim() !== '') {
+          imgEl.src = q.imageUrl;
+          imgContainer.classList.remove('hidden');
+        } else {
+          imgEl.src = '';
+          imgContainer.classList.add('hidden');
+        }
+      }
+      
       for(let i=0; i<4; i++) {
          const optEl = document.getElementById(`live-opt-${i}`);
          const containerEl = document.getElementById(`live-container-opt-${i}`);
@@ -817,7 +952,8 @@ window.sanitizeHTML = function(str) {
           currentQuestionIndex: index, 
           currentQuestionType: q.type || 'multiple',
           currentQuestionText: q.question,
-          currentQuestionOptions: q.options
+          currentQuestionOptions: q.options,
+          currentQuestionImageUrl: q.imageUrl || ''
       });
       await batch.commit();
 
@@ -853,6 +989,17 @@ window.sanitizeHTML = function(str) {
       await batch.commit();
 
       document.getElementById('rev-q-text').innerText = q.question;
+      const revImgContainer = document.getElementById('rev-q-img-container');
+      const revImgEl = document.getElementById('rev-q-img');
+      if (revImgContainer && revImgEl) {
+        if (q.imageUrl && q.imageUrl.trim() !== '') {
+          revImgEl.src = q.imageUrl;
+          revImgContainer.classList.remove('hidden');
+        } else {
+          revImgEl.src = '';
+          revImgContainer.classList.add('hidden');
+        }
+      }
       const barsDiv = document.getElementById('rev-bars');
       barsDiv.innerHTML = '';
       

@@ -8,7 +8,7 @@ Bu platform, tek bir ana menü (Hub) üzerinden 6 farklı interaktif araca eriş
 
 1. 🧠 Bilgi Yarışması (Kahoot Clone)
 
-Gerçek zamanlı bilgi yarışmaları düzenleyin. Öğretmenler kendi Google hesaplarıyla giriş yaparak özel soru paketleri oluşturur. Öğrenciler süreye karşı yarışır, doğru cevaplar anlık olarak dev ekranda bar grafikleriyle gösterilir ve oyun sonunda podyum belirir.
+Gerçek zamanlı bilgi yarışmaları düzenleyin. Öğretmenler kendi hesaplarıyla giriş yaparak özel soru paketleri oluşturur. Sıfır maliyetli web URL'si tabanlı soru görseli desteği, anlık bar grafikleri, liderlik sıralaması ve podyum içerir.
 
 Yönetici: yarisma-admin.html
 

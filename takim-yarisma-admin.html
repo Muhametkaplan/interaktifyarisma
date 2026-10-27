@@ -897,11 +897,18 @@
       showScreen('question');
 
       // Firestore batch: Oyuncu cevaplarını sıfırla, odayı 'question' yap
+      players.forEach(p => {
+        p.currentAnswer = null;
+        p.lastPoints = 0;
+        p.timeTaken = null;
+      });
+
       const batch = writeBatch(db);
       players.forEach(p => {
         batch.update(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, p.id), {
           currentAnswer: null,
-          lastPoints: 0
+          lastPoints: 0,
+          timeTaken: null
         });
       });
 
@@ -924,7 +931,7 @@
       }, 1000);
     }
 
-    // 6. SÜRE BİTİMİ & PUANLARI HESAPLAYIP TAKIMLARA EKLEME
+    // 6. SÜRE BİTİMİ & PUANLARI HESAPLAYIP TAKIMLARA EKLEME (KAHOOT MANTIĞI)
     async function handleTimeUp() {
       clearInterval(timerInterval);
       if (localGameState !== 'question') return;
@@ -933,13 +940,23 @@
       const q = questions[currentQIndex];
       const batch = writeBatch(db);
 
-      // Her oyuncunun puanını hesapla
+      // Her oyuncunun puanını Kahoot hız ve doğruluk formülüne göre hesapla
       players.forEach(p => {
         const playerRef = doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, p.id);
-        if (p.currentAnswer === q.correctAnswerIndex) {
-          const timeTaken = ((p.answeredAt || Date.now()) - questionStartTime) / 1000;
-          const remaining = Math.max(0, (q.timeLimit || 20) - timeTaken);
-          const points = Math.round((remaining / (q.timeLimit || 20)) * 500) + 500;
+        const hasAnswered = p.currentAnswer !== null && p.currentAnswer !== undefined;
+        const isCorrect = hasAnswered && Number(p.currentAnswer) === Number(q.correctAnswerIndex);
+
+        if (isCorrect) {
+          const timeLimit = Number(q.timeLimit) || 20;
+          let timeTakenSec;
+          if (typeof p.timeTaken === 'number') {
+            timeTakenSec = Math.max(0.1, Math.min(timeLimit, p.timeTaken));
+          } else {
+            timeTakenSec = Math.max(0.1, Math.min(timeLimit, ((p.answeredAt || Date.now()) - questionStartTime) / 1000));
+          }
+          const remaining = Math.max(0, timeLimit - timeTakenSec);
+          // Resmi Kahoot Hız Puanı Formülü: Minimum 500 (son saniye), Maksimum 1000 (ilk an)
+          const points = Math.round((remaining / timeLimit) * 500) + 500;
           p.score = (p.score || 0) + points;
           p.lastPoints = points;
           batch.update(playerRef, { score: p.score, lastPoints: points });
@@ -963,6 +980,8 @@
           updatedTeams[teamId].score = sumScore;
         }
       });
+
+      teamsMap = updatedTeams; // Yerel hafızayı anında güncelle (sıralama gecikmesini önler)
 
       batch.update(doc(db, 'artifacts', appId, 'public', 'data', GAMES_PATH, pin), {
         state: 'reveal',

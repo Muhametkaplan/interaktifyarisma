@@ -350,6 +350,10 @@
     let hasAnswered = false;
     let unsubSession = null;
     let unsubTeammates = null;
+    let unsubMyPlayer = null;
+    let myPlayerData = null;
+    let currentGameState = 'lobby';
+    let latestGameData = null;
     let maxTeamSize = 5;
     let questionStartTime = 0;
     let currentQuizTimeLimit = 20;
@@ -604,6 +608,7 @@
       showScreen('waiting');
       listenToGame();
       listenToTeammates();
+      listenToMyPlayer();
     }
 
     // 7. OYUN DURUMUNU CANLI DİNLEME
@@ -618,7 +623,9 @@
         }
 
         const data = docSnap.data();
+        latestGameData = data;
         const state = data.state;
+        currentGameState = state;
         currentQuizTimeLimit = data.timeLimit || 20;
 
         if (state === 'lobby') {
@@ -673,10 +680,12 @@
           }
         }
         else if (state === 'reveal') {
-          showQuestionResults(data);
+          showScreen('result');
+          renderResultBanner(data);
         }
         else if (state === 'leaderboard') {
           showScreen('result'); // Lider tablosu sırasında sonuç ve puan özeti ekranında kal
+          renderResultBanner(data);
         }
         else if (state === 'end') {
           showEndGame(data);
@@ -743,16 +752,37 @@
       });
     }
 
-    // 9. CEVAP GÖNDERME
+    // 8.1 ÖĞRENCİNİN KENDİ VERİLERİNİ CANLI DİNLEME (RACE CONDITION ÖNLER)
+    function listenToMyPlayer() {
+      if (unsubMyPlayer) unsubMyPlayer();
+
+      unsubMyPlayer = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid), (docSnap) => {
+        if (!docSnap.exists()) return;
+        myPlayerData = docSnap.data();
+
+        // Eğer sonuç ekranındaysak, skorlar güncellendiği anda arayüzü anında tazele
+        if (currentGameState === 'reveal' || currentGameState === 'leaderboard') {
+          renderResultBanner(latestGameData);
+        }
+      });
+    }
+
+    // 9. CEVAP GÖNDERME (KAHOOT HIZ HESABI)
     window.submitAnswer = async function(optionIndex) {
       if (!currentUser || !gamePin || hasAnswered) return;
 
       hasAnswered = true;
       showScreen('answered');
 
+      const timeLimit = currentQuizTimeLimit || 20;
+      const elapsed = (Date.now() - questionStartTime) / 1000;
+      // Öğrencinin kendi sayacı üzerinden geçen net süre (cihaz saat farkını önler)
+      const timeTaken = Math.max(0.1, Math.min(timeLimit, elapsed));
+
       try {
         await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid), {
           currentAnswer: optionIndex,
+          timeTaken: timeTaken,
           answeredAt: Date.now()
         });
       } catch (e) {
@@ -761,43 +791,42 @@
     };
 
     // 10. SORU SONUCU GÖSTERİMİ (BİREBİR GÖRSEL DİZAYNI)
-    async function showQuestionResults(gameData) {
-      showScreen('result');
+    function renderResultBanner(gameData) {
+      const gData = gameData || latestGameData || {};
+      const pData = myPlayerData || {};
+      const myScore = pData.score || 0;
+      const lastPts = pData.lastPoints || 0;
+      const banner = document.getElementById('result-banner');
 
-      try {
-        const playerSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', PLAYERS_PATH, currentUser.uid));
-        const pData = playerSnap.data() || {};
-        const myScore = pData.score || 0;
-        const lastPts = pData.lastPoints || 0;
-        const banner = document.getElementById('result-banner');
+      document.getElementById('result-my-score').innerText = myScore;
 
-        document.getElementById('result-my-score').innerText = myScore;
+      // Takım toplam puanı (Admin'in resmi toplam skoru)
+      if (gData.teams && gData.teams[myTeamId]) {
+        document.getElementById('result-team-score').innerText = gData.teams[myTeamId].score || 0;
+      }
 
-        if (lastPts > 0) {
-          banner.className = "text-center p-6 rounded-3xl mb-4 shadow-xl border bg-emerald-950/40 border-emerald-500/30";
-          banner.innerHTML = `
-            <div class="w-14 h-14 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400 flex items-center justify-center text-2xl font-black mb-3">
-              ✓
-            </div>
-            <h3 class="text-2xl font-black text-emerald-400 mb-1">Doğru Cevap!</h3>
-            <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 font-black text-sm">
-              +${lastPts} Puan Kazandın
-            </span>
-          `;
-        } else {
-          banner.className = "text-center p-6 rounded-3xl mb-4 shadow-xl border bg-red-950/40 border-red-500/30";
-          banner.innerHTML = `
-            <div class="w-14 h-14 mx-auto rounded-full bg-red-500/20 border-2 border-red-500 text-red-400 flex items-center justify-center text-2xl font-black mb-3">
-              ✗
-            </div>
-            <h3 class="text-2xl font-black text-red-400 mb-1">Yanlış veya Süre Doldu!</h3>
-            <span class="inline-block px-4 py-1.5 rounded-full bg-red-500/20 text-red-300 font-black text-sm">
-              +0 Puan
-            </span>
-          `;
-        }
-      } catch (err) {
-        console.error(err);
+      if (lastPts > 0) {
+        banner.className = "text-center p-6 rounded-3xl mb-4 shadow-xl border bg-emerald-950/40 border-emerald-500/30";
+        banner.innerHTML = `
+          <div class="w-14 h-14 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400 flex items-center justify-center text-2xl font-black mb-3">
+            ✓
+          </div>
+          <h3 class="text-2xl font-black text-emerald-400 mb-1">Doğru Cevap!</h3>
+          <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 font-black text-sm">
+            +${lastPts} Puan Kazandın (Kahoot Hız Bonusu)
+          </span>
+        `;
+      } else {
+        banner.className = "text-center p-6 rounded-3xl mb-4 shadow-xl border bg-red-950/40 border-red-500/30";
+        banner.innerHTML = `
+          <div class="w-14 h-14 mx-auto rounded-full bg-red-500/20 border-2 border-red-500 text-red-400 flex items-center justify-center text-2xl font-black mb-3">
+            ✗
+          </div>
+          <h3 class="text-2xl font-black text-red-400 mb-1">Yanlış veya Süre Doldu!</h3>
+          <span class="inline-block px-4 py-1.5 rounded-full bg-red-500/20 text-red-300 font-black text-sm">
+            +0 Puan
+          </span>
+        `;
       }
     }
 

@@ -503,9 +503,19 @@ window.sanitizeHTML = function(str) {
         document.getElementById('q-time').value = q.timeLimit;
 
         const imgInput = document.getElementById('q-image-url');
+        const badge = document.getElementById('img-compress-badge');
         if (imgInput) {
           imgInput.value = q.imageUrl || '';
           updateImagePreview(q.imageUrl || '');
+        }
+        if (badge) {
+          if (q.imageUrl && q.imageUrl.startsWith('data:image/')) {
+            const approxKb = Math.round((q.imageUrl.length * 3 / 4) / 1024);
+            badge.innerText = `⚡ ${approxKb} KB (Cihazdan Yüklü)`;
+            badge.classList.remove('hidden');
+          } else {
+            badge.classList.add('hidden');
+          }
         }
 
         document.getElementById('btn-submit-q').innerText = 'Soruyu Güncelle';
@@ -565,15 +575,32 @@ window.sanitizeHTML = function(str) {
             </label>
             <button type="button" id="btn-clear-img" onclick="clearQuestionImage()" class="text-xs text-red-600 hover:text-red-700 font-bold transition hidden">Görseli Kaldır ✕</button>
           </div>
-          <input type="url" id="q-image-url" placeholder="https://... (Web'deki resmin bağlantısını yapıştırın)" class="w-full p-3 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500 font-medium text-sm">
-          <p class="text-[11px] text-gray-500 mt-1">
-            💡 <strong>Sıfır Maliyet:</strong> Web'deki herhangi bir resmin bağlantısını yapıştırabilirsiniz. Depolama kotası harcanmaz.
-          </p>
+
+          <!-- 2 Seçenek: Cihazdan Yükle veya Web Bağlantısı -->
+          <div class="flex flex-col sm:flex-row gap-2 mb-2">
+            <label class="flex-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 px-3 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition select-none">
+              <span>📁 Cihazdan Resim Seç</span>
+              <input type="file" id="q-image-file" accept="image/*" class="hidden" onchange="handleDeviceImageUpload(event)">
+            </label>
+            <div class="flex items-center justify-center text-xs text-gray-400 font-bold px-1 select-none">veya</div>
+            <input type="url" id="q-image-url" placeholder="https://... (Web bağlantısı yapıştırın)" class="flex-[2] p-2.5 border-2 border-gray-300 rounded-xl outline-none focus:border-purple-500 font-medium text-xs">
+          </div>
+
+          <div class="flex items-center justify-between">
+            <p class="text-[11px] text-gray-500 leading-relaxed">
+              💡 <strong>Sıfır Maliyet:</strong> Cihazınızdan seçilen resimler tarayıcıda ultra hafif WebP formatına (~25 KB) sıkıştırılır veya doğrudan web bağlantısı kullanılır.
+            </p>
+            <span id="img-compress-badge" class="hidden text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md whitespace-nowrap ml-2"></span>
+          </div>
+
           <div id="q-img-preview-box" class="mt-3 hidden">
             <span class="text-[11px] font-bold text-gray-500 block mb-1">Önizleme:</span>
-            <img id="q-img-preview" src="" alt="Önizleme" class="max-h-40 rounded-xl border border-gray-200 bg-white p-1 object-contain">
+            <div class="relative inline-block">
+              <img id="q-img-preview" src="" alt="Önizleme" class="max-h-40 rounded-xl border border-gray-200 bg-white p-1 object-contain">
+            </div>
           </div>
         `;
+
         const imgInput = document.getElementById('q-image-url');
         if (imgInput) {
           imgInput.addEventListener('input', () => updateImagePreview(imgInput.value.trim()));
@@ -591,11 +618,75 @@ window.sanitizeHTML = function(str) {
       }
     }
 
+    window.handleDeviceImageUpload = function(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const badge = document.getElementById('img-compress-badge');
+      if (badge) {
+        badge.innerText = '⏳ Sıkıştırılıyor...';
+        badge.classList.remove('hidden');
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const maxDim = 800;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // WebP formatı, yoksa JPEG (kalite 0.65)
+          let optimizedDataUrl = canvas.toDataURL('image/webp', 0.65);
+          if (!optimizedDataUrl.startsWith('data:image/webp')) {
+            optimizedDataUrl = canvas.toDataURL('image/jpeg', 0.65);
+          }
+
+          const approxKb = Math.round((optimizedDataUrl.length * 3 / 4) / 1024);
+          if (badge) {
+            badge.innerText = `⚡ ${approxKb} KB (Optimize Edildi)`;
+            badge.classList.remove('hidden');
+          }
+
+          const urlInput = document.getElementById('q-image-url');
+          if (urlInput) {
+            urlInput.value = optimizedDataUrl;
+          }
+          updateImagePreview(optimizedDataUrl);
+        };
+        img.onerror = function() {
+          alert("Görsel yüklenirken bir hata oluştu!");
+          if (badge) badge.classList.add('hidden');
+        };
+        img.src = e.target.result;
+      };
+      reader.onerror = function() {
+        alert("Dosya okunamadı!");
+        if (badge) badge.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+    };
+
     window.updateImagePreview = function(url) {
       const box = document.getElementById('q-img-preview-box');
       const img = document.getElementById('q-img-preview');
       const clearBtn = document.getElementById('btn-clear-img');
-      if (url && url.startsWith('http')) {
+      if (url && (url.startsWith('http') || url.startsWith('data:image/'))) {
         if (img) {
           img.src = url;
           img.onerror = () => { if(box) box.classList.add('hidden'); if(clearBtn) clearBtn.classList.add('hidden'); };
@@ -611,6 +702,10 @@ window.sanitizeHTML = function(str) {
     window.clearQuestionImage = function() {
       const input = document.getElementById('q-image-url');
       if (input) input.value = '';
+      const fileInput = document.getElementById('q-image-file');
+      if (fileInput) fileInput.value = '';
+      const badge = document.getElementById('img-compress-badge');
+      if (badge) badge.classList.add('hidden');
       updateImagePreview('');
     };
 

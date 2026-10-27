@@ -397,7 +397,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, collectionGroup, query, where, onSnapshot, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, query, where, onSnapshot, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     function sanitizeHTML(str) {
       if (!str) return '';
@@ -477,41 +477,27 @@
       }
     });
 
-    // 1. KAYITLI SORU PAKETLERİNİ GETİR (BİLGİ YARIŞMASI İLE ORTAK HAVUZ)
+    // 1. KAYITLI SORU PAKETLERİNİ GETİR (SADECE GİRİŞ YAPAN HESABA AİT OLANLAR)
     window.loadSavedQuizzes = async function() {
       showScreen('quiz-list');
       const container = document.getElementById('saved-quizzes-container');
-      container.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-10 font-bold text-base">Kayıtlı paketler yükleniyor...</div>';
+      container.innerHTML = '<div class="text-center text-gray-500 col-span-2 py-10 font-bold text-base">Kayıtlı paketleriniz yükleniyor...</div>';
 
       try {
         const currentHostId = hostId || auth.currentUser?.uid;
+        if (!currentHostId) {
+          container.innerHTML = '<div class="text-center text-amber-400 col-span-2 py-8 text-sm font-bold">Lütfen önce giriş yapınız.</div>';
+          return;
+        }
+
         savedQuizzes = [];
 
-        // 1. Kullanıcının normal bilgi yarışmasında kaydettiği paketleri çek
-        if (currentHostId) {
-          try {
-            const qRef = collection(db, 'artifacts', appId, 'users', currentHostId, QUIZZES_PATH);
-            const snapshot = await getDocs(qRef);
-            snapshot.forEach(docSnap => {
-              savedQuizzes.push({ id: docSnap.id, ...docSnap.data() });
-            });
-          } catch(errUser) {
-            console.warn("Kullanıcı paketleri çekilirken hata:", errUser);
-          }
-        }
-
-        // 2. Ayrıca sistemdeki tüm kullanıcıların kaydettiği yarışmaları (collectionGroup) da tara ve ekle
-        try {
-          const groupSnap = await getDocs(collectionGroup(db, QUIZZES_PATH));
-          groupSnap.forEach(docSnap => {
-            const data = docSnap.data();
-            if (!savedQuizzes.some(q => q.id === docSnap.id)) {
-              savedQuizzes.push({ id: docSnap.id, ...data });
-            }
-          });
-        } catch(errGroup) {
-          console.log("CollectionGroup araması pas geçildi:", errGroup);
-        }
+        // Sadece giriş yapan hesaba ait paketleri çek (hem normal yarışmadan hem de buradan kaydedilenler)
+        const qRef = collection(db, 'artifacts', appId, 'users', currentHostId, QUIZZES_PATH);
+        const snapshot = await getDocs(qRef);
+        snapshot.forEach(docSnap => {
+          savedQuizzes.push({ id: docSnap.id, ...docSnap.data() });
+        });
 
         // Tarihe göre yeniden eskiye sırala
         savedQuizzes.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -520,8 +506,8 @@
           container.innerHTML = `
             <div class="col-span-2 bg-gray-900 border border-gray-800 p-8 rounded-3xl text-center">
               <span class="text-4xl block mb-2">📦</span>
-              <p class="font-bold text-white text-base">Henüz kayıtlı soru paketiniz bulunmuyor.</p>
-              <p class="text-xs text-gray-400 mt-1 mb-4">Normal bilgi yarışmasından kaydettiğiniz veya burada hazırladığınız tüm paketler bu listede görünür.</p>
+              <p class="font-bold text-white text-base">Hesabınıza ait kayıtlı soru paketi bulunamadı.</p>
+              <p class="text-xs text-gray-400 mt-1 mb-4">Normal bilgi yarışmasından kaydettiğiniz veya burada hazırladığınız tüm paketleriniz burada görünür.</p>
               <button onclick="startNewQuizSetup()" class="bg-orange-600 hover:bg-orange-500 text-white px-6 py-2.5 rounded-xl font-bold text-xs transition">
                 + Yeni Paket Oluştur
               </button>
@@ -571,9 +557,7 @@
       if (confirm("Bu soru paketini tamamen silmek istediğinize emin misiniz?")) {
         try {
           const currentHostId = hostId || auth.currentUser?.uid;
-          const targetQuiz = savedQuizzes.find(q => q.id === quizId);
-          const targetHostId = targetQuiz?.hostId || currentHostId;
-          await deleteDoc(doc(db, 'artifacts', appId, 'users', targetHostId, QUIZZES_PATH, quizId));
+          await deleteDoc(doc(db, 'artifacts', appId, 'users', currentHostId, QUIZZES_PATH, quizId));
           savedQuizzes = savedQuizzes.filter(q => q.id !== quizId);
           loadSavedQuizzes();
         } catch (err) {
@@ -727,9 +711,7 @@
       try {
         const currentHostId = hostId || auth.currentUser?.uid;
         if (editingQuizId) {
-          const targetQuiz = savedQuizzes.find(q => q.id === editingQuizId);
-          const targetHostId = targetQuiz?.hostId || currentHostId;
-          const ref = doc(db, 'artifacts', appId, 'users', targetHostId, QUIZZES_PATH, editingQuizId);
+          const ref = doc(db, 'artifacts', appId, 'users', currentHostId, QUIZZES_PATH, editingQuizId);
           await updateDoc(ref, { name, questions, showTextOnStudent: showText });
           return editingQuizId;
         } else {

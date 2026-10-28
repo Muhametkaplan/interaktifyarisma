@@ -120,30 +120,76 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-gray-400 mb-2 ml-1">Takım Rengi / Teması</label>
-          <div class="grid grid-cols-4 gap-2">
+          <label class="block text-xs font-bold text-gray-400 mb-2 ml-1">Takım Rengi / Teması (10 Renk)</label>
+          <div class="grid grid-cols-5 gap-1.5 sm:gap-2">
+            <!-- 1. Turuncu -->
             <label class="cursor-pointer">
               <input type="radio" name="teamColor" value="orange" checked class="peer sr-only">
-              <div class="p-3 rounded-xl bg-orange-500/20 border-2 border-transparent peer-checked:border-orange-500 text-center text-orange-400 font-bold text-xs flex flex-col items-center gap-1">
-                <span class="w-4 h-4 rounded-full bg-orange-500"></span> Turuncu
+              <div class="p-2 sm:p-2.5 rounded-xl bg-orange-500/10 border-2 border-transparent peer-checked:border-orange-500 text-center text-orange-400 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-orange-500 shadow-sm"></span> Turuncu
               </div>
             </label>
+            <!-- 2. Kırmızı -->
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="red" class="peer sr-only">
+              <div class="p-2 sm:p-2.5 rounded-xl bg-red-500/10 border-2 border-transparent peer-checked:border-red-500 text-center text-red-400 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-red-500 shadow-sm"></span> Kırmızı
+              </div>
+            </label>
+            <!-- 3. Mavi -->
             <label class="cursor-pointer">
               <input type="radio" name="teamColor" value="blue" class="peer sr-only">
-              <div class="p-3 rounded-xl bg-blue-500/20 border-2 border-transparent peer-checked:border-blue-500 text-center text-blue-400 font-bold text-xs flex flex-col items-center gap-1">
-                <span class="w-4 h-4 rounded-full bg-blue-500"></span> Mavi
+              <div class="p-2 sm:p-2.5 rounded-xl bg-blue-500/10 border-2 border-transparent peer-checked:border-blue-500 text-center text-blue-400 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-blue-500 shadow-sm"></span> Mavi
               </div>
             </label>
+            <!-- 4. Yeşil -->
             <label class="cursor-pointer">
               <input type="radio" name="teamColor" value="green" class="peer sr-only">
-              <div class="p-3 rounded-xl bg-emerald-500/20 border-2 border-transparent peer-checked:border-emerald-500 text-center text-emerald-400 font-bold text-xs flex flex-col items-center gap-1">
-                <span class="w-4 h-4 rounded-full bg-emerald-500"></span> Yeşil
+              <div class="p-2 sm:p-2.5 rounded-xl bg-emerald-500/10 border-2 border-transparent peer-checked:border-emerald-500 text-center text-emerald-400 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-emerald-500 shadow-sm"></span> Yeşil
               </div>
             </label>
+            <!-- 5. Mor -->
             <label class="cursor-pointer">
               <input type="radio" name="teamColor" value="purple" class="peer sr-only">
-              <div class="p-3 rounded-xl bg-purple-500/20 border-2 border-transparent peer-checked:border-purple-500 text-center text-purple-400 font-bold text-xs flex flex-col items-center gap-1">
-                <span class="w-4 h-4 rounded-full bg-purple-500"></span> Mor
+              <div class="p-2 sm:p-2.5 rounded-xl bg-purple-500/10 border-2 border-transparent peer-checked:border-purple-500 text-center text-purple-400 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-purple-500 shadow-sm"></span> Mor
+              </div>
+            </label>
+            <!-- 6. Siyah -->
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="black" class="peer sr-only">
+              <div class="p-2 sm:p-2.5 rounded-xl bg-zinc-800/60 border-2 border-transparent peer-checked:border-zinc-300 text-center text-zinc-300 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-black border border-zinc-500 shadow-sm"></span> Siyah
+              </div>
+            </label>
+            <!-- 7. Sarı -->
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="yellow" class="peer sr-only">
+              <div class="p-2 sm:p-2.5 rounded-xl bg-yellow-500/10 border-2 border-transparent peer-checked:border-yellow-500 text-center text-yellow-400 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-yellow-400 shadow-sm"></span> Sarı
+              </div>
+            </label>
+            <!-- 8. Turkuaz -->
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="cyan" class="peer sr-only">
+              <div class="p-2 sm:p-2.5 rounded-xl bg-cyan-500/10 border-2 border-transparent peer-checked:border-cyan-500 text-center text-cyan-400 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-cyan-400 shadow-sm"></span> Turkuaz
+              </div>
+            </label>
+            <!-- 9. Pembe -->
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="pink" class="peer sr-only">
+              <div class="p-2 sm:p-2.5 rounded-xl bg-pink-500/10 border-2 border-transparent peer-checked:border-pink-500 text-center text-pink-400 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-pink-500 shadow-sm"></span> Pembe
+              </div>
+            </label>
+            <!-- 10. Lacivert -->
+            <label class="cursor-pointer">
+              <input type="radio" name="teamColor" value="indigo" class="peer sr-only">
+              <div class="p-2 sm:p-2.5 rounded-xl bg-indigo-500/10 border-2 border-transparent peer-checked:border-indigo-500 text-center text-indigo-400 font-bold text-[10px] sm:text-xs flex flex-col items-center gap-1 transition">
+                <span class="w-4 h-4 rounded-full bg-indigo-500 shadow-sm"></span> Lacivert
               </div>
             </label>
           </div>
@@ -323,6 +369,23 @@
       });
     }
 
+    // --- TAKIM RENK TEMALARI (10 RENK) ---
+    function getTeamColorTheme(color) {
+      const themes = {
+        orange: { bg: 'bg-orange-500/20', border: 'border-orange-500', text: 'text-orange-400', badge: 'bg-orange-500', hex: '#f97316', name: 'Turuncu' },
+        red:    { bg: 'bg-red-500/20', border: 'border-red-500', text: 'text-red-400', badge: 'bg-red-500', hex: '#ef4444', name: 'Kırmızı' },
+        blue:   { bg: 'bg-blue-500/20', border: 'border-blue-500', text: 'text-blue-400', badge: 'bg-blue-500', hex: '#3b82f6', name: 'Mavi' },
+        green:  { bg: 'bg-emerald-500/20', border: 'border-emerald-500', text: 'text-emerald-400', badge: 'bg-emerald-500', hex: '#10b981', name: 'Yeşil' },
+        purple: { bg: 'bg-purple-500/20', border: 'border-purple-500', text: 'text-purple-400', badge: 'bg-purple-500', hex: '#a855f7', name: 'Mor' },
+        black:  { bg: 'bg-zinc-800/80', border: 'border-zinc-400', text: 'text-zinc-200', badge: 'bg-zinc-900 border border-zinc-500', hex: '#27272a', name: 'Siyah' },
+        yellow: { bg: 'bg-yellow-500/20', border: 'border-yellow-500', text: 'text-yellow-400', badge: 'bg-yellow-500', hex: '#eab308', name: 'Sarı' },
+        cyan:   { bg: 'bg-cyan-500/20', border: 'border-cyan-500', text: 'text-cyan-400', badge: 'bg-cyan-500', hex: '#06b6d4', name: 'Turkuaz' },
+        pink:   { bg: 'bg-pink-500/20', border: 'border-pink-500', text: 'text-pink-400', badge: 'bg-pink-500', hex: '#ec4899', name: 'Pembe' },
+        indigo: { bg: 'bg-indigo-500/20', border: 'border-indigo-500', text: 'text-indigo-400', badge: 'bg-indigo-500', hex: '#6366f1', name: 'Lacivert' }
+      };
+      return themes[color] || themes.orange;
+    }
+
     let firebaseConfig = {
       apiKey: "AIzaSyB4m9CE05j1fTukFZq6kcxu03rO9SXErqI",
       authDomain: "interaktif-yarisma.firebaseapp.com",
@@ -482,17 +545,18 @@
         teamIds.forEach(id => {
           const t = teams[id];
           const isFull = (t.memberCount || 0) >= maxTeamSize;
+          const theme = getTeamColorTheme(t.color);
           
           const teamCard = document.createElement('div');
-          teamCard.className = "bg-gray-800/90 border border-gray-700/80 p-3.5 rounded-2xl flex items-center justify-between shadow-md";
+          teamCard.className = `bg-gray-800/90 border ${theme.border}/40 p-3.5 rounded-2xl flex items-center justify-between shadow-md transition`;
           teamCard.innerHTML = `
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-lg font-bold text-orange-400">
+              <div class="w-10 h-10 rounded-xl ${theme.bg} border ${theme.border} flex items-center justify-center text-lg font-bold ${theme.text}">
                 🛡️
               </div>
               <div>
                 <h4 class="font-bold text-sm text-white">${sanitizeHTML(t.name)}</h4>
-                <p class="text-[11px] text-gray-400">Kapasite: <span class="font-bold text-orange-400">${t.memberCount || 0}</span> / ${maxTeamSize} üye</p>
+                <p class="text-[11px] text-gray-400">Kapasite: <span class="font-bold ${theme.text}">${t.memberCount || 0}</span> / ${maxTeamSize} üye</p>
               </div>
             </div>
             <button ${isFull ? 'disabled' : ''} onclick="joinSpecificTeam('${id}', '${sanitizeHTML(t.name)}')" class="${isFull ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600 text-white'} px-4 py-2 rounded-xl text-xs font-black shadow-md transition">

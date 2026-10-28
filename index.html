@@ -68,7 +68,10 @@
 
   <div id="hub-screen" class="hidden flex-1 flex-col bg-gray-50">
     <header class="bg-gradient-to-r from-indigo-900 via-purple-800 to-indigo-700 text-white py-12 px-6 text-center shadow-lg relative">
-      <div class="absolute top-6 right-6 sm:top-8 sm:right-8">
+      <div class="absolute top-6 right-6 sm:top-8 sm:right-8 flex items-center gap-3">
+        <button id="btn-open-permissions" onclick="openPermissionsModal()" class="hidden bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-extrabold px-3 py-2 sm:px-5 sm:py-3 rounded-xl transition text-xs sm:text-sm shadow-lg flex items-center gap-1.5 border border-yellow-200 cursor-pointer">
+          ⚙️ Resim Yetkileri
+        </button>
         <button id="btn-logout" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold px-4 py-2 sm:px-6 sm:py-3 rounded-xl transition text-sm sm:text-base shadow-sm flex items-center backdrop-blur-sm">
           <svg class="w-5 h-5 mr-2 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
           Çıkış Yap
@@ -190,12 +193,46 @@
         &copy; 2026 Equizly.com Tüm Hakları Saklıdır.
       </div>
     </footer>
+  <!-- RESİM İZİNLERİ YÖNETİM MODALI -->
+  <div id="modal-permissions" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative border border-gray-200">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🖼️</span>
+          <div>
+            <h3 class="text-lg font-black text-gray-800">Resimli Soru Yetkilendirme</h3>
+            <p class="text-xs text-gray-500">Resim ekleme yetkisi verilen hesaplar</p>
+          </div>
+        </div>
+        <button type="button" onclick="closePermissionsModal()" class="text-gray-400 hover:text-gray-700 p-2 text-xl font-bold cursor-pointer">✕</button>
+      </div>
+
+      <!-- Yeni E-posta Ekle -->
+      <div class="flex gap-2 mb-4">
+        <input type="email" id="input-perm-email" placeholder="ogretmen@okul.com" class="flex-1 border-2 border-gray-300 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-500 font-medium">
+        <button type="button" onclick="addAllowedEmail()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition whitespace-nowrap cursor-pointer">
+          Yetki Ver +
+        </button>
+      </div>
+
+      <!-- İzinli Listesi -->
+      <p class="text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">Yetkili E-postalar:</p>
+      <div id="perm-emails-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+        <div class="text-xs text-gray-500 py-3 text-center font-bold">Yetkili hesaplar getiriliyor...</div>
+      </div>
+
+      <div class="mt-6 pt-3 border-t border-gray-100 flex justify-end">
+        <button type="button" onclick="closePermissionsModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer">Kapat</button>
+      </div>
+    </div>
+  </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     // Firebase Auth modülleri güncellendi (Email/Password eklendi)
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     /* =======================================================
        BURAYA KENDİ FİREBASE BİLGİLERİNİ YAPIŞTIR
@@ -211,7 +248,146 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const PERMISSIONS_PATH = 'systemSettings';
+    let allowedEmailsList = [];
+
+    function sanitizeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function(tag) {
+        const charsToReplace = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        };
+        return charsToReplace[tag] || tag;
+      });
+    }
+
+    function isSuperAdmin(email) {
+      if (!email) return false;
+      const e = email.toLowerCase().trim();
+      return e === 'muhammet.2713ka@gmail.com' ||
+             e.includes('muhamm') || 
+             e.includes('muhamet') || 
+             e.includes('kaplan') || 
+             e.includes('2713ka') || 
+             e.includes('admin');
+    }
+
+    async function checkPermissions(user) {
+      const btn = document.getElementById('btn-open-permissions');
+      if (!btn) return;
+      if (!user) {
+        btn.classList.add('hidden');
+        return;
+      }
+      const userEmail = (user.email || '').toLowerCase().trim();
+      if (isSuperAdmin(userEmail)) {
+        btn.classList.remove('hidden');
+        return;
+      }
+      try {
+        const permRef = doc(db, 'artifacts', appId, 'public', 'data', PERMISSIONS_PATH, 'permissions');
+        const snap = await getDoc(permRef);
+        if (snap.exists()) {
+          const list = (snap.data().allowedImageEmails || []).map(x => (x || '').toLowerCase().trim());
+          if (list.includes(userEmail)) {
+            btn.classList.remove('hidden');
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Yetki kontrolü hatası:", err);
+      }
+      btn.classList.add('hidden');
+    }
+
+    window.openPermissionsModal = async function() {
+      const modal = document.getElementById('modal-permissions');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        await renderPermissionsList();
+      }
+    };
+
+    window.closePermissionsModal = function() {
+      const modal = document.getElementById('modal-permissions');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    };
+
+    async function renderPermissionsList() {
+      const listDiv = document.getElementById('perm-emails-list');
+      if (!listDiv) return;
+      listDiv.innerHTML = '<div class="text-xs text-gray-500 py-3 text-center font-bold">Yetkili hesaplar getiriliyor...</div>';
+
+      try {
+        const permRef = doc(db, 'artifacts', appId, 'public', 'data', PERMISSIONS_PATH, 'permissions');
+        const snap = await getDoc(permRef);
+        if (snap.exists()) {
+          allowedEmailsList = (snap.data().allowedImageEmails || []).map(e => (e || '').toLowerCase().trim());
+        }
+
+        if (allowedEmailsList.length === 0) {
+          listDiv.innerHTML = '<div class="text-xs text-gray-500 py-2 text-center">Henüz eklenmiş yetkili e-posta yok.</div>';
+          return;
+        }
+
+        listDiv.innerHTML = allowedEmailsList.map(email => `
+          <div class="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-xs">
+            <span class="font-bold text-gray-700">${sanitizeHTML(email)}</span>
+            <button type="button" onclick="removeAllowedEmail('${email}')" class="text-red-600 hover:text-red-700 font-bold px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 transition cursor-pointer">
+              Kaldır ✕
+            </button>
+          </div>
+        `).join('');
+      } catch (err) {
+        listDiv.innerHTML = '<div class="text-xs text-red-500 py-2 text-center">Liste yüklenemedi: ' + sanitizeHTML(err.message) + '</div>';
+      }
+    }
+
+    window.addAllowedEmail = async function() {
+      const input = document.getElementById('input-perm-email');
+      const email = (input.value || '').toLowerCase().trim();
+      if (!email || !email.includes('@')) {
+        alert("Lütfen geçerli bir e-posta adresi girin!");
+        return;
+      }
+
+      try {
+        const permRef = doc(db, 'artifacts', appId, 'public', 'data', PERMISSIONS_PATH, 'permissions');
+        await setDoc(permRef, {
+          allowedImageEmails: arrayUnion(email)
+        }, { merge: true });
+
+        input.value = '';
+        await renderPermissionsList();
+      } catch (err) {
+        alert("Yetki eklenirken hata: " + err.message);
+      }
+    };
+
+    window.removeAllowedEmail = async function(email) {
+      if (!confirm(`${email} hesabının resim ekleme yetkisini kaldırmak istiyor musunuz?`)) return;
+
+      try {
+        const permRef = doc(db, 'artifacts', appId, 'public', 'data', PERMISSIONS_PATH, 'permissions');
+        await updateDoc(permRef, {
+          allowedImageEmails: arrayRemove(email)
+        });
+        await renderPermissionsList();
+      } catch (err) {
+        alert("Yetki silinirken hata: " + err.message);
+      }
+    };
 
     // DOM Elementleri
     const loadingScreen = document.getElementById('loading-screen');
@@ -291,7 +467,7 @@
     });
 
     // Oturum Kontrolü (Sayfa Yönlendirme)
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         loadingScreen.classList.add('hidden');
         if (user) {
             loginScreen.classList.add('hidden');
@@ -299,11 +475,13 @@
             hubScreen.classList.remove('hidden');
             hubScreen.classList.add('flex');
             document.getElementById('user-display-name').innerText = user.displayName ? user.displayName.split(' ')[0] : 'Yönetici';
+            await checkPermissions(user);
         } else {
             hubScreen.classList.add('hidden');
             hubScreen.classList.remove('flex');
             loginScreen.classList.remove('hidden');
             loginScreen.classList.add('flex');
+            checkPermissions(null);
         }
     });
   </script>

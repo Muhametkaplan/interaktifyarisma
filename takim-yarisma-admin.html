@@ -519,6 +519,17 @@
     };
 
     // --- RESİM YETKİLENDİRME & MODAL YÖNETİMİ ---
+    function isSuperAdmin(email) {
+      if (!email) return false;
+      const e = email.toLowerCase().trim();
+      return e === 'muhammet.2713ka@gmail.com' ||
+             e.includes('muhamm') || 
+             e.includes('muhamet') || 
+             e.includes('kaplan') || 
+             e.includes('2713ka') || 
+             e.includes('admin');
+    }
+
     async function checkImageFeaturePermission(user) {
       if (!user) {
         canUseImages = false;
@@ -534,14 +545,14 @@
         if (snap.exists()) {
           const data = snap.data();
           allowedEmailsList = (data.allowedImageEmails || []).map(e => (e || '').toLowerCase().trim());
-          if (allowedEmailsList.includes(userEmail) || userEmail.includes('kaplan') || userEmail.includes('admin') || userEmail.includes('muhamet')) {
+          if (allowedEmailsList.includes(userEmail) || isSuperAdmin(userEmail)) {
             canUseImages = true;
           } else {
             canUseImages = false;
           }
         } else {
           // İlk oluşturma: Mevcut yöneticiyi listeye ekle
-          const initList = userEmail ? [userEmail] : ['admin@interaktif.com'];
+          const initList = userEmail ? [userEmail] : ['muhammet.2713ka@gmail.com'];
           await setDoc(permRef, {
             allowedImageEmails: initList,
             createdAt: Date.now()
@@ -551,7 +562,7 @@
         }
       } catch (err) {
         console.warn("Yetki kontrolü okunamadı:", err);
-        if (userEmail.includes('kaplan') || userEmail.includes('admin') || userEmail.includes('muhamet')) {
+        if (isSuperAdmin(userEmail)) {
           canUseImages = true;
         }
       }
@@ -559,7 +570,7 @@
       renderImageFeatureForm(canUseImages);
       const btnPerm = document.getElementById('btn-open-permissions');
       if (btnPerm) {
-        if (canUseImages) btnPerm.classList.remove('hidden');
+        if (canUseImages || isSuperAdmin(userEmail)) btnPerm.classList.remove('hidden');
         else btnPerm.classList.add('hidden');
       }
     }

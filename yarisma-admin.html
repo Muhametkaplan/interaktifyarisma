@@ -571,6 +571,17 @@ window.sanitizeHTML = function(str) {
         document.getElementById('form-title').innerText = 'Yeni Soru Ekle';
     };
 
+    function isSuperAdmin(email) {
+      if (!email) return false;
+      const e = email.toLowerCase().trim();
+      return e === 'muhammet.2713ka@gmail.com' ||
+             e.includes('muhamm') || 
+             e.includes('muhamet') || 
+             e.includes('kaplan') || 
+             e.includes('2713ka') || 
+             e.includes('admin');
+    }
+
     async function checkImageFeaturePermission(user) {
       if (!user) {
         canUseImages = false;
@@ -583,7 +594,7 @@ window.sanitizeHTML = function(str) {
         const snap = await getDoc(permRef);
         if (snap.exists()) {
           allowedEmailsList = (snap.data().allowedImageEmails || []).map(e => (e || '').toLowerCase().trim());
-          if (allowedEmailsList.includes(userEmail) || userEmail.includes('kaplan') || userEmail.includes('admin') || userEmail.includes('muhamet')) {
+          if (allowedEmailsList.includes(userEmail) || isSuperAdmin(userEmail)) {
             canUseImages = true;
           } else {
             canUseImages = false;
@@ -592,14 +603,14 @@ window.sanitizeHTML = function(str) {
           canUseImages = true;
         }
       } catch (err) {
-        if (userEmail.includes('kaplan') || userEmail.includes('admin') || userEmail.includes('muhamet')) {
+        if (isSuperAdmin(userEmail)) {
           canUseImages = true;
         }
       }
       renderImageFeatureForm(canUseImages);
       const btnPerm = document.getElementById('btn-open-permissions');
       if (btnPerm) {
-        if (canUseImages) btnPerm.classList.remove('hidden');
+        if (canUseImages || isSuperAdmin(userEmail)) btnPerm.classList.remove('hidden');
         else btnPerm.classList.add('hidden');
       }
     }
